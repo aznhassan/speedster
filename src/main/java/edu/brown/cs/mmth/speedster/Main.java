@@ -15,8 +15,8 @@ public class Main {
    * @param args
    */
   public static void main(String[] args) {
-    System.out.println(Flashcard.computeFlashcardRank(10, 2, 5));
-    System.out.println(Flashcard.computeFlashcardRank(30, 10, 1));
+    System.out.println(Flashcard.computeFlashcardRank(10, 10, 25));
+    System.out.println(Flashcard.computeFlashcardRank(10, 100, 1));
   }
 
 }

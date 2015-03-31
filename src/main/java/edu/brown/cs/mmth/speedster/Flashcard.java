@@ -10,8 +10,8 @@ import java.util.List;
 import edu.brown.cs.mmth.fileIo.Writeable;
 
 /**
- * This card models a flashcard. It stores all associated 
- * data and allows direct file IO. It also has the method 
+ * This card models a flashcard. It stores all associated
+ * data and allows direct file IO. It also has the method
  * @author tbhargav
  *
  */
@@ -39,14 +39,14 @@ public class Flashcard implements Readable, Writeable {
    * Computes a universal flashcard rank based on given data.
    * @param numDays
    * @param noCorrect (no. of times user got card right)
-   * @param noWrong (no. of times user got card wrong) 
-   * @return integer rank of flashcard 
+   * @param noWrong (no. of times user got card wrong)
+   * @return integer rank of flashcard
    */
-  public static int computeFlashcardRank(int numDays,int noCorrect,int noWrong) {
-    int dayWeight=numDays*10;
-    double ratio=noWrong/noCorrect*100;
-    int rank=(int)(dayWeight+ratio);
+  public static double computeFlashcardRank(int numDays,int noCorrect,int noWrong) {
+    int dayWeight = numDays*10;
+    double ratio = (noWrong / noCorrect) * 100.0;
+    double rank = (int) (dayWeight + ratio);
     return rank;
   }
-  
+
 }
