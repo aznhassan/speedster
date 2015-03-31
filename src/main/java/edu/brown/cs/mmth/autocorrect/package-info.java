@@ -1,8 +1,17 @@
 /**
- * Package used as the launching point of world conquest.
+ * This package stores classes that are
+ * exclusive to autocorrect functionality!
  *
- * @since 1.0
- * @author hsufi
- * @version 1.0
+ * All classes in this package (with the
+ * exception of main) implement either
+ * the SuggestionGen or Ranking interface.
+ * In other words they are all suggestion
+ * generators or rankers!
+ *
  */
-package edu.brown.cs.mmth.autocorrect;
+/**
+ * @author tbhargav
+ *
+ */
+package edu.brown.cs.tbhargav.autocorrect;
+
