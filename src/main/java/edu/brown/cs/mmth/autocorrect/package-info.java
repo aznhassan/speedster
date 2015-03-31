@@ -5,4 +5,4 @@
  * @author hsufi
  * @version 1.0
  */
-package edu.brown.cs.mmth;
+package edu.brown.cs.mmth.autocorrect;
