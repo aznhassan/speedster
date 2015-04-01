@@ -56,7 +56,7 @@ public final class LEDGen implements SuggestionGenInterface {
           ledMatrix[i][j] = ledMatrix[i - 1][j - 1];
         } else {
           int minPrev = Math.min(ledMatrix[i - 1][j - 1],
-              Math.min(ledMatrix[i][j - 1], ledMatrix[i - 1][j]));
+                  Math.min(ledMatrix[i][j - 1], ledMatrix[i - 1][j]));
           ledMatrix[i][j] = 1 + minPrev;
         }
       }
@@ -76,7 +76,7 @@ public final class LEDGen implements SuggestionGenInterface {
   @Override
   public List<Word> getSuggestions(final Trie<Word> trie, final String word) {
 
-    assert(ledDist>=0);
+    assert (ledDist >= 0);
 
     if (ledDist < 0) {
       throw new IllegalArgumentException();
@@ -103,10 +103,10 @@ public final class LEDGen implements SuggestionGenInterface {
    * @return
    */
   private List<Word> recursiveLEDTrieNav(final TrieNode<Word> root,
-      final int lower, final int upper, final String word) {
+          final int lower, final int upper, final String word) {
     ArrayList<Word> wordsWithinDist = new ArrayList<Word>();
     if ((root.isWord()) && (root.getCurrText().length() > lower)
-        && (root.getCurrText().length() < upper)) {
+            && (root.getCurrText().length() < upper)) {
       if (computeEditDist(root.getCurrText(), word) <= ledDist) {
         wordsWithinDist.add(root.getStoredValue());
       }

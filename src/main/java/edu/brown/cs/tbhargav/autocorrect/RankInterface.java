@@ -27,7 +27,7 @@ public interface RankInterface {
    * @return top suggestions
    */
   List<Word> rankedSuggestions(String word, String prevWord,
-      Collection<Word> words);
+          Collection<Word> words);
 
   /**
    * Checks whether given words are equal (in accordance with specific ranking)

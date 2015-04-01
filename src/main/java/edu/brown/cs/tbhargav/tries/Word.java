@@ -56,7 +56,7 @@ public final class Word implements TrieStorable {
    * @return list of 'Word' objects
    */
   public static HashMap<String, Word> makeWordsFromStrings(
-      final List<String> wordText) {
+          final List<String> wordText) {
     HashMap<String, Word> words = new HashMap<String, Word>();
 
     for (int i = 0; i < wordText.size(); i++) {

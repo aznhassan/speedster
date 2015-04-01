@@ -50,7 +50,7 @@ public final class Trie<E extends TrieStorable> {
    * @param toStore
    */
   private void addValue(final TrieNode<E> root1, final E val,
-      final String toStore) {
+          final String toStore) {
     char[] toStoreArr = toStore.toLowerCase().toCharArray();
 
     // Base case.
@@ -60,7 +60,7 @@ public final class Trie<E extends TrieStorable> {
         nodeToAdd.setStoredValue(val);
       } else {
         root1.addCharEdge(toStoreArr[0], new TrieNode<E>(root1.getCurrText()
-            + toStoreArr[0], root1.getDepth() + 1));
+                + toStoreArr[0], root1.getDepth() + 1));
         TrieNode<E> nodeToAdd = root1.getCharNode(toStoreArr[0]);
         nodeToAdd.setStoredValue(val);
       }
@@ -69,12 +69,12 @@ public final class Trie<E extends TrieStorable> {
 
     if (root1.hasCharEdge(toStoreArr[0])) {
       addValue(root1.getCharNode(toStoreArr[0]), val,
-          toStore.substring(1, toStore.length()));
+              toStore.substring(1, toStore.length()));
     } else {
       root1.addCharEdge(toStoreArr[0], new TrieNode<E>(root1.getCurrText()
-          + toStoreArr[0], root1.getDepth() + 1));
+              + toStoreArr[0], root1.getDepth() + 1));
       addValue(root1.getCharNode(toStoreArr[0]), val,
-          toStore.substring(1, toStore.length()));
+              toStore.substring(1, toStore.length()));
     }
 
   }

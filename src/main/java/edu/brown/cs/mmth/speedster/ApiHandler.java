@@ -5,7 +5,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 
-/** Handles the ajax requests sent by the front end.
+/**
+ * Handles the ajax requests sent by the front end.
+ * 
  * @author hassan
  *
  */
@@ -14,14 +16,14 @@ public final class ApiHandler {
   /**
    * Private Constructor.
    */
-  private ApiHandler() {}
-
+  private ApiHandler() {
+  }
 
   private static class NoteMetaHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      //Grab request specifics from the map
+      // Grab request specifics from the map
       String toReturn = "";
       return toReturn;
     }
@@ -31,7 +33,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      //Grab request specifics from the map
+      // Grab request specifics from the map
       String toReturn = "";
       return toReturn;
     }
@@ -41,8 +43,8 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      //Grab request specifics from the map, grab the
-      //request page as json.
+      // Grab request specifics from the map, grab the
+      // request page as json.
       String toReturn = "";
       return toReturn;
     }
@@ -52,7 +54,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      //Grab request specifics from the map
+      // Grab request specifics from the map
       String toReturn = "";
       return toReturn;
     }
@@ -62,7 +64,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      //Grab request specifics from the map
+      // Grab request specifics from the map
       String toReturn = "";
       return toReturn;
     }
@@ -72,7 +74,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      //Grab request specifics from the map
+      // Grab request specifics from the map
       String toReturn = "";
       return toReturn;
     }

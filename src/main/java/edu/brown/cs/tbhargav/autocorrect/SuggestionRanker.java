@@ -48,7 +48,7 @@ public final class SuggestionRanker {
   }
 
   private List<Word> collisionSort(final String word, final String prevWord,
-      final int ruleIndex, final List<Word> toSort1) {
+          final int ruleIndex, final List<Word> toSort1) {
     List<Word> rankedWords = new ArrayList<Word>();
     List<Word> tRanks = new ArrayList<Word>();
     RankInterface rule = rules.get(ruleIndex);
@@ -91,7 +91,7 @@ public final class SuggestionRanker {
           rankedWords.addAll(toSort);
         } else {
           rankedWords.addAll(collisionSort(word, prevWord, ruleIndex + 1,
-              toSort));
+                  toSort));
         }
 
       } else {
@@ -115,7 +115,7 @@ public final class SuggestionRanker {
    * @return
    */
   public List<Word> rankSuggestions(final String word, final String prevWord,
-      final Collection<Word> suggestions, final int numSuggestions) {
+          final Collection<Word> suggestions, final int numSuggestions) {
     ArrayList<Word> rankedWords = new ArrayList<Word>();
     ArrayList<Word> wordsToSort = new ArrayList<Word>();
     wordsToSort.addAll(suggestions);

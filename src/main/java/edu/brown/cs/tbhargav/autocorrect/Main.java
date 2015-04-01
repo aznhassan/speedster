@@ -110,17 +110,17 @@ public class Main {
 
   }
 
-
   /**
    * Turns on prefix and whitespace suggestions!
    */
   public static void turnBasicGenOn() {
-    prefix=true;
-    whitespace=true;
+    prefix = true;
+    whitespace = true;
   }
 
   /**
    * Creates the global trie using given file names.
+   * 
    * @param fileNames
    */
   public static void createTrie(final List<String> fileNames) {
@@ -148,6 +148,7 @@ public class Main {
 
   /**
    * Accessor method.
+   * 
    * @return the globalTrie
    */
   public static Trie<Word> getGlobalTrie() {
@@ -169,7 +170,7 @@ public class Main {
     public ModelAndView handle(final Request req, final Response res) {
       // Defining the variable 'title'
       Map<String, Object> variables = ImmutableMap.of("title",
-          "Mind your language!", "message", " ", "orig", "", "suggs", "");
+              "Mind your language!", "message", " ", "orig", "", "suggs", "");
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -201,7 +202,7 @@ public class Main {
 
       if (!withoutWord.toString().isEmpty()) {
         prevWord = withoutWord.toString().split(" ")[withoutWord.toString()
-                                                     .split(" ").length - 1];
+                .split(" ").length - 1];
       }
 
       List<Word> suggs = suggGenAndRanker(globalTrie, word, prevWord);
@@ -222,7 +223,7 @@ public class Main {
       Map<String, Object> variables;
 
       variables = ImmutableMap.of("title", "Mind your language", "message",
-          " ", "orig", inputText, "suggs", sb.toString());
+              " ", "orig", inputText, "suggs", sb.toString());
 
       return gson.toJson(variables);
 
@@ -263,7 +264,7 @@ public class Main {
 
       if (!withoutWord.toString().isEmpty()) {
         prevWord = withoutWord.toString().split(" ")[withoutWord.toString()
-                                                     .split(" ").length - 1];
+                .split(" ").length - 1];
       }
 
       List<Word> suggs = suggGenAndRanker(trie, word, prevWord);
@@ -284,7 +285,7 @@ public class Main {
    * @return
    */
   public static List<Word> suggGenAndRanker(final Trie<Word> trie,
-      final String word, final String prevWord) {
+          final String word, final String prevWord) {
     List<Word> suggs = new ArrayList<Word>();
     List<SuggestionGenInterface> gens = new ArrayList<SuggestionGenInterface>();
 
@@ -306,7 +307,7 @@ public class Main {
         boolean alreadyIn = false;
         for (Word s : suggs) {
           if (s.getStringText().trim()
-              .equalsIgnoreCase(w.getStringText().trim())) {
+                  .equalsIgnoreCase(w.getStringText().trim())) {
             alreadyIn = true;
           }
         }
@@ -323,7 +324,7 @@ public class Main {
       temp.addAll(new WhitespaceGen().getSuggestions(trie, word));
       for (int i = 0; i < temp.size() - 1; i += 2) {
         Word join = new Word(temp.get(i).getStringText() + " "
-            + temp.get(i + 1).getStringText());
+                + temp.get(i + 1).getStringText());
         join.setFrequency(temp.get(i).getFrequency());
         join.setAdjacentWords(temp.get(i).getAdjacentWords());
         // Checking for duplicates!
@@ -344,7 +345,7 @@ public class Main {
     // Edge (default) case
     if (suggs.size() == 0) {
       if (trie.getNodeFromString(word) != null
-          && trie.getNodeFromString(word).isWord()) {
+              && trie.getNodeFromString(word).isWord()) {
         suggs.add(new Word(word));
       }
       return suggs;
@@ -391,7 +392,7 @@ public class Main {
       optParser.accepts("gui", "Launches GUI interface of program!");
       optParser.accepts("prefix", "Activates prefix suggestions.");
       optParser.accepts("led", "Activate Levenshtein edit distance.")
-      .withRequiredArg().ofType(Integer.class);
+              .withRequiredArg().ofType(Integer.class);
       optParser.accepts("whitespace", "Activate splitting suggestions.");
       optParser.accepts("smart", "Activates my smart ordering!");
       optParser.accepts("h", "show help").forHelp();
@@ -433,7 +434,7 @@ public class Main {
       }
 
       List<String> nonOptionArguments = (List<String>) options
-          .nonOptionArguments();
+              .nonOptionArguments();
       return nonOptionArguments;
 
     } catch (Exception e) {
