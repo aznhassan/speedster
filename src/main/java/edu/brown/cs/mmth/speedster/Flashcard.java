@@ -18,6 +18,9 @@ import edu.brown.cs.mmth.fileIo.Writeable;
  */
 public class Flashcard implements Readable, Writeable {
 
+  // Instance variables. 
+  private int _rank;
+  
   @Override
   public List<String> getDataToStore() {
     // TODO Auto-generated method stub
@@ -37,6 +40,15 @@ public class Flashcard implements Readable, Writeable {
   }
 
   /**
+   * Accessor method for rank. TODO: Updates
+   * rank based on other fields of flashcard.
+   * @return the _rank
+   */
+  public int getRank() {
+    return _rank;
+  }
+
+  /**
    * Computes a universal flashcard rank based on given data.
    * 
    * @param numDays
@@ -46,11 +58,11 @@ public class Flashcard implements Readable, Writeable {
    *          (no. of times user got card wrong)
    * @return integer rank of flashcard
    */
-  public static double computeFlashcardRank(int numDays, int noCorrect,
+  public static int computeFlashcardRank(int numDays, int noCorrect,
           int noWrong) {
     int dayWeight = numDays * 10;
     double ratio = (noWrong / noCorrect) * 100.0;
-    double rank = (int) (dayWeight + ratio);
+    int rank = (int) (dayWeight + ratio);
     return rank;
   }
 
