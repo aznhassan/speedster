@@ -1,32 +1,39 @@
 package edu.brown.cs.mmth.speedster;
 
+
 import java.util.List;
 import java.util.Map;
 
+import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
+import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
 
 import edu.brown.cs.tbhargav.tries.Word;
 
 /**
  * Handles the ajax requests sent by the front end.
- * 
- * @author hassan
+ *
+ * @author hsufi
  *
  */
 public final class ApiHandler {
 
+  // Instance variables.
+  private static Gson gson = new Gson();
+  
   /**
    * Private Constructor.
    */
   private ApiHandler() {
   }
 
-  private static class NoteMetaHandler implements Route {
+  public static class NoteMetaHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -36,7 +43,7 @@ public final class ApiHandler {
     }
   }
 
-  private static class SuggestionsHandler implements Route {
+  public static class SuggestionsHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       // Helps get content from 'form'
@@ -89,18 +96,25 @@ public final class ApiHandler {
     }
   }
 
-  private static class GetNote implements Route {
+  /** Loads the note given by the id and then runs that
+   *  note on it's own page.
+   * @author hsufi
+   *
+   */
+  public static class GetNote implements TemplateViewRoute  {
     @Override
-    public Object handle(final Request req, final Response res) {
+    public ModelAndView handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map, grab the
-      // request page as json.
-      String toReturn = "";
-      return toReturn;
+      int id = Integer.parseInt(req.params(":id"));
+      //Grab the note with this id from the db
+      Map<String, Object> variables =
+              ImmutableMap.of(
+                      "title", "Speedster");
+      return new ModelAndView(variables, "note.ftl");
     }
   }
 
-  private static class UpdateCSS implements Route {
+  public static class UpdateCSS implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -110,7 +124,7 @@ public final class ApiHandler {
     }
   }
 
-  private static class GetNextFlashCard implements Route {
+  public static class GetNextFlashCard implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -120,7 +134,7 @@ public final class ApiHandler {
     }
   }
 
-  private static class UpdateFlashCard implements Route {
+  public static class UpdateFlashCard implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
