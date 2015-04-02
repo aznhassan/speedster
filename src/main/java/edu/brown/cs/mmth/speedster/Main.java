@@ -1,14 +1,10 @@
-package edu.brown.cs.mmth.speedster
+package edu.brown.cs.mmth.speedster;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -18,7 +14,6 @@ import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
-import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -83,18 +78,11 @@ public final class Main {
 
     int length = args.length;
     if (length > 2 || length == 0) {
-      System.err.println("ERROR: Must match pattern [--gui] maps.sqlite3");
+      System.err.println("ERROR: Must match pattern");
       System.exit(1);
     }
 
     File db = options.valueOf(fileSpec);
-    try {
-      //MapNode node = map.getIntersectionNode("Benevolent St", "Gano St");
-      //System.out.println(node);
-    } catch (ClassNotFoundException | SQLException e) {
-      System.err.println("ERROR: SQL problem " + e.getMessage());
-      System.exit(1);
-    }
 
     if (options.has("gui")) {
       runSparkServer();
@@ -113,12 +101,12 @@ public final class Main {
 
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
-    Spark.get("/allNotes", );
-    Spark.post("//words", , freeMarker);
-    Spark.post("/updateStyle", );
-    Spark.get("/getNote/:id", new ApiHandler.GetNote());
-    Spark.post("/getNextFlashcard", );
-    Spark.post("/finishedCard", );
+    Spark.get("/allNotes", new ApiHandler.NoteMetaHandler());
+    Spark.post("/words", new ApiHandler.SuggestionsHandler());
+    Spark.post("/updateStyle", new ApiHandler.UpdateCSS() );
+    Spark.get("/getNote/:id", new ApiHandler.GetNote(), freeMarker);
+    Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
+    Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
   }
 
   /** Returns a freeMakerEngine.

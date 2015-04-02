@@ -25,11 +25,14 @@ public final class ApiHandler {
   private ApiHandler() {
   }
 
+  /** Loads metadata associated with all notes.
+   * @author hsufi
+   *
+   */
   public static class NoteMetaHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map
+      // Grab metadata from notes, return info as JSON.
       String toReturn = "";
       return toReturn;
     }
