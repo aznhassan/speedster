@@ -1,5 +1,7 @@
 package edu.brown.cs.mmth.speedster;
 
+
+import java.util.List;
 import java.util.Map;
 
 import spark.ModelAndView;
@@ -10,6 +12,9 @@ import spark.Route;
 import spark.TemplateViewRoute;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
+import edu.brown.cs.tbhargav.tries.Word;
 
 /**
  * Handles the ajax requests sent by the front end.
@@ -19,6 +24,9 @@ import com.google.common.collect.ImmutableMap;
  */
 public final class ApiHandler {
 
+  // Instance variables.
+  private static Gson gson = new Gson();
+  
   /**
    * Private Constructor.
    */
@@ -41,10 +49,53 @@ public final class ApiHandler {
   public static class SuggestionsHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
+      // Helps get content from 'form'
       QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map
-      String toReturn = "";
-      return toReturn;
+      String inputText = qm.value("text_box");
+
+      // String parsing to get neat suggestions.
+      String sansPunct = edu.brown.cs.tbhargav.autocorrect.Main
+          .stripPunctuation(inputText);
+      String[] arr = sansPunct.split(" ");
+      String word = arr[arr.length - 1];
+      String prevWord = "";
+      StringBuilder withoutWord = new StringBuilder();
+      for (int i = 0; i < arr.length - 1; i++) {
+        if (!arr[i].trim().equalsIgnoreCase("")) {
+          withoutWord.append(arr[i].trim() + " ");
+        }
+      }
+
+      if (!withoutWord.toString().isEmpty()) {
+        prevWord = withoutWord.toString().split(" ")[withoutWord.toString()
+                                                     .split(" ").length - 1];
+      }
+
+      List<Word> suggs = edu.brown.cs.tbhargav.autocorrect.Main
+          .suggGenAndRanker(
+              edu.brown.cs.tbhargav.autocorrect.Main.getGlobalTrie(), word,
+              prevWord);
+
+      // Combining the 5 (punctuation free suggestions
+      // into a big '.' separated string
+      StringBuilder sb = new StringBuilder("");
+      for (int i = 0; i < suggs.size(); i++) {
+        Word w = suggs.get(i);
+        sb.append(withoutWord + w.getStringText());
+        if (i == suggs.size() - 1) {
+          continue;
+        }
+        sb.append('.');
+      }
+
+      // Adding suggestions in manually!
+      Map<String, Object> variables;
+
+      variables = ImmutableMap.of("title", "Hollywood Connections", "message",
+          " ", "orig", inputText, "suggs", sb.toString());
+
+      return gson.toJson(variables);
+
     }
   }
 
