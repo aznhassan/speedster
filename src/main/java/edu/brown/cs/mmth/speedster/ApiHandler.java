@@ -1,6 +1,7 @@
 package edu.brown.cs.mmth.speedster;
 
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +133,14 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map
+      String cssJson = qm.value("css");
+      try {
+        CSSSheetMaker.writeJSONToFile(cssJson);
+      } catch (IOException e) {
+        System.err.println("ERROR: CSS error " + e.getMessage());
+        //return JSON with error message.
+      }
+
       String toReturn = "";
       return toReturn;
     }
