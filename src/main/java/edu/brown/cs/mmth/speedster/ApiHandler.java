@@ -24,9 +24,11 @@ import edu.brown.cs.tbhargav.tries.Word;
  */
 public final class ApiHandler {
 
-  // Instance variables.
-  private static Gson gson = new Gson();
-  
+  /**
+   * Gson object to make things into JSON.
+   */
+  private static final Gson gson = new Gson();
+
   /**
    * Private Constructor.
    */
@@ -46,6 +48,10 @@ public final class ApiHandler {
     }
   }
 
+  /** Generates autocorrect suggestions for the given word.
+   * @author tbhargav
+   *
+   */
   public static class SuggestionsHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
@@ -117,6 +123,11 @@ public final class ApiHandler {
     }
   }
 
+  /** Updates the stylesheet of the current subject
+   *  with the given rules.
+   * @author hsufi
+   *
+   */
   public static class UpdateCSS implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
@@ -127,6 +138,11 @@ public final class ApiHandler {
     }
   }
 
+  /** Grabs the next flash card to display to the user
+   * based on the data from each flashcard.
+   * @author hsufi
+   *
+   */
   public static class GetNextFlashCard implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
@@ -137,6 +153,12 @@ public final class ApiHandler {
     }
   }
 
+  /** Updates the meta-data of the given flashcard, such as
+   *  adding to the number of right and wrongs as well as updating
+   *  the time stamp of the flashcard.
+   * @author hsufi
+   *
+   */
   public static class UpdateFlashCard implements Route {
     @Override
     public Object handle(final Request req, final Response res) {

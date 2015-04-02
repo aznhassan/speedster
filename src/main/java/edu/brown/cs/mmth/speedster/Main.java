@@ -19,7 +19,6 @@ import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 
 import freemarker.template.Configuration;
 
@@ -34,10 +33,6 @@ public final class Main {
    * The arguments given to the program.
    */
   private final String[] args;
-  /**
-   * Gson object to make things into JSON.
-   */
-  private static final Gson GSON = new Gson();
 
   /** Creates a main object.
    * @param args - The arguments passed to the program.
@@ -101,7 +96,7 @@ public final class Main {
 
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
-    Spark.get("/allNotes", new ApiHandler.NoteMetaHandler());
+    Spark.post("/allNotes", new ApiHandler.NoteMetaHandler());
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
     Spark.post("/updateStyle", new ApiHandler.UpdateCSS() );
     Spark.get("/getNote/:id", new ApiHandler.GetNote(), freeMarker);
