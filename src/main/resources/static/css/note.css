@@ -1,0 +1,111 @@
+/** {
+	border: 1px dashed red;
+}*/
+
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+
+
+/*////////////////////////////////////////////////////
+Standard HTML Tags
+////////////////////////////////////////////////////*/
+
+h2 {
+	font-family: 'Bitter', serif;
+	font-weight: 400;
+	font-size: 37px;
+	letter-spacing: 4px;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+h3 {
+	font-family: 'Bitter', serif;
+	font-weight: 400;
+	font-size: 25px;
+	letter-spacing: 2.5px;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+html, body {
+    height: 99%;
+}
+
+body {
+    background-color: #00E5DB;
+    color: #700000;
+    /*font-family: "Open Sans";*/
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+input {
+	outline: none;
+}
+
+p {
+	pointer-events: none;
+}
+
+a {
+	text-decoration: none;
+	color: #900000;
+}
+
+a:hover {
+	color: #B00000;
+}
+
+a:active {
+	color: #500000;
+}
+
+
+
+
+/*////////////////////////////////////////////////////
+Custom Classes
+////////////////////////////////////////////////////*/
+
+.centered {
+	margin: auto;
+	max-width: 400px;
+}
+
+
+
+
+/*////////////////////////////////////////////////////
+IDs
+////////////////////////////////////////////////////*/
+
+#noteArea {
+	width: 96%;
+	height: 96%;
+	margin-left: 2%;
+	margin-top: 2%;
+	border-style: none;
+	background-color: rgba(0, 0, 0, 0);
+	outline: none;
+	resize: none;
+
+	color: rgba(0, 0, 0, 0.8);
+}
+
+
+#notecolon {
+	font-weight: bold;
+}
+
+
+
+
+
+
+
+
