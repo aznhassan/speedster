@@ -105,7 +105,7 @@ function surroundSelection(sel, elt) {
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
-
+/*
 var savedRange;
 var isInFocus;
 function saveSelection() {
@@ -136,6 +136,78 @@ function restoreSelection(offset) {
         }
     }
 }
+*/
+
+var saveSelection, restoreSelection;
+
+if (window.getSelection && document.createRange) {
+    saveSelection = function(containerEl) {
+        var range = window.getSelection().getRangeAt(0);
+        var preSelectionRange = range.cloneRange();
+        preSelectionRange.selectNodeContents(containerEl);
+        preSelectionRange.setEnd(range.startContainer, range.startOffset);
+        var start = preSelectionRange.toString().length;
+
+        return {
+            start: start,
+            end: start + range.toString().length
+        };
+    };
+
+    restoreSelection = function(containerEl, savedSel) {
+        var charIndex = 0, range = document.createRange();
+        range.setStart(containerEl, 0);
+        range.collapse(true);
+        var nodeStack = [containerEl], node, foundStart = false, stop = false;
+
+        while (!stop && (node = nodeStack.pop())) {
+            if (node.nodeType == 3) {
+                var nextCharIndex = charIndex + node.length;
+                if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+                    range.setStart(node, savedSel.start - charIndex);
+                    foundStart = true;
+                }
+                if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+                    range.setEnd(node, savedSel.end - charIndex);
+                    stop = true;
+                }
+                charIndex = nextCharIndex;
+            } else {
+                var i = node.childNodes.length;
+                while (i--) {
+                    nodeStack.push(node.childNodes[i]);
+                }
+            }
+        }
+
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+} else if (document.selection) {
+    saveSelection = function(containerEl) {
+        var selectedTextRange = document.selection.createRange();
+        var preSelectionTextRange = document.body.createTextRange();
+        preSelectionTextRange.moveToElementText(containerEl);
+        preSelectionTextRange.setEndPoint("EndToStart", selectedTextRange);
+        var start = preSelectionTextRange.text.length;
+
+        return {
+            start: start,
+            end: start + selectedTextRange.text.length
+        }
+    };
+
+    restoreSelection = function(containerEl, savedSel) {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(containerEl);
+        textRange.collapse(true);
+        textRange.moveEnd("character", savedSel.end);
+        textRange.moveStart("character", savedSel.start);
+        textRange.select();
+    };
+}
+
 
 // Gets the word written just prior to the cursor.
 // NOTE: omits trailing special characters.
@@ -163,19 +235,40 @@ function getPrevWord() {
         console.log(sel);
 
         var counter = 0;
+        var countermax = 50;
 
+        // Try characters after word
         while (/^[^\s]+$/.test(sel.toString())) {
           sel.modify("extend", "forward", "character");
           
           // Selections cannot detect end of selectable text on addition of a character--have to (for now?) break out jankily
           counter++;
-          if (counter > 100) {
-            console.log("--- E-brake! ---");
+          if (counter > countermax) {
+            console.log("--- E-brake right! ---");
             break;
           }
         }
 
         sel.modify("extend", "backward", "character");
+
+
+        counter = 0;
+
+        while (/^[^\s]+$/.test(sel.toString())) {
+          sel.modify("move", "backward", "character");
+          sel.modify("extend", "forward", "character");
+          
+          // Selections cannot detect end of selectable text on addition of a character--have to (for now?) break out jankily
+          counter++;
+          if (counter > countermax) {
+            console.log("--- E-brake left! ---");
+            break;
+          }
+        }
+
+        sel.modify("extend", "backward", "character");
+        sel.modify("move", "forward", "character");
+
 
         return sel;
     }
@@ -193,7 +286,7 @@ $(document).ready(function() {
 
 	$("#noteArea").keyup(function(event) {
     // Save caret location
-		saveSelection();
+		var savedSelection = saveSelection($("#noteArea")[0]);
 
 		var caller = $(event.target);
 		var input = caller[0].value;
@@ -208,12 +301,12 @@ $(document).ready(function() {
    			// Down Arrow
    		} else if (code == 32) {
    			// Space
-   			
+   			/*
         	var sel = getPrevWord();
         	console.log("[" + sel.toString() + "]");
 
         	var note = false;
-        	if (sel.toString() === "note:") {
+        	if (sel.toString() === ":note:") {
             	note = true;
             	var span = document.createElement("span");
             	span.style.fontWeight = "bold";
@@ -222,7 +315,7 @@ $(document).ready(function() {
         	}
         
         	// Restore caret location
-        	restoreSelection(0);
+        	//restoreSelection(0);
 
         	if (note) {
             	console.log("uurg");
@@ -240,6 +333,21 @@ $(document).ready(function() {
             	sel.removeAllRanges();
             	sel.addRange(range);
         	}
+        	*/
+
+        	var res = $("#noteArea").text();
+        	
+			res = res.replace(/(\bnote:\s+)(.*\.)/g, function(x, a, b) {
+        		console.log("it's a match!");
+        		return a + '<span class="noteafter">' + b + '</span>';
+        	});
+
+        	res = res.replace(/\bnote:/g, function(x) {
+        		return '<br><span class="notecolon">' + x + '</span>';
+        	});
+
+        	$("#noteArea")[0].innerHTML = res;
+        	restoreSelection($("#noteArea")[0], savedSelection);
    		} else if (code == 13) {
         	// newline (?)
         	sel = window.getSelection();
