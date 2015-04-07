@@ -60,6 +60,8 @@ Rule:
 */
 
 
+// USAGE:
+// $("#mySelection").outside("click", function(event) {});
 (function($){
   $.fn.outside = function(ename, cb){
       return this.each(function(){
@@ -76,6 +78,7 @@ Rule:
   };
 }(jQuery));
 
+// Gets the parent DOM element of the current caret (cursor) position
 function getSelectionParentElement() {
     var parentEl = null, sel;
     if (window.getSelection) {
@@ -92,6 +95,7 @@ function getSelectionParentElement() {
     return parentEl;
 }
 
+// Surrounds a selection with a DOM element (may possibly work? I don't remember)
 function surroundSelection(sel, elt) {
     if (sel.rangeCount) {
         var range = sel.getRangeAt(0).cloneRange();
@@ -101,45 +105,16 @@ function surroundSelection(sel, elt) {
     }
 }
 
-// Mozilla's regular expression escape-ifier (not sure if needed)
+// Mozilla's regular expression escape-ifier
+// Takes a regex in the form of a string and adds a \ before special characters so that you can use the regex as a string (i.e. new Regex(...))
+// ex. "\s" -> "\\s"
 function escapeRegExp(string) {
     return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
-/*
-var savedRange;
-var isInFocus;
-function saveSelection() {
-    if (window.getSelection) { //non IE Browsers
-        savedRange = window.getSelection().getRangeAt(0);
-        //console.log(savedRange);
-    } else if (document.selection) { //IE
-        savedRange = document.selection.createRange();  
-    }
-}
 
-function restoreSelection(offset) {
-    isInFocus = true;
-    $("#noteArea").focus();
-    if (savedRange != null) {
-        if (window.getSelection) { //non IE and there is already a selection 
-            var s = window.getSelection();
-            if (s.rangeCount > 0) {
-                s.removeAllRanges();
-            }
-            //console.log(savedRange.endContainer);
-            savedRange.setEnd(savedRange.endContainer, savedRange.endOffset + offset);
-            s.addRange(savedRange);
-        } else if (document.createRange) { //non IE and no selection
-            window.getSelection().addRange(savedRange);
-        } else if (document.selection) { //IE
-            savedRange.select();
-        }
-    }
-}
-*/
-
+// The following code is used to save and restore the caret position in an HTML tree
+// I believe it does so by storing a hidden character in the text and then returning back to that on restore (I think... still have to read it)
 var saveSelection, restoreSelection;
-
 if (window.getSelection && document.createRange) {
     saveSelection = function(containerEl) {
         var range = window.getSelection().getRangeAt(0);
@@ -224,6 +199,7 @@ function getPrevSelection() {
 
 // Gets the word written just prior to the cursor.
 // Note: does not omit special characters; only call on space!
+// NOT NECESSARY ANYMORE YAYYYYYYYY
 function getPrevWord() {
     var sel;
     if (window.getSelection && (sel = window.getSelection()).modify) {
@@ -301,43 +277,10 @@ $(document).ready(function() {
    			// Down Arrow
    		} else if (code == 32) {
    			// Space
-   			/*
-        	var sel = getPrevWord();
-        	console.log("[" + sel.toString() + "]");
-
-        	var note = false;
-        	if (sel.toString() === ":note:") {
-            	note = true;
-            	var span = document.createElement("span");
-            	span.style.fontWeight = "bold";
-            	span.style.color = "#FF0000";
-            	surroundSelection(sel, span);
-        	}
-        
-        	// Restore caret location
-        	//restoreSelection(0);
-
-        	if (note) {
-            	console.log("uurg");
-            	sel = window.getSelection();
-            	var range = sel.getRangeAt(0);
-
-            	var span = document.createElement("span");
-            	span.style.fontStyle = "italic";
-            	span.style.color = "#FFFF00";
-            	span.innerHTML = "&#8203;"; // Zero-width space code
-
-            	range.insertNode(span);
-            	range.setStart(span, 0);
-            	range.setEnd(span, 1);
-            	sel.removeAllRanges();
-            	sel.addRange(range);
-        	}
-        	*/
 
         	var res = $("#noteArea").text();
         	
-			res = res.replace(/(\bnote:\s+)(.*\.)/g, function(x, a, b) {
+			res = res.replace(/(\bnote:\s+)(.*\.|.*$)/g, function(x, a, b) {
         		console.log("it's a match!");
         		return a + '<span class="noteafter">' + b + '</span>';
         	});
@@ -351,8 +294,7 @@ $(document).ready(function() {
    		} else if (code == 13) {
         	// newline (?)
         	sel = window.getSelection();
-        	var parent = getSelectionParentElement(sel); 
-        	//sel.modify("extend", "forward", "character");
+        	var parent = getSelectionParentElement(sel);
         } else {
         	// Regular character?
         	
