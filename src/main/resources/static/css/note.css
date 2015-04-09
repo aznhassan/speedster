@@ -100,6 +100,7 @@ IDs
 	background-color: rgba(0, 0, 0, 0);
 	outline: none;
 	resize: none;
+	white-space: pre;
 
 	color: rgba(0, 0, 0, 0.8);
 }

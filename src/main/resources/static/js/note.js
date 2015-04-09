@@ -78,6 +78,34 @@ Rule:
   };
 }(jQuery));
 
+jQuery.fn.extend({
+insertAtCaret: function(myValue, myValueE){
+  return this.each(function(i) {
+    if (document.selection) {
+      //For browsers like Internet Explorer
+      this.focus();
+      sel = document.selection.createRange();
+      sel.text = myValue + myValueE;
+      this.focus();
+    }
+    else if (this.selectionStart || this.selectionStart == '0') {
+      //For browsers like Firefox and Webkit based
+      var startPos = this.selectionStart;
+      var endPos = this.selectionEnd;
+      var scrollTop = this.scrollTop;
+      this.value = this.value.substring(0,     startPos)+myValue+this.value.substring(startPos,endPos)+myValueE+this.value.substring(endPos,this.value.length);
+      this.focus();
+      this.selectionStart = startPos + myValue.length;
+      this.selectionEnd = ((startPos + myValue.length) + this.value.substring(startPos,endPos).length);
+      this.scrollTop = scrollTop;
+    } else {
+      this.value += myValue;
+      this.focus();
+    }
+  })
+    }
+});
+
 // Gets the parent DOM element of the current caret (cursor) position
 function getSelectionParentElement() {
     var parentEl = null, sel;
@@ -102,6 +130,20 @@ function surroundSelection(sel, elt) {
         range.surroundContents(elt);
         sel.removeAllRanges();
         sel.addRange(range);
+    }
+}
+
+// Inserts html before the cursor
+function insertHTMLAtCursor(html) {
+    var sel, range;
+    if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.getRangeAt && sel.rangeCount) {
+            range = sel.getRangeAt(0);
+            range.deleteContents();
+            console.log(html);
+            range.insertNode(html);
+        }
     }
 }
 
@@ -250,6 +292,25 @@ function getPrevWord() {
     }
 }
 
+function stylize() {
+	var savedSelection = saveSelection($("#noteArea")[0]);
+	var res = $("#noteArea").text();
+        	
+	res = res.replace(/(\bnote:\s*)(.*\.|.*$)/g, function(x, a, b) {
+        console.log("it's a match!");
+        return a + '<span class="noteafter">' + b + '</span>';
+    });
+
+    res = res.replace(/\bnote:/g, function(x) {
+        return '<br><span class="notecolon">' + x + '</span>';
+    });
+
+    res = res.replace(/\u200b/g, "<br>\u200b");
+
+    $("#noteArea")[0].innerHTML = res;
+    restoreSelection($("#noteArea")[0], savedSelection);
+}
+
 
 ///////////////////////////////////////////////////////////////
 ///////////////////////   MAIN   //////////////////////////////
@@ -262,39 +323,40 @@ $(document).ready(function() {
 
 	$("#noteArea").keyup(function(event) {
     // Save caret location
-		var savedSelection = saveSelection($("#noteArea")[0]);
 
-		var caller = $(event.target);
-		var input = caller[0].value;
+		var caller = $(event.target)[0];
+		var input = caller.value;
 		var vars = {"text": input};
 
 		var code = event.keyCode || event.which;
 		if (code == 9) {
    			// Tab
+   			//stylize();
    		} else if (code == 38) {
    			// Up   Arrow
    		} else if (code == 40) {
    			// Down Arrow
    		} else if (code == 32) {
    			// Space
-
-        	var res = $("#noteArea").text();
-        	
-			res = res.replace(/(\bnote:\s+)(.*\.|.*$)/g, function(x, a, b) {
-        		console.log("it's a match!");
-        		return a + '<span class="noteafter">' + b + '</span>';
-        	});
-
-        	res = res.replace(/\bnote:/g, function(x) {
-        		return '<br><span class="notecolon">' + x + '</span>';
-        	});
-
-        	$("#noteArea")[0].innerHTML = res;
-        	restoreSelection($("#noteArea")[0], savedSelection);
+   			stylize();
    		} else if (code == 13) {
-        	// newline (?)
+        	// Line feed? Carriage return?
+        	
         	sel = window.getSelection();
         	var parent = getSelectionParentElement(sel);
+        	//console.log(parent);
+        	
+        	//var elt = document.createElement("div");
+        	//elt.innerHTML = "&#13;";
+
+        	var elt = document.createTextNode("\u200b");
+
+        	parent.parentNode.insertBefore(elt, parent);
+        	//parent.remove();
+        	//parent.innerHTML = "&#13";
+        	
+        	//insertHTMLAtCursor("&#10");
+        	stylize();
         } else {
         	// Regular character?
         	
@@ -308,6 +370,10 @@ $(document).ready(function() {
  					// #TODO: populate a drop-down with words from the responseList
  				});
         	}
+
+        	stylize();
         }
+
+        
 	});
 });
