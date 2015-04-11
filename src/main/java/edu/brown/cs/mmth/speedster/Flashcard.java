@@ -12,18 +12,49 @@ import edu.brown.cs.mmth.fileIo.Writeable;
 /**
  * This card models a flashcard. It stores all associated data and allows direct
  * file IO. It also has the method
- * 
+ *
  * @author tbhargav
  *
  */
 public class Flashcard implements Readable, Writeable {
 
-  // Instance variables. 
+  // Instance variables.
+  /**
+   * The rank of the flash card.
+   */
   private int _rank;
-  
+  /**
+   * The number of times this user got this flash card correct.
+   */
+  private int numberTimesCorrect;
+  /**
+   * The number of times this user got this flash card wrong.
+   */
+  private int numberTimesWrong;
+  /**
+   * The question to display.
+   */
+  private String question;
+  /**
+   * The answer to the question.
+   */
+  private String answer;
+
+  /**
+   * Constructs a new flash card
+   */
+  public Flashcard(String answer, String question) {
+     numberTimesCorrect = 0;
+     numberTimesWrong = 0;
+     this.answer = answer;
+     this.question = question;
+
+  }
+
   @Override
   public List<String> getDataToStore() {
-    // TODO Auto-generated method stub
+    //Folder structure can still change.
+
     return null;
   }
 
@@ -50,7 +81,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Computes a universal flashcard rank based on given data.
-   * 
+   *
    * @param numDays
    * @param noCorrect
    *          (no. of times user got card right)
