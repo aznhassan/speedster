@@ -1,27 +1,10 @@
 package edu.brown.cs.mmth.speedster;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Map;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import spark.ExceptionHandler;
-import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
-import spark.Spark;
-import spark.TemplateViewRoute;
-import spark.template.freemarker.FreeMarkerEngine;
-
-import com.google.common.collect.ImmutableMap;
-
-import freemarker.template.Configuration;
-
 /**
  * This is the main class that co-ordinates GUI with the back-end.
  *
@@ -40,11 +23,6 @@ public final class Main {
   public static void main(String[] args) {
     new Main(args).run();
   }
-
-  /**
-   * HTML server exception number.
-   */
-  private static final int EXCEPTIONSTATUS = 500;
 
   /** Constructs a Main object.
    * @param argsM - The array of argument
@@ -80,93 +58,9 @@ public final class Main {
     File db = options.valueOf(fileSpec);
 
     if (options.has("gui")) {
-      runSparkServer();
+      Web.runSparkServer();
     }
   }
 
-
-  /**
-   * Runs the spark server.
-   */
-  private void runSparkServer() {
-    Spark.externalStaticFileLocation("src/main/resources/static");
-    Spark.exception(Exception.class, new ExceptionPrinter());
-
-    FreeMarkerEngine freeMarker = createEngine();
-
-    // Setup Spark Routes
-    Spark.get("/home", new FrontHandler(), freeMarker);
-    Spark.post("/allNotes", new ApiHandler.NoteMetaHandler());
-    Spark.post("/words", new ApiHandler.SuggestionsHandler());
-    Spark.post("/updateStyle", new ApiHandler.UpdateCSS() );
-    Spark.get("/getNote/:id", new ApiHandler.GetNote(), freeMarker);
-    Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
-    Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
-  }
-
-  /** Returns a freeMakerEngine.
-   * @return - A freeMakerEngine
-   */
-  private static FreeMarkerEngine createEngine() {
-    Configuration config = new Configuration();
-    File templates =
-            new File("src/main/resources/spark/template/freemarker");
-    try {
-      config.setDirectoryForTemplateLoading(templates);
-    } catch (IOException ioe) {
-      System.out.printf("ERROR: Unable use %s for template loading",
-              templates);
-      System.exit(1);
-    }
-    return new FreeMarkerEngine(config);
-  }
-
-  /** Launches a site where you can query the baconGraph.
-   * @author hsufi
-   *
-   */
-  private static class FrontHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      Map<String, Object> variables =
-              ImmutableMap.of(
-                      "title", "Maps");
-      return new ModelAndView(variables, "map.ftl");
-    }
-  }
-
-  /** Handles map requests.
-   * @author hsufi
-   *
-   */
-  private static class ResultsHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      Map<String, Object> variables =
-              ImmutableMap.of(
-                      "title", "C32: Maps");
-      return new ModelAndView(variables, "results.ftl");
-    }
-  }
-
-  /** Prints out exceptions to the page.
-   * @author hsufi
-   *
-   */
-  private static class ExceptionPrinter implements ExceptionHandler {
-    @Override
-    public void handle(final Exception e, final Request req,
-            final Response res) {
-      res.status(EXCEPTIONSTATUS);
-      StringWriter stacktrace = new StringWriter();
-      try (PrintWriter pw = new PrintWriter(stacktrace)) {
-        pw.println("<pre>");
-        e.printStackTrace(pw);
-        pw.println("</pre>");
-      }
-      res.body(stacktrace.toString());
-    }
-  }
 }
 
