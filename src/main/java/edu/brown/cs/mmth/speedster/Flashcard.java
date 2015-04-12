@@ -3,10 +3,9 @@
  */
 package edu.brown.cs.mmth.speedster;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
 import java.util.List;
 
+import edu.brown.cs.mmth.fileIo.Readable;
 import edu.brown.cs.mmth.fileIo.Writeable;
 
 /**
@@ -18,11 +17,20 @@ import edu.brown.cs.mmth.fileIo.Writeable;
  */
 public class Flashcard implements Readable, Writeable {
 
-  // Instance variables.
   /**
    * The rank of the flash card.
    */
   private int _rank;
+
+  /**
+   * The subject that Flashcard belongs to.
+   */
+  private String subjectName;
+
+  /**
+   * The id of the Flashcard.
+   */
+  private long id;
   /**
    * The number of times this user got this flash card correct.
    */
@@ -41,6 +49,12 @@ public class Flashcard implements Readable, Writeable {
   private String answer;
 
   /**
+   * Flash cards should only be displayed once per session.
+   */
+  private boolean displayForThisSession;
+
+
+  /**
    * Constructs a new flash card
    */
   public Flashcard(String answer, String question) {
@@ -48,7 +62,6 @@ public class Flashcard implements Readable, Writeable {
      numberTimesWrong = 0;
      this.answer = answer;
      this.question = question;
-
   }
 
   @Override
@@ -64,12 +77,6 @@ public class Flashcard implements Readable, Writeable {
     return 0;
   }
 
-  @Override
-  public int read(CharBuffer cb) throws IOException {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
   /**
    * Accessor method for rank. TODO: Updates
    * rank based on other fields of flashcard.
@@ -79,14 +86,30 @@ public class Flashcard implements Readable, Writeable {
     return _rank;
   }
 
+  @Override
+  public void setId() {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public void updateFields(List<String> fields) {
+    // TODO Auto-generated method stub
+
+  }
+
+  /**
+   * Grabs the subject of the Flashcard.
+   */
+  public String getSubject() {
+    return subjectName;
+  }
+
   /**
    * Computes a universal flashcard rank based on given data.
-   *
-   * @param numDays
-   * @param noCorrect
-   *          (no. of times user got card right)
-   * @param noWrong
-   *          (no. of times user got card wrong)
+   * @param numDays -
+   * @param noCorrect - (no. of times user got card right)
+   * @param noWrong - (no. of times user got card wrong)
    * @return integer rank of flashcard
    */
   public static int computeFlashcardRank(int numDays, int noCorrect,
@@ -96,5 +119,6 @@ public class Flashcard implements Readable, Writeable {
     int rank = (int) (dayWeight + ratio);
     return rank;
   }
+
 
 }
