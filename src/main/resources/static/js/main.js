@@ -69,6 +69,10 @@ $(document).ready(function() {
 	 			notes_div.id = folderList[i].notes[j].note_id;
 	 			notes_div.innerHTML = folderList[i].notes[j].note_name;
 	 			folder_div.appendChild(notes_div);
+	 			$(notes_div).click(function(event) {
+	 				console.log("NOTE ID: " + this.id);
+	 				window.location.replace("/getNote/" + this.id);
+	 			});
 	 		}
 	 		$('body').append(folder_div);
 	 	}
