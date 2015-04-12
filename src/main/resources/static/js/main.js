@@ -62,7 +62,10 @@ $(document).ready(function() {
 	 		var folder_div = document.createElement("div");
 	 		folder_div.className = "folder_name_div";
 	 		folder_div.id = folderList[i].folder_id;
+	 		console.log("DATA: " + folderList[i]);
+	 		$(folder_div).attr('data-folder',folderList[i]);
 	 		folder_div.innerHTML = folderList[i].folder_name;
+	 		createCircleDiv(folder_div);
 	 		for(var j = 0; j < folderList[i].notes.length; j++) {
 	 			var notes_div = document.createElement("div");
 	 			notes_div.className = "note_name_div";
@@ -74,10 +77,58 @@ $(document).ready(function() {
 	 				window.location.replace("/getNote/" + this.id);
 	 			});
 	 		}
-	 		$('body').append(folder_div);
+	 		$('#main-div').append(folder_div);
 	 	}
 	 }
 
+
+	 function createCircleDiv(folderDiv) {
+	 	var circle = document.createElement("div");
+	 	circle.className = "circle";
+	 	circle.innerHTML = "+";
+	 	folderDiv.appendChild(circle);
+	 	$(circle).click(function(event) {
+	 		createNewNote(folderDiv);
+	 		
+	 		// #TODO: send info about the new note to server.
+	 	});
+	 }
+
+
+	 function createNewNote(folderDiv) {
+	 	var new_note_div = document.createElement("div");
+ 		new_note_div.className = "new_note_name_div";
+ 		$(new_note_div).attr('contenteditable','true');
+ 		new_note_div.id = folderDiv.id;
+ 		console.log("NEW NOTE ID: " + new_note_div.id);
+ 		new_note_div.innerHTML = "NEW  NOTE";
+ 		folderDiv.appendChild(new_note_div);
+ 		
+	 }
+
+	 function saveClick() {
+	 	console.log($(document).find('.new_note_name_div'));
+	 	var newNotes = [];
+	 	$('.new_note_name_div').each(function(i) {
+	 		var noteData = {
+	 			"associated_folder_id":this.id,
+	 			"title":this.innerText
+	 		}
+	 		newNotes.push(noteData);
+	 	});
+	 	console.log(newNotes);
+	 	// POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
+	 	var postParam = {
+	 		notes: JSON.stringify(newNotes)
+	 	}
+	 	$.post("/updateNotes", postParam, function(responseObject) {
+
+	 	});
+	 }
+
+	 $('#save-button').click(function(event) {
+	 	saveClick();
+	 });
 
 	/**
 	 * Click handler for folder name
