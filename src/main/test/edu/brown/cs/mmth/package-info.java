@@ -1,5 +1,5 @@
 /**
- * Package used as the launching point of world conquest.
+ * Package used for testing program.
  *
  * @since 1.0
  * @author hsufi
