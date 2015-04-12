@@ -39,7 +39,7 @@ public final class Web {
 
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
-    Spark.post("/allNotes", new ApiHandler.NoteMetaHandler());
+    Spark.get("/notes", new ApiHandler.NoteMetaHandler(), freeMarker);
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
     Spark.post("/updateStyle", new ApiHandler.UpdateCSS());
     Spark.get("/getNote/:id", new ApiHandler.GetNote(), freeMarker);

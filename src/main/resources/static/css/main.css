@@ -1,10 +1,16 @@
 body {
-	background-color: #FFFFEA;
+    background-color: #00E5DB;
+    color: rgba(0, 0, 0, 0.8);
+    font-family: "Bitter", serif;
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: 1px;
 }
 
 h1 {
 	text-align: center;
 	margin-bottom: 15px;
+	font-size:35px;
 }
 
 .content {
@@ -43,4 +49,21 @@ p {
 	margin-top: 20px;
 	margin-bottom: 43px;
 	border: 1px solid #000000;
+}
+
+.folder_name_div {
+	background-color: #000;
+	color: #FFF;
+	text-align:center;
+	font-size:25px;
+	border: 1px dashed red;
+}
+
+.note_name_div {
+	background-color: rgba(0,0,255,0.8);
+	color: #FFF;
+	text-align:left;
+	font-size:20px;
+	border: 1px dashed red;
+	padding-left:3%;
 }
