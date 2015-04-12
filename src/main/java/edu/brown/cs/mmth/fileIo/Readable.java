@@ -14,8 +14,9 @@ public interface Readable {
   /**
    * This allows us to update the id of the object to that of the file from
    * which we are reading.
+   * @param idL -- id to set object to
    */
-  void setId();
+  void setId(long idL);
 
   /**
    * The given data will be of the form field_name: field_value. Implementing

@@ -1,9 +1,9 @@
 package edu.brown.cs.mmth.speedster;
 
-import java.io.IOException;
-import java.nio.CharBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
+import edu.brown.cs.mmth.fileIo.Readable;
 import edu.brown.cs.mmth.fileIo.Writeable;
 
 
@@ -18,27 +18,48 @@ public class Note implements Readable, Writeable{
    * The String that holds the written note information
    */
   private String data;
+  private String subject;
+  private long id;
 
-  public Note(){
-    // TODO Auto-generated constructor stub
+  /**
+   * Constructs a new note object with a unique ID.
+   * @param d -- data to store
+   * @param s -- subject to which note belongs
+   */
+  public Note(String d, String s){
+    data=d;
+    subject=s;
   }
 
+  /**
+   * Gets the subject to which the note belongs.
+   * @return the subject in string form.
+   */
+  public String getSubject() {
+    return subject;
+  }
+  
   @Override
   public List<String> getDataToStore() {
-    // TODO Auto-generated method stub
-    return null;
+    List<String> listString=new ArrayList<String>();
+    listString.add(data);
+    return listString;
   }
 
   @Override
-  public int getId() {
-    // TODO Auto-generated method stub
-    return 0;
+  public long getId() {
+    return id;
   }
 
   @Override
-  public int read(CharBuffer cb) throws IOException {
-    // TODO Auto-generated method stub
-    return 0;
+  public void setId(long idL) {
+    id=idL;
+    
+  }
+
+  @Override
+  public void updateFields(List<String> fields) {
+    // TODO Auto-generated method stub 
   }
 
 }
