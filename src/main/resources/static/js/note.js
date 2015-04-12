@@ -78,33 +78,14 @@ Rule:
   };
 }(jQuery));
 
-jQuery.fn.extend({
-insertAtCaret: function(myValue, myValueE){
-  return this.each(function(i) {
-    if (document.selection) {
-      //For browsers like Internet Explorer
-      this.focus();
-      sel = document.selection.createRange();
-      sel.text = myValue + myValueE;
-      this.focus();
-    }
-    else if (this.selectionStart || this.selectionStart == '0') {
-      //For browsers like Firefox and Webkit based
-      var startPos = this.selectionStart;
-      var endPos = this.selectionEnd;
-      var scrollTop = this.scrollTop;
-      this.value = this.value.substring(0,     startPos)+myValue+this.value.substring(startPos,endPos)+myValueE+this.value.substring(endPos,this.value.length);
-      this.focus();
-      this.selectionStart = startPos + myValue.length;
-      this.selectionEnd = ((startPos + myValue.length) + this.value.substring(startPos,endPos).length);
-      this.scrollTop = scrollTop;
-    } else {
-      this.value += myValue;
-      this.focus();
-    }
-  })
-    }
-});
+String.prototype.capitalizeFirstLetter = function() {
+	if (this.length > 0) {
+		return this.charAt(0).toUpperCase() + this.slice(1);
+	} else {
+		return '';
+	}
+}
+
 
 // Gets the parent DOM element of the current caret (cursor) position
 function getSelectionParentElement() {
@@ -123,29 +104,6 @@ function getSelectionParentElement() {
     return parentEl;
 }
 
-// Surrounds a selection with a DOM element (may possibly work? I don't remember)
-function surroundSelection(sel, elt) {
-    if (sel.rangeCount) {
-        var range = sel.getRangeAt(0).cloneRange();
-        range.surroundContents(elt);
-        sel.removeAllRanges();
-        sel.addRange(range);
-    }
-}
-
-// Inserts html before the cursor
-function insertHTMLAtCursor(html) {
-    var sel, range;
-    if (window.getSelection) {
-        sel = window.getSelection();
-        if (sel.getRangeAt && sel.rangeCount) {
-            range = sel.getRangeAt(0);
-            range.deleteContents();
-            console.log(html);
-            range.insertNode(html);
-        }
-    }
-}
 
 // Mozilla's regular expression escape-ifier
 // Takes a regex in the form of a string and adds a \ before special characters so that you can use the regex as a string (i.e. new Regex(...))
@@ -226,88 +184,59 @@ if (window.getSelection && document.createRange) {
 }
 
 
-// Gets the word written just prior to the cursor.
-// NOTE: omits trailing special characters.
-function getPrevSelection() {
-    var sel, word = "";
-    if (window.getSelection && (sel = window.getSelection()).modify) {
-        var selectedRange = sel.getRangeAt(0);
-        sel.collapseToStart();
-        sel.modify("move", "backward", "word");
-        sel.modify("extend", "forward", "word");
-        return sel;
-    }
+function moveCursor(savedSelection, offset) {
+	savedSelection.start += offset;
+	savedSelection.end += offset;
 }
 
-// Gets the word written just prior to the cursor.
-// Note: does not omit special characters; only call on space!
-// NOT NECESSARY ANYMORE YAYYYYYYYY
-function getPrevWord() {
-    var sel;
-    if (window.getSelection && (sel = window.getSelection()).modify) {
-        //sel = sel.getRangeAt(0);
-
-        sel.collapseToStart();
-        sel.modify("move", "backward", "word");
-        sel.modify("extend", "forward", "word");
-        console.log(sel);
-
-        var counter = 0;
-        var countermax = 50;
-
-        // Try characters after word
-        while (/^[^\s]+$/.test(sel.toString())) {
-          sel.modify("extend", "forward", "character");
-          
-          // Selections cannot detect end of selectable text on addition of a character--have to (for now?) break out jankily
-          counter++;
-          if (counter > countermax) {
-            console.log("--- E-brake right! ---");
-            break;
-          }
-        }
-
-        sel.modify("extend", "backward", "character");
-
-
-        counter = 0;
-
-        while (/^[^\s]+$/.test(sel.toString())) {
-          sel.modify("move", "backward", "character");
-          sel.modify("extend", "forward", "character");
-          
-          // Selections cannot detect end of selectable text on addition of a character--have to (for now?) break out jankily
-          counter++;
-          if (counter > countermax) {
-            console.log("--- E-brake left! ---");
-            break;
-          }
-        }
-
-        sel.modify("extend", "backward", "character");
-        sel.modify("move", "forward", "character");
-
-
-        return sel;
-    }
-}
-
-function stylize() {
+function stylize(offset) {
 	var savedSelection = saveSelection($("#noteArea")[0]);
 	var res = $("#noteArea").text();
-        	
-	res = res.replace(/(\bnote:\s*)(.*\.|.*$)/g, function(x, a, b) {
-        console.log("it's a match!");
-        return a + '<span class="noteafter">' + b + '</span>';
+
+	// Invariants:
+	//	1) Extra visible characters are never added (maybe \u200b doesn't count?)
+	//	2) No <br> tags are inserted at the end of a replacement (these newlines will appear after the cursor)
+	
+	// &nbsp; -> <br>
+	res = res.replace(/\u200b/g, '<br>\u200b');
+
+	// TITLE
+	res = res.replace(/^(.*?)(<br>\u200b|$)/, function(x, a, b) {
+        return '<div class="title">' + a + '</div>' + b;
     });
 
-    res = res.replace(/\bnote:/g, function(x) {
-        return '<br><span class="notecolon">' + x + '</span>';
+    // Sections
+    res = res.replace(/(<br>\u200b<br>\u200b)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+        return a + '<span class="section">' + b + '</span>' + c;
     });
 
-    res = res.replace(/\u200b/g, "<br>\u200b");
+	// NOTE:
+	res = res.replace(/(note:)(.*?[\.\!\?]|.*$)/gi, function(x, a, b) {
+        return '<div class="box">' + '<span class="notecolon">' + a + '</span>' + '<span class="noteafter">' + b + '</span>' + '</div>';
+    });
+
+	// Q/A
+	res = res.replace(/\b(Q:)(.*?\?)([^]*?)(A:)(.*?\.)/gim, function(x, a, b, c, d, e) {
+        return '<div class="box">' + a + b + c + d + e + '</div>';
+    });
+	res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
+        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
+    });
+    res = res.replace(/\b(A:)(.*?\.|.*$)/gi, function(x, a, b) {
+        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
+    });
+
+
+	// TExt -> Text
+	res = res.replace(/\b([A-Z]{2}[a-z]+)\b/g, function(x, a) {
+		return a.toLowerCase().capitalizeFirstLetter();
+	});
+
 
     $("#noteArea")[0].innerHTML = res;
+    console.log(savedSelection);
+    //offset = (offset ? offset : 0);
+    //moveCursor(savedSelection, offset);
     restoreSelection($("#noteArea")[0], savedSelection);
 }
 
@@ -340,22 +269,18 @@ $(document).ready(function() {
    			// Space
    			stylize();
    		} else if (code == 13) {
-        	// Line feed? Carriage return?
+        	// Line feed
         	
         	sel = window.getSelection();
         	var parent = getSelectionParentElement(sel);
-        	//console.log(parent);
         	
         	//var elt = document.createElement("div");
-        	//elt.innerHTML = "&#13;";
 
         	var elt = document.createTextNode("\u200b");
+        	//var elt = document.createTextNode("&#13;");
 
         	parent.parentNode.insertBefore(elt, parent);
-        	//parent.remove();
-        	//parent.innerHTML = "&#13";
         	
-        	//insertHTMLAtCursor("&#10");
         	stylize();
         } else {
         	// Regular character?

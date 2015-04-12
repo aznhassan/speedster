@@ -15,7 +15,7 @@ Standard HTML Tags
 ////////////////////////////////////////////////////*/
 
 h2 {
-	font-family: 'Bitter', serif;
+	font-family: "Bitter", serif;
 	font-weight: 400;
 	font-size: 37px;
 	letter-spacing: 4px;
@@ -24,7 +24,7 @@ h2 {
 }
 
 h3 {
-	font-family: 'Bitter', serif;
+	font-family: "Bitter", serif;
 	font-weight: 400;
 	font-size: 25px;
 	letter-spacing: 2.5px;
@@ -38,9 +38,10 @@ html, body {
 
 body {
     background-color: #00E5DB;
-    color: #700000;
-    /*font-family: "Open Sans";*/
-    font-size: 18px;
+    color: rgba(0, 0, 0, 0.8);
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: 17px;
     letter-spacing: 1px;
 }
 
@@ -74,16 +75,57 @@ Custom Classes
 
 .centered {
 	margin: auto;
-	max-width: 400px;
+	max-width: 700px;
+}
+
+.box {
+	background-color: rgba(255, 255, 255, 0.35);
+	padding: 7px;
 }
 
 .notecolon {
-	font-weight: bold;
-	color: #050ABB;
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 2px;
+	color: rgba(0, 0, 0, 0.7);
+	text-transform: uppercase;
 }
 
 .noteafter {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.qacolon {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 2px;
+	color: rgba(0, 0, 0, 0.7);
+	text-transform: uppercase;
+}
+
+.qaafter {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: 2px;
+	color: rgba(0, 0, 0, 0.8);
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.section {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+	color: rgba(0, 0, 0, 0.6);
+	text-transform: uppercase;
 }
 
 
@@ -103,11 +145,6 @@ IDs
 	white-space: pre;
 
 	color: rgba(0, 0, 0, 0.8);
-}
-
-
-#notecolon {
-	font-weight: bold;
 }
 
 
