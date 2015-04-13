@@ -3,6 +3,7 @@
  */
 package edu.brown.cs.mmth.speedster;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.brown.cs.mmth.fileIo.Readable;
@@ -76,9 +77,15 @@ public class Flashcard implements Readable, Writeable {
 
   @Override
   public List<String> getDataToStore() {
-    //Folder structure can still change.
-
-    return null;
+    List<String> toReturn = new ArrayList<>();
+    toReturn.add("rank: " + _rank);
+    toReturn.add("subjectName: " + subjectName);
+    toReturn.add("id: " + id);
+    toReturn.add("numberTimesCorrect: " + numberTimesCorrect);
+    toReturn.add("numberTimesWrong: " + numberTimesWrong);
+    toReturn.add("question: " + question);
+    toReturn.add("answer: " + answer);
+    return toReturn;
   }
 
   /**
