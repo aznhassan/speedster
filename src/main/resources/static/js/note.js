@@ -189,7 +189,27 @@ function moveCursor(savedSelection, offset) {
 	savedSelection.end += offset;
 }
 
-function stylize(offset) {
+function correct(res) {
+	// WOrd -> Word
+	res = res.replace(/\b([A-Z]{2}[a-z]+)\b/g, function(x, a) {
+		return a.toLowerCase().capitalizeFirstLetter();
+	});
+	
+	// word. word -> word. Word
+	res = res.replace(/([\.\?\!]|<br>\u200b)([^w]*?)([a-zA-Z])/g, function(x, a, b, c) {
+		return a + b + c.toUpperCase();
+	});
+
+	// word i word -> word I word
+	res = res.replace(/\bi\s/g, 'I ');
+
+	// -- -> ––
+	res = res.replace(/--/g, '––');
+
+	return res;
+}
+
+function stylize(correcting) {
 	var savedSelection = saveSelection($("#noteArea")[0]);
 	var res = $("#noteArea").text();
 
@@ -197,7 +217,7 @@ function stylize(offset) {
 	//	1) Extra visible characters are never added (maybe \u200b doesn't count?)
 	//	2) No <br> tags are inserted at the end of a replacement (these newlines will appear after the cursor)
 	
-	// &nbsp; -> <br>
+	// \u200b -> <br>\u200b
 	res = res.replace(/\u200b/g, '<br>\u200b');
 
 	// TITLE
@@ -205,41 +225,44 @@ function stylize(offset) {
         return '<div class="title">' + a + '</div>' + b;
     });
 
-    // Sections
-    res = res.replace(/(<br>\u200b<br>\u200b)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-        return a + '<span class="section">' + b + '</span>' + c;
+	// NOTE:
+	res = res.replace(/(note:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+        return '<div class="box">' + '<span class="notecolon">' + a + '</span>' 
+        + '<span class="noteafter">' + b + '</span>' + '</div>' + maybeUnNewline(c);
     });
 
-	// NOTE:
-	res = res.replace(/(note:)(.*?[\.\!\?]|.*$)/gi, function(x, a, b) {
-        return '<div class="box">' + '<span class="notecolon">' + a + '</span>' + '<span class="noteafter">' + b + '</span>' + '</div>';
-    });
 
 	// Q/A
-	res = res.replace(/\b(Q:)(.*?\?)([^]*?)(A:)(.*?\.)/gim, function(x, a, b, c, d, e) {
-        return '<div class="box">' + a + b + c + d + e + '</div>';
+	res = res.replace(/\b(Q:)(.*?\?)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e, f) {
+        return '<div class="box">' + a + b + c + d + e + '</div>' + maybeUnNewline(f);
     });
 	res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
         return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
     });
-    res = res.replace(/\b(A:)(.*?\.|.*$)/gi, function(x, a, b) {
-        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
+    res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>' + maybeUnNewline(c);
     });
 
 
-	// TExt -> Text
-	res = res.replace(/\b([A-Z]{2}[a-z]+)\b/g, function(x, a) {
-		return a.toLowerCase().capitalizeFirstLetter();
-	});
+    // Sections
+    res = res.replace(/(<br>\u200b<br>\u200b)([^\u200b]*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+        return a + '<span class="section">' + b + '</span>' + c;
+    });
+
+
+    // Common capitalization errors
+    if (correcting) {
+    	res = correct(res);
+    }
 
 
     $("#noteArea")[0].innerHTML = res;
-    console.log(savedSelection);
-    //offset = (offset ? offset : 0);
-    //moveCursor(savedSelection, offset);
     restoreSelection($("#noteArea")[0], savedSelection);
 }
 
+function maybeUnNewline(captured) {
+	return (captured == '<br>\u200b' ? '\u200b' : '');
+}
 
 ///////////////////////////////////////////////////////////////
 ///////////////////////   MAIN   //////////////////////////////
@@ -267,7 +290,7 @@ $(document).ready(function() {
    			// Down Arrow
    		} else if (code == 32) {
    			// Space
-   			stylize();
+   			stylize(true);
    		} else if (code == 13) {
         	// Line feed
         	

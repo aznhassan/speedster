@@ -14,35 +14,12 @@
 Standard HTML Tags
 ////////////////////////////////////////////////////*/
 
-h2 {
-	font-family: "Bitter", serif;
-	font-weight: 400;
-	font-size: 37px;
-	letter-spacing: 4px;
-	text-transform: uppercase;
-	text-align: center;
-}
-
-h3 {
-	font-family: "Bitter", serif;
-	font-weight: 400;
-	font-size: 25px;
-	letter-spacing: 2.5px;
-	text-transform: uppercase;
-	text-align: center;
-}
-
 html, body {
     height: 99%;
 }
 
 body {
     background-color: #00E5DB;
-    color: rgba(0, 0, 0, 0.8);
-    font-family: "Open Sans", sans-serif;
-    font-weight: 400;
-    font-size: 17px;
-    letter-spacing: 1px;
 }
 
 input {
@@ -67,6 +44,18 @@ a:active {
 }
 
 
+/*////////////////////////////////////////////////////
+Body Text
+////////////////////////////////////////////////////*/
+
+body, .noteafter, .qaafter {
+	color: rgba(0, 0, 0, 0.8);
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: 1px;
+    text-transform: none;
+}
 
 
 /*////////////////////////////////////////////////////
@@ -80,7 +69,9 @@ Custom Classes
 
 .box {
 	background-color: rgba(255, 255, 255, 0.35);
-	padding: 7px;
+	padding: 4px;
+	padding-left: 7px;
+	padding-right: 7px;
 }
 
 .notecolon {
@@ -114,7 +105,7 @@ Custom Classes
     font-weight: 700;
     font-size: 30px;
     letter-spacing: 2px;
-	color: rgba(0, 0, 0, 0.8);
+	color: rgba(0, 0, 0, 0.7);
 	text-align: center;
 	text-transform: uppercase;
 }
