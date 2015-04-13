@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
 
 /**
@@ -41,8 +42,7 @@ public final class NoteWriter {
       }
       
       // We now create the file path where we want to write the note. 
-      // TODO: Update this to static var in main
-      String basePath="";
+      String basePath=Main.getBasePath();
       
       String suffixPath="/"+note.getSubject()+"/N"+note.getId();
       String finalPath=basePath+suffixPath;

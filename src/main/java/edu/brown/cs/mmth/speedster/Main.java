@@ -16,6 +16,7 @@ public final class Main {
    * The arguments given to the program.
    */
   private final String[] args;
+  private static String basePath="./";
 
   /** Creates a main object.
    * @param args - The arguments passed to the program.
@@ -31,6 +32,14 @@ public final class Main {
     args = argsM;
   }
 
+  /**
+   * Returns base path to data folder of software.
+   * @return string with path structure.
+   */
+  public static String getBasePath() {
+    return basePath;
+  }
+  
   /**
    * Starts the Options parsing, launches the gui or stars the
    * REPL.
