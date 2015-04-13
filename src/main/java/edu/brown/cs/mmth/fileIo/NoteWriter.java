@@ -25,7 +25,7 @@ public final class NoteWriter {
   
   /**
    * Given a list of note objects writes them to file using
-   * our pre-determined file structure.
+   * our pre-determined file structure. 
    * @param notes
    * @return true if operation successful, false if error occurred. 
    */
@@ -61,7 +61,9 @@ public final class NoteWriter {
       
       // We will only get a single string to write. 
       try {
-        br.write(dataToWrite.get(0));
+        for(String s: dataToWrite) {
+          br.write(s);
+        }
       } catch (IOException e) {
         return false;
       } finally {

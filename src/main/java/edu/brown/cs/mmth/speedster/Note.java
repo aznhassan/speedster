@@ -17,7 +17,7 @@ public class Note implements Readable, Writeable{
   /**
    * The String that holds the written note information
    */
-  private String data;
+  private String textData;
   private String subject;
   private long id;
 
@@ -27,7 +27,7 @@ public class Note implements Readable, Writeable{
    * @param s -- subject to which note belongs
    */
   public Note(String d, String s){
-    data=d;
+    textData=d;
     subject=s;
   }
 
@@ -42,7 +42,7 @@ public class Note implements Readable, Writeable{
   @Override
   public List<String> getDataToStore() {
     List<String> listString=new ArrayList<String>();
-    listString.add(data);
+    listString.add(textData);
     return listString;
   }
 
