@@ -14,12 +14,12 @@ import edu.brown.cs.mmth.speedster.Flashcard;
  * @author hsufi
  *
  */
-public final class FlashCardWritter {
+public final class FlashCardWriter {
 
   /**
    * Private Constructor.
    */
-  private FlashCardWritter() {}
+  private FlashCardWriter() {}
 
   /** Given a list of Flashcards in JSON format will
    *  make and return a list of said cards as Flashcards.
@@ -37,7 +37,6 @@ public final class FlashCardWritter {
    * operation.
    */
   public boolean writeCards(Collection<Flashcard> flashCards){
-    StringBuilder bd = new StringBuilder();
     for (Flashcard card : flashCards) {
       BufferedWriter writer = null;
       try {
