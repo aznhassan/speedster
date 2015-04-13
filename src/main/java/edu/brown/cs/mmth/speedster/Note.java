@@ -39,6 +39,17 @@ public class Note implements Readable, Writeable{
     return subject;
   }
   
+  /**
+   * Gets text data in single string. Use instead of
+   * getDataToStore (which is exclusively used by writer).
+   * Trims the text data it returns.
+   * @return String with all text data of notes.
+   */
+  public String getTextData() {
+    return textData.trim();
+  }
+  
+  
   @Override
   public List<String> getDataToStore() {
     List<String> listString=new ArrayList<String>();

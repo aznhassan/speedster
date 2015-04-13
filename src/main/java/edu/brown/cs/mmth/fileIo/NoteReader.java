@@ -5,9 +5,9 @@ package edu.brown.cs.mmth.fileIo;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -45,8 +45,8 @@ public class NoteReader {
         // Reading data from this file into string.
         BufferedReader br;
         try {
-          br = new BufferedReader(new FileReader(fileEntry));
-        } catch (FileNotFoundException e) {
+          br = new BufferedReader(new InputStreamReader(new FileInputStream(fileEntry), "UTF-8"));
+        } catch (Exception e) {
           return null;
         }
         StringBuilder text=new StringBuilder();
