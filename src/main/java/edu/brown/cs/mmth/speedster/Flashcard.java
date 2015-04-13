@@ -65,16 +65,20 @@ public class Flashcard implements Readable, Writeable {
   }
 
   @Override
+  public long getId() {
+    return id;
+  }
+
+  @Override
+  public void setId(long idL) {
+    id = idL;
+  }
+
+  @Override
   public List<String> getDataToStore() {
     //Folder structure can still change.
 
     return null;
-  }
-
-  @Override
-  public int getId() {
-    // TODO Auto-generated method stub
-    return 0;
   }
 
   /**
@@ -84,12 +88,6 @@ public class Flashcard implements Readable, Writeable {
    */
   public int getRank() {
     return _rank;
-  }
-
-  @Override
-  public void setId() {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
@@ -119,6 +117,7 @@ public class Flashcard implements Readable, Writeable {
     int rank = (int) (dayWeight + ratio);
     return rank;
   }
+
 
 
 }

@@ -37,7 +37,6 @@ public final class FlashCardWritter {
    * operation.
    */
   public boolean writeCards(Collection<Flashcard> flashCards){
-    String path = "/speedster"; // Will grab the working directory later from a file.
     StringBuilder bd = new StringBuilder();
     for (Flashcard card : flashCards) {
       BufferedWriter writer = null;
@@ -46,6 +45,13 @@ public final class FlashCardWritter {
                 + "/f" + card.getId());
         file.getParentFile().mkdirs();
         writer = new BufferedWriter(new FileWriter(file));
+        List<String> dataToWrite = card.getDataToStore();
+        int length = dataToWrite.size();
+        for (int i = 0; i < length - 2; i++) {
+          writer.write(dataToWrite.get(i) + ",");
+        }
+        writer.write(dataToWrite.get(length - 1));
+        writer.write("\n");
       } catch (IOException e) {
         return false;
       } finally {
