@@ -100,7 +100,6 @@ public class Flashcard implements Readable, Writeable {
   @Override
   public void updateFields(List<String> fields) {
     // TODO Auto-generated method stub
-
   }
 
   /**
