@@ -40,12 +40,35 @@ public final class ApiHandler {
    * @author hsufi
    *
    */
-  public static class NoteMetaHandler implements Route {
+  public static class NoteMetaHandler implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      
+      //Grab the note with this id from the db
+      Map<String, Object> variables =
+              ImmutableMap.of(
+                      "title", "Welcome home");
+      return new ModelAndView(variables, "main.ftl");
+    }
+  }
+
+  /**
+   * Handles updating notes per folder when new notes are added by the user on the main page.
+   * @author sm15
+   */
+  public static class UpdateNotes implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
-      // Grab metadata from notes, return info as JSON.
-      String toReturn = "";
-      return toReturn;
+      QueryParamsMap qm = req.queryMap();
+      String notes = qm.value("notes");
+
+
+      // #TODO: response if any!
+      Map<String, Object> variables =
+              ImmutableMap.of(
+                      "title", "Welcome home");
+      return new ModelAndView(variables, "main.ftl");
     }
   }
 
