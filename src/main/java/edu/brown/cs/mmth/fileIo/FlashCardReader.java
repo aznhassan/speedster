@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 import edu.brown.cs.mmth.speedster.Flashcard;
+import edu.brown.cs.mmth.speedster.Main;
 
 /** Reads Flashcards from disk.
  * @author hsufi
@@ -30,8 +31,7 @@ public final class FlashCardReader {
    * @return A list of Flashcard objects.
    */
   public Collection<Flashcard> readCards(String subject) {
-     String base_path = "";
-     String pathToCards = base_path + "/" + subject;
+     String pathToCards = Main.getBasePath() + "/" + subject;
      File directory = new File(pathToCards);
      File[] files = directory.listFiles();
      List<Flashcard> flashCards = new ArrayList<>();
