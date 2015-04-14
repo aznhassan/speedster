@@ -3,7 +3,9 @@
  */
 package edu.brown.cs.mmth.speedster;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import edu.brown.cs.mmth.fileIo.Readable;
@@ -50,19 +52,24 @@ public class Flashcard implements Readable, Writeable {
   private String answer;
 
   /**
+   * The day the card was last used
+   */
+  private Date lastUse;
+
+  /**
    * Flash cards should only be displayed once per session.
    */
   private boolean displayForThisSession;
-
 
   /**
    * Constructs a new flash card
    */
   public Flashcard(String answer, String question) {
-     numberTimesCorrect = 0;
-     numberTimesWrong = 0;
-     this.answer = answer;
-     this.question = question;
+    numberTimesCorrect = 0;
+    numberTimesWrong = 0;
+    this.answer = answer;
+    this.question = question;
+    lastUse = new Date(Instant.now().toEpochMilli());
   }
 
   @Override
@@ -75,22 +82,175 @@ public class Flashcard implements Readable, Writeable {
     id = idL;
   }
 
+  /**
+   * Accessor for _rank.
+   * 
+   * @return the _rank
+   */
+  public int get_rank() {
+    return _rank;
+  }
+
+  /**
+   * Mutator for _rank.
+   * 
+   * @param _rank
+   *          the _rank to set
+   */
+  public void set_rank(int _rank) {
+    this._rank = _rank;
+  }
+
+  /**
+   * Accessor for subjectName.
+   * 
+   * @return the subjectName
+   */
+  public String getSubjectName() {
+    return subjectName;
+  }
+
+  /**
+   * Mutator for subjectName.
+   * 
+   * @param subjectName
+   *          the subjectName to set
+   */
+  public void setSubjectName(String subjectName) {
+    this.subjectName = subjectName;
+  }
+
+  /**
+   * Accessor for numberTimesCorrect.
+   * 
+   * @return the numberTimesCorrect
+   */
+  public int getNumberTimesCorrect() {
+    return numberTimesCorrect;
+  }
+
+  /**
+   * Mutator for numberTimesCorrect.
+   * 
+   * @param numberTimesCorrect
+   *          the numberTimesCorrect to set
+   */
+  public void setNumberTimesCorrect(int numberTimesCorrect) {
+    this.numberTimesCorrect = numberTimesCorrect;
+  }
+
+  /**
+   * Accessor for numberTimesWrong.
+   * 
+   * @return the numberTimesWrong
+   */
+  public int getNumberTimesWrong() {
+    return numberTimesWrong;
+  }
+
+  /**
+   * Mutator for numberTimesWrong.
+   * 
+   * @param numberTimesWrong
+   *          the numberTimesWrong to set
+   */
+  public void setNumberTimesWrong(int numberTimesWrong) {
+    this.numberTimesWrong = numberTimesWrong;
+  }
+
+  /**
+   * Accessor for question.
+   * 
+   * @return the question
+   */
+  public String getQuestion() {
+    return question;
+  }
+
+  /**
+   * Mutator for question.
+   * 
+   * @param question
+   *          the question to set
+   */
+  public void setQuestion(String question) {
+    this.question = question;
+  }
+
+  /**
+   * Accessor for answer.
+   * 
+   * @return the answer
+   */
+  public String getAnswer() {
+    return answer;
+  }
+
+  /**
+   * Mutator for answer.
+   * 
+   * @param answer
+   *          the answer to set
+   */
+  public void setAnswer(String answer) {
+    this.answer = answer;
+  }
+
+  /**
+   * Accessor for lastUse.
+   * 
+   * @return the lastUse
+   */
+  public Date getLastUse() {
+    return lastUse;
+  }
+
+  /**
+   * Mutator for lastUse.
+   * 
+   * @param lastUse
+   *          the lastUse to set
+   */
+  public void setLastUse(Date lastUse) {
+    this.lastUse = lastUse;
+  }
+
+  /**
+   * Accessor for displayForThisSession.
+   * 
+   * @return the displayForThisSession
+   */
+  public boolean isDisplayForThisSession() {
+    return displayForThisSession;
+  }
+
+  /**
+   * Mutator for displayForThisSession.
+   * 
+   * @param displayForThisSession
+   *          the displayForThisSession to set
+   */
+  public void setDisplayForThisSession(boolean displayForThisSession) {
+    this.displayForThisSession = displayForThisSession;
+  }
+
   @Override
   public List<String> getDataToStore() {
     List<String> toReturn = new ArrayList<>();
-    toReturn.add("rank: " + _rank);
-    toReturn.add("subjectName: " + subjectName);
-    toReturn.add("id: " + id);
-    toReturn.add("numberTimesCorrect: " + numberTimesCorrect);
-    toReturn.add("numberTimesWrong: " + numberTimesWrong);
-    toReturn.add("question: " + question);
-    toReturn.add("answer: " + answer);
+    toReturn.add(new Long(_rank).toString());
+    toReturn.add(subjectName);
+    toReturn.add(new Integer(numberTimesCorrect).toString());
+    toReturn.add(new Integer(numberTimesWrong).toString());
+    toReturn.add(question);
+    toReturn.add(answer);
+    toReturn.add(new Long(lastUse.getTime()).toString());
     return toReturn;
   }
 
   /**
-   * Accessor method for rank. TODO: Updates
-   * rank based on other fields of flashcard.
+   * Accessor method for rank. TODO: Updates rank based on other fields of
+   * flashcard.
+   *
    * @return the _rank
    */
   public int getRank() {
@@ -99,7 +259,13 @@ public class Flashcard implements Readable, Writeable {
 
   @Override
   public void updateFields(List<String> fields) {
-    // TODO Auto-generated method stub
+    _rank = Integer.parseInt(fields.get(0));
+    subjectName = fields.get(1);
+    numberTimesCorrect = Integer.parseInt(fields.get(2));
+    numberTimesWrong = Integer.parseInt(fields.get(3));
+    question = fields.get(4);
+    answer = fields.get(5);
+    lastUse = new Date(Long.parseLong(fields.get(6)));
   }
 
   /**
@@ -111,19 +277,25 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Computes a universal flashcard rank based on given data.
-   * @param numDays -
-   * @param noCorrect - (no. of times user got card right)
-   * @param noWrong - (no. of times user got card wrong)
+   *
+   * @param numDays
+   *          -
+   * @param noCorrect
+   *          - (no. of times user got card right)
+   * @param noWrong
+   *          - (no. of times user got card wrong)
    * @return integer rank of flashcard
    */
-  public static int computeFlashcardRank(int numDays, int noCorrect,
-          int noWrong) {
+  public static int
+      computeFlashcardRank(int numDays, int noCorrect, int noWrong) {
     int dayWeight = numDays * 10;
     double ratio = (noWrong / noCorrect) * 100.0;
     int rank = (int) (dayWeight + ratio);
     return rank;
   }
 
-
-
+  @Override
+  public String toString() {
+    return this.getDataToStore().toString();
+  }
 }
