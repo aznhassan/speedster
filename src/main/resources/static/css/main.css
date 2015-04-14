@@ -51,7 +51,7 @@ p {
 	border: 1px solid #000000;
 }
 
-.folder_name_div {
+.folder_name_div, .new_folder_name_div {
 	background-color: #000;
 	color: #FFF;
 	text-align:center;
@@ -86,10 +86,26 @@ p {
 #save-button {
 	float:right;
 	margin-right:5%;
+	margin-left: 85%;
+	margin-top:10%;
+	position: absolute;
+	border:2px dashed red;
+	background-color:white;
+	width:9%;
+	text-align:center;
+	cursor:pointer;
+	display: inline-block;
+}
+
+#add_section_button {
+	float:left;
+	margin-left:5%;
+	position: absolute;
 	margin-top:10%;
 	border:2px dashed red;
 	background-color:white;
 	width:9%;
 	text-align:center;
 	cursor:pointer;
+	display: inline-block;
 }

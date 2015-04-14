@@ -7,7 +7,7 @@ $(document).ready(function() {
 
 	// variables/DOM elements needed
 	// var editStyleButton = document.getElementById("");
-
+	var folder_num_counter = 0;
 
 	/**************************************
 	 * TESTING JSON STRINGS FOR MAIN PAGE
@@ -27,6 +27,8 @@ $(document).ready(function() {
 	 };
 
 	 var fList = [folderOne, folderTwo];
+
+	 folder_num_counter = fList.length;
 
 	/**
 	 * Handles getting all metadata for folders and within them notes
@@ -87,6 +89,7 @@ $(document).ready(function() {
 	 	circle.className = "circle";
 	 	circle.innerHTML = "+";
 	 	folderDiv.appendChild(circle);
+	 	$(circle).attr('contenteditable','false');
 	 	$(circle).click(function(event) {
 	 		createNewNote(folderDiv);
 	 		
@@ -107,13 +110,27 @@ $(document).ready(function() {
 	 }
 
 	 function saveClick() {
+	 	/* Find all new folders added */
+	 	console.log($(document).find('.new_folder_name_div'));
+	 	var new_folders = [];
+	 	$('.new_folder_name_div').each(function(j) {
+	 		this.id = fList.length + 1;
+	 		var folder_data = {
+	 			"folder_id": this.id,
+	 			"title": this.innerText
+	 		}
+
+	 	});
+
+	 	/* Find all new notes */
 	 	console.log($(document).find('.new_note_name_div'));
 	 	var newNotes = [];
 	 	$('.new_note_name_div').each(function(i) {
 	 		var noteData = {
 	 			"associated_folder_id":this.id,
 	 			"title":this.innerText
-	 		}
+			}
+			console.log("NOTE DATA :::: " + noteData);
 	 		newNotes.push(noteData);
 	 	});
 	 	console.log(newNotes);
@@ -130,38 +147,25 @@ $(document).ready(function() {
 	 	saveClick();
 	 });
 
-	/**
-	 * Click handler for folder name
-	 */
-	function folderClick(id) {
-		// #TODO
+
+
+	function addSectionClick() {
+		var new_folder_div = document.createElement("div");
+		new_folder_div.className = "new_folder_name_div";
+		new_folder_div.innerHTML = "NEW FOLDER";
+		new_folder_div.id = folder_num_counter + 1;
+		$(new_folder_div).attr('contenteditable', 'true');
+		createCircleDiv(new_folder_div);
+		$('#main-div').append(new_folder_div);
+		folder_num_counter++;
+
 	}
 
-	/**
-	 * Click handler for note name
-	 */
-	// function noteClick(id) {
-	// 	// #TODO: send get request for the whole note and load a new page with the note.
-	// 	// this was "getNote/:id" in our note.js stencil, not sure how to abstract this out to the
-	// 	// other class since we need to attach a click handler to the name here ?
+	$('#add_section_button').click(function(event) {
+		addSectionClick();
+	});
 
-	// 	// load note.ftl, which has note.js linked in it.
-	// 	var getParams = {
-
-	// 	}
-
-	// 	$.get("/getNote/:id", getParams, function(responseHTML)) {
-	// 		// reponseHTML should be the note.ftl file
-	// 		// which has note.js linked in it so that can deal with the specifics of this note
-	// 	}
-	// }
-
-	/**
-	 * Click handler for the edit style button
-	 */
-	 // $(editStyleButton).click(function(event) {
-	 // 	// #TODO: open style edit pop-up
-	 // });
+	
 
 });
 

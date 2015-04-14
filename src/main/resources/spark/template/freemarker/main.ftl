@@ -24,6 +24,7 @@
      <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
      <div id="main-div"></div>
+     <div id="add_section_button">NEW SECTION</div>
      <div id="save-button">SAVE CHANGES</div>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
