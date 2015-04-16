@@ -12,9 +12,7 @@ $(document).ready(function() {
 	// var editStyleButton = document.getElementById("");
 	var folder_num_counter = 0;
 
-	/**************************************
-	 * TESTING JSON STRINGS FOR MAIN PAGE
-	 *************************************/
+	
 /* JSON format for received folders from the server
 
 {
@@ -33,6 +31,10 @@ $(document).ready(function() {
 
 
 */
+	/**************************************
+	 * TESTING JSON STRINGS FOR MAIN PAGE
+	 *************************************/
+
 	 var folderOne = {
 	 	"folder_id":1,
 	 	"folder_name": "CS 22: Discrete Structures and Probabilty",
@@ -104,7 +106,9 @@ $(document).ready(function() {
 	 	}
 	 }
 
-
+	 /**
+	  * Helper function to create the 'add section + sign button'
+	  */
 	 function createCircleDiv(folderDiv) {
 	 	var circle = document.createElement("div");
 	 	circle.className = "circle";
@@ -119,6 +123,9 @@ $(document).ready(function() {
 	 }
 
 
+	 /**
+	  * Add a new editable note title div when a user adds one,
+	  */
 	 function createNewNote(folderDiv) {
 	 	var new_note_div = document.createElement("div");
  		new_note_div.className = "new_note_name_div";
@@ -166,6 +173,11 @@ $(document).ready(function() {
 	the folder id if needed.
 
 */
+	/**
+	 * click handler for the save changes button on the main page
+	 * sends information in the above format about new folders
+	 * and notes to the server.
+	 */
 	 function saveClick() {
 	 	/* Find all new folders added */
 	 	console.log($(document).find('.new_folder_name_div'));
@@ -201,12 +213,15 @@ $(document).ready(function() {
 	 	});
 	 }
 
+	 // attach the click handler to the button
 	 $('#save-button').click(function(event) {
 	 	saveClick();
 	 });
 
 
-
+	 /**
+	  * click handler for the add new section button
+	  */
 	function addSectionClick() {
 		var new_folder_div = document.createElement("div");
 		new_folder_div.className = "new_folder_name_div";
@@ -219,40 +234,51 @@ $(document).ready(function() {
 
 	}
 
+	// attach handler to the button
 	$('#add_section_button').click(function(event) {
 		addSectionClick();
 	});
 
-	
+	// handler for the edit style button on the main page,
+	// displays the style edit overlay
 	$('#edit_style_button').click(function(event) {
 		$('.example_overlay')[0].style.display = "table";
 		$('.example_content')[0].style.display = "table-cell";
 		createEditStyleDivs();
 	});
 
-	
+/************************************
+ * STYLE EDITING OVERLAY
+ ************************************/
+
 	/**
 	 * creates all HTML of the edit styles overlay
-	 *
+	 * 
 	 */
 	function createEditStyleDivs() {
+		// for each existing folder
 		for(var i = 0; i < fList.length; i++) {
+			// create a style div
 			var style_div = document.createElement('div');
 			$('.example_content')[0].appendChild(style_div);
 			style_div.className = 'style_div';
 			style_div.id = fList[i].folder_id;
 
+			// for each folder's style div, create a toolbar per style text
+			// to be edited
 			$(style_div).html('<h2 class="folder_style_header">' +  
 				fList[i].folder_name +   
 				'</h2>' + getStyleHTML('note', fList[i].folder_id) + 
 				getStyleHTML('q', fList[i].folder_id));
 
+			// append font sizes to the font size dropdowns
 			$(style_div).find('.font-size').each(function() {
 				for(var i = 0; i < 40; i+=2) {
 					$(this).append('<option>' + i + '</option>');
 				}
 			});
 
+			// set up toggling values on click for the B, I, U styles
 			$(style_div).find('h2').text(fList[i].folder_name);
 			setTextStyleToggle('note', fList[i].folder_id, 'font-weight');
 			setTextStyleToggle('note', fList[i].folder_id, 'font-style');
@@ -263,18 +289,24 @@ $(document).ready(function() {
 
 
 		}
+
+		// add in a save styles button
 		var style_save_button = document.createElement('div');
 		style_save_button.id = "style-save-button";
 		style_save_button.innerText = 'SAVE';
 		$(style_div)[0].appendChild(style_save_button);
+
+		// attach click handler to the save style button
 		$(style_save_button).click(function(event) {
 			saveStyleClick();
 		});
-
-		
-
 	}
 
+	/**
+	 * Click handler for the save styles button
+	 * Sends updated styles to the server as a JSON string
+	 * in a POST request '/updateStyle'.
+	 */
 	function saveStyleClick() {
 		var updated_styles = styleChangesToSave();
 		console.log("POST PARAMS: " + JSON.stringify(updated_styles));
@@ -287,7 +319,7 @@ $(document).ready(function() {
 			// response may be not needed
 		});
 
-
+		// clear the style editing overlay
 		$('.example_content')[0].innerHTML = '<h1 id="rule-header">STYLE RULES</h1>';
 		$('.example_overlay')[0].style.display = "none";
 		$('.example_content')[0].style.display = "none";
@@ -324,50 +356,66 @@ $(document).ready(function() {
 
 /* Here's how the style changes will be found and saved:
  list_of_folder_ids = [1,2,3];
- list_of_styles_texts = ['note', 'q'];
- list_of_style_types = ["bold", "italic", "underline", "font-family"]
+ list_of_styles_texts = ['note', 'q', ...];
+ list_of_style_types = ["bold", "italic", "underline", "font-family", ...]
 */
 
+/** 
+ * gets all the updated CSS that needs to be sent ot the server on clicking the save styles button
+ */
 function styleChangesToSave() {
+
+	// list of all existing folder ids, existing rules to style, existing styles possible to change
 	list_of_folder_ids = [1,2];
  	list_of_styles_texts = ['note', 'q'];
 	list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
 
+	// this will contain all the info to be sent to the server.
 	result_list = [];
 
+	// go over all the folder ids
 	for(var i = 0; i < list_of_folder_ids.length; i++) {
+
+		// create a style object for each folder
 		var folder_style = 
 		{
 			"folder_id": list_of_folder_ids[i],
 			"style_classes": []
 		}
 
-
+		// go over all possible rules to style for the folder
 		for(var j = 0; j < list_of_styles_texts.length; j++) {
+
+			// set a rule string to map the styles to
 			var class_value = String(list_of_styles_texts[j]);
 			console.log("VALUE: " + class_value);
+
+			// create a styles object for this folder and this rule
 			var style_text_object = 
 			{
 
 			};
 
+			// container class object to map the rule to it's style object
 			var container_class = {
 				
 			};
 
+			// map the rule to it's style object
 			container_class[class_value] = style_text_object;
 
+			// fill in the style object with all the styles' current values as of on clicking the save button
 			for(var k = 0; k < list_of_style_types.length; k++) {
 				style_text_object[list_of_style_types[k]] = 
 					getButtonValue(list_of_styles_texts[j], list_of_style_types[k], list_of_folder_ids[i]);
 			}
-			folder_style.style_classes.push(container_class);
 
+			// add the updates to the style object for this rule
+			folder_style.style_classes.push(container_class);
 
 		}
 
-
-
+		// store everything in the results list
 		result_list.push(folder_style);
 	}
 
@@ -375,6 +423,10 @@ function styleChangesToSave() {
 	return result_list;
 }
 
+/**
+ * get the value for the styling toolbar buttons according to their unique id
+ * on clicking the save style button, so we can updates for each style
+ */
 function getButtonValue(style_text, style_type, folder_id) {
 	// ex: note2_bold
 	if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
@@ -388,7 +440,7 @@ function getButtonValue(style_text, style_type, folder_id) {
 
 
 /***********************
-STYLE PLAN:
+
 
 One style html:
 
@@ -417,7 +469,14 @@ One style html:
 ************************/
 
 
-
+	/**
+	 * given a rule to style, and the folder id, this creates the toolbar
+	 * for that folder and that rule with unique ids that include the folder id
+	 * and the rule word itself.
+	 * ex: getStyleHTML('note', 2)
+	 * or, getstyleHTML('q', 3);
+	 *
+	 */
 	function getStyleHTML(style, id) {
 		return '<h3 class=' + style + '_styles">Style for ' + style + ': </h3> \
 		<div class="style-toolbar">  \
@@ -443,6 +502,7 @@ One style html:
 	// eg: style_text == 'note', style_type = 'bold' ... 
 	// search for id --> 'note' + 'folder_id' + '_' + 'bold'
 	// to be used for B, I, U   .... text styles
+	// sets up the toggling of values for the B, I, U styles (or any others that can have only two states)
 	function setTextStyleToggle(style_text, folder_id, style_type) {
 		console.log($('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type));
 		var button = $('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type);
@@ -461,41 +521,6 @@ One style html:
 		}
 		
 	}
-
-
-
-
-
-	// function returnStyleHtml() {
-	// 	return '<h2 class="folder_style_header">Style Folder One</h2> \
-	// 	<h3 class="note_styles">Style for "note:"</h3> \
-	// 	<div class="style-toolbar">  \
-	// 		<div class="boldButton" id=' + "note" + "_bold"  + 'value="off">B</div> \
-	// 	 	<div class="italicButton" id="note_italic" value = "off">i</div> \
-	// 	  	<div class="underlineButton" id="note_underline" value="off">U</div> \
-	// 	  	<select class="font-family" id="note_font">	\
-	// 	  		<option value="Arial">Arial</option> \
-	// 	  		<option value="Helvetica">Helvetica</option> \
-	// 		  	<option value="Sans Serif">Sans Serif</option> \
-	// 		  	<option value="Times New Roman">Times New Roman</option> \
-	// 	  	</select> \
-	// 	</div><br> \
-	// 	<h3 class="q_styles">Style for "q:/a:"</h3> \
-	// 	<div class="style-toolbar">  \
-	// 		<div class="boldButton" id="q_bold" value="off">B</div> \
-	// 	 	<div class="italicButton" id="q_italic" value = "off">i</div> \
-	// 	  	<div class="underlineButton" id="q_underline" value="off">U</div> \
-	// 	  	<select class="font-family" id="q_font">	\
-	// 	  		<option value="Arial">Arial</option> \
-	// 	  		<option value="Helvetica">Helvetica</option> \
-	// 		  	<option value="Sans Serif">Sans Serif</option> \
-	// 		  	<option value="Times New Roman">Times New Roman</option> \
-	// 	  	</select> \
-	// 	</div><br>';
-	// }
-
-
-	
 
 });
 
