@@ -24,7 +24,7 @@ public class Flashcard implements Readable, Writeable {
   /**
    * The rank of the flash card.
    */
-  private int _rank;
+  private int rank;
 
   /**
    * The subject that Flashcard belongs to.
@@ -89,7 +89,7 @@ public class Flashcard implements Readable, Writeable {
    * @return the _rank
    */
   public int get_rank() {
-    return _rank;
+    return rank;
   }
 
   /**
@@ -99,7 +99,7 @@ public class Flashcard implements Readable, Writeable {
    *          the _rank to set
    */
   public void set_rank(int _rank) {
-    this._rank = _rank;
+    this.rank = _rank;
   }
 
   /**
@@ -248,7 +248,7 @@ public class Flashcard implements Readable, Writeable {
   @Override
   public List<String> getDataToStore() {
     List<String> toReturn = new ArrayList<>();
-    toReturn.add(new Long(_rank).toString());
+    toReturn.add(new Long(rank).toString());
     toReturn.add(subjectName);
     toReturn.add(new Integer(numberTimesCorrect).toString());
     toReturn.add(new Integer(numberTimesWrong).toString());
@@ -265,12 +265,12 @@ public class Flashcard implements Readable, Writeable {
    * @return the _rank
    */
   public int getRank() {
-    return _rank;
+    return rank;
   }
 
   @Override
   public void updateFields(List<String> fields) {
-    _rank = Integer.parseInt(fields.get(0));
+    rank = Integer.parseInt(fields.get(0));
     subjectName = fields.get(1);
     numberTimesCorrect = Integer.parseInt(fields.get(2));
     numberTimesWrong = Integer.parseInt(fields.get(3));
