@@ -2,8 +2,16 @@ package edu.brown.cs.mmth.speedster;
 
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
+import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
+import edu.brown.cs.mmth.fileIo.NoteReader;
+import edu.brown.cs.tbhargav.tries.Word;
 
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -11,11 +19,6 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-
-import edu.brown.cs.tbhargav.tries.Word;
 
 /**
  * Handles the ajax requests sent by the front end.
@@ -46,6 +49,26 @@ public final class ApiHandler {
       // Grab metadata from notes, return info as JSON.
       String toReturn = "";
       return toReturn;
+    }
+  }
+
+  /**
+   * Handles updating notes per folder when new notes are added by the
+   * user on the main page.
+   * @author sm15
+   */
+  public static class UpdateNotes implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String notes = qm.value("notes");
+
+
+      // #TODO: response if any!
+      Map<String, Object> variables =
+              ImmutableMap.of(
+                      "title", "Welcome home");
+      return new ModelAndView(variables, "main.ftl");
     }
   }
 
@@ -115,11 +138,37 @@ public final class ApiHandler {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      int id = Integer.parseInt(req.params(":id"));
-      //Grab the note with this id from the db
-      Map<String, Object> variables =
-              ImmutableMap.of(
-                      "title", "Speedster");
+      int id;
+      try {
+        id = Integer.parseInt(req.params(":id"));
+      } catch (NumberFormatException e) {
+        Map<String, Object> variables =
+            ImmutableMap.of(
+                    "title", "Speedster",
+                    "error", e.getMessage());
+            return new ModelAndView(variables, "note.ftl");
+      }
+      String subject = req.params("subject");
+      Collection<Note> notes = NoteReader.readNotes(subject);
+      Note returnNote = null;
+      for (Note note: notes) {
+        if (note.getId() == id) {
+          returnNote = note;
+          break;
+        }
+      }
+      Map<String, Object> variables;
+      if (returnNote != null) {
+        variables =
+            ImmutableMap.of(
+                "title", "Speedster",
+                "node", returnNote.getTextData());
+      } else {
+        variables =
+            ImmutableMap.of(
+                "title", "Speedster",
+                "node", "");
+      }
       return new ModelAndView(variables, "note.ftl");
     }
   }
@@ -133,14 +182,15 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String cssJson = qm.value("css");
+      String cssFile = qm.value("css");
+      String subject = qm.value("subject");
+      Boolean success = false;
       try {
-        CSSSheetMaker.writeJSONToFile(cssJson);
+        success = CSSSheetMaker.writeCSSToFile(cssFile, subject);
       } catch (IOException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
         //return JSON with error message.
       }
-
       String toReturn = "";
       return toReturn;
     }

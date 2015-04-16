@@ -48,14 +48,13 @@ public final class FlashCardWriter {
    */
   public static boolean writeCards(Collection<Flashcard> flashCards) {
     for (Flashcard card : flashCards) {
-      BufferedWriter writer = null;
-      try {
-        File file =
-            new File("./data/" + card.getSubject() + "/f" + card.getId());
-        file.getParentFile().mkdirs();
-        writer =
-            new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8"));
+      File file =
+          new File("./data/" + card.getSubject() + "/f" + card.getId());
+      file.getParentFile().mkdirs();
+      try (BufferedWriter writer =
+          new BufferedWriter(new OutputStreamWriter(
+              new FileOutputStream(file), "UTF-8"));) {
+        
         List<String> dataToWrite = card.getDataToStore();
         int length = dataToWrite.size();
         for (int i = 0; i < length - 2; i++) {
@@ -65,12 +64,6 @@ public final class FlashCardWriter {
         writer.write("\n");
       } catch (IOException e) {
         return false;
-      } finally {
-        try {
-          writer.close();
-        } catch (IOException e) {
-          return false;
-        }
       }
     }
     return true;

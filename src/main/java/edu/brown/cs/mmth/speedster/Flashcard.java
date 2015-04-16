@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import edu.brown.cs.mmth.fileIo.Readable;
 import edu.brown.cs.mmth.fileIo.Writeable;
@@ -84,7 +85,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for _rank.
-   * 
+   *
    * @return the _rank
    */
   public int get_rank() {
@@ -93,7 +94,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for _rank.
-   * 
+   *
    * @param _rank
    *          the _rank to set
    */
@@ -103,7 +104,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for subjectName.
-   * 
+   *
    * @return the subjectName
    */
   public String getSubjectName() {
@@ -112,7 +113,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for subjectName.
-   * 
+   *
    * @param subjectName
    *          the subjectName to set
    */
@@ -122,7 +123,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for numberTimesCorrect.
-   * 
+   *
    * @return the numberTimesCorrect
    */
   public int getNumberTimesCorrect() {
@@ -131,7 +132,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for numberTimesCorrect.
-   * 
+   *
    * @param numberTimesCorrect
    *          the numberTimesCorrect to set
    */
@@ -141,7 +142,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for numberTimesWrong.
-   * 
+   *
    * @return the numberTimesWrong
    */
   public int getNumberTimesWrong() {
@@ -150,7 +151,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for numberTimesWrong.
-   * 
+   *
    * @param numberTimesWrong
    *          the numberTimesWrong to set
    */
@@ -160,16 +161,26 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for question.
-   * 
+   *
    * @return the question
    */
   public String getQuestion() {
     return question;
   }
 
+
+  /** Grabs the number of days since last use.
+   * @return - The number of days since last use
+   */
+  public long getElapsedDays() {
+    Date now = new Date(System.currentTimeMillis());
+    long diffMili = now.getTime() - lastUse.getTime();
+    return TimeUnit.DAYS.convert(diffMili, TimeUnit.MILLISECONDS);
+  }
+
   /**
    * Mutator for question.
-   * 
+   *
    * @param question
    *          the question to set
    */
@@ -179,7 +190,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for answer.
-   * 
+   *
    * @return the answer
    */
   public String getAnswer() {
@@ -188,7 +199,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for answer.
-   * 
+   *
    * @param answer
    *          the answer to set
    */
@@ -198,7 +209,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for lastUse.
-   * 
+   *
    * @return the lastUse
    */
   public Date getLastUse() {
@@ -207,7 +218,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for lastUse.
-   * 
+   *
    * @param lastUse
    *          the lastUse to set
    */
@@ -217,7 +228,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for displayForThisSession.
-   * 
+   *
    * @return the displayForThisSession
    */
   public boolean isDisplayForThisSession() {
@@ -226,7 +237,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for displayForThisSession.
-   * 
+   *
    * @param displayForThisSession
    *          the displayForThisSession to set
    */
@@ -277,13 +288,9 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Computes a universal flashcard rank based on given data.
-   *
-   * @param numDays
-   *          -
-   * @param noCorrect
-   *          - (no. of times user got card right)
-   * @param noWrong
-   *          - (no. of times user got card wrong)
+   * @param numDays -
+   * @param noCorrect - (no. of times user got card right)
+   * @param noWrong - (no. of times user got card wrong)
    * @return integer rank of flashcard
    */
   public static int
@@ -297,5 +304,20 @@ public class Flashcard implements Readable, Writeable {
   @Override
   public String toString() {
     return this.getDataToStore().toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Flashcard)) {
+      return false;
+    }
+
+    Flashcard otherCard = (Flashcard) obj;
+    return id == otherCard.id;
+  }
+
+  @Override
+  public int hashCode() {
+    return new Long(id).hashCode();
   }
 }

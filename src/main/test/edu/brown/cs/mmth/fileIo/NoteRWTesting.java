@@ -1,7 +1,7 @@
 /**
  * See package-info.java file.
  */
-package edu.brown.cs.mmth;
+package edu.brown.cs.mmth.fileIo;
 
 import static org.junit.Assert.assertTrue;
 

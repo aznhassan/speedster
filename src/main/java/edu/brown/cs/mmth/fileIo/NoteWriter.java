@@ -15,43 +15,43 @@ import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
 
 /**
- * Given a list of note objects writes them to file. 
+ * Given a list of note objects writes them to file.
  * @author tbhargav
  *
  */
 public final class NoteWriter {
-  
+
   protected NoteWriter() {
     throw new UnsupportedOperationException();
   }
-  
+
   /**
    * Given a list of note objects writes them to file using
-   * our pre-determined file structure. 
+   * our pre-determined file structure.
    * @param notes
-   * @return true if operation successful, false if error occurred. 
+   * @return true if operation successful, false if error occurred.
    */
   public static boolean writeNotes(Collection<Note> notes) {
     // We iterate through each note and write it in a directory that
     // corresponds to its subject name. (Base path is decided by user.)
     for(Note note: notes) {
       List<String> dataToWrite=note.getDataToStore();
-      
+
       // If a given note has no data we go to next iteration.
       if(dataToWrite.isEmpty()) {
         continue;
       }
-      
-      // We now create the file path where we want to write the note. 
+
+      // We now create the file path where we want to write the note.
       String basePath=Main.getBasePath();
-      
-      String suffixPath="/"+note.getSubject()+"/N"+note.getId();
+
+      String suffixPath="/"+note.getSubject().toLowerCase()+"/N"+note.getId();
       String finalPath=basePath+suffixPath;
-      
+
       File file=new File(finalPath);
-      // Creates directories in case they don't exist. 
+      // Creates directories in case they don't exist.
       file.getParentFile().mkdirs();
-      
+
       OutputStreamWriter writer;
       try {
         writer = new OutputStreamWriter(new FileOutputStream(file),"UTF-8");
@@ -59,8 +59,8 @@ public final class NoteWriter {
         return false;
       }
       BufferedWriter br=new BufferedWriter(writer);
-      
-      // We will only get a single string to write. 
+
+      // We will only get a single string to write.
       try {
         for(String s: dataToWrite) {
           br.write(s);
@@ -74,9 +74,9 @@ public final class NoteWriter {
           return false;
         }
       }
-      
+
     }
     return true;
   }
-  
+
 }
