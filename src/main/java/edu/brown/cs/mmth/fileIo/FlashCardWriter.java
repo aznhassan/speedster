@@ -40,9 +40,7 @@ public final class FlashCardWriter {
 
   /**
    * Writes a collection of Flashcards to the given path.
-   *
-   * @param flashCards
-   *          - The list of FlashCards to write to file
+   * @param flashCards - The list of FlashCards to write to file
    * @return - Boolean indicating whether or not there was an error in the
    *         operation.
    */
@@ -54,7 +52,7 @@ public final class FlashCardWriter {
       try (BufferedWriter writer =
           new BufferedWriter(new OutputStreamWriter(
               new FileOutputStream(file), "UTF-8"));) {
-        
+
         List<String> dataToWrite = card.getDataToStore();
         int length = dataToWrite.size();
         for (int i = 0; i < length - 2; i++) {

@@ -46,7 +46,7 @@ public final class ApiHandler {
   public static class NoteMetaHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
-      // Grab metadata from notes, return info as JSON.
+
       String toReturn = "";
       return toReturn;
     }
@@ -182,11 +182,11 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String cssFile = qm.value("css");
+      String cssJson = qm.value("css");
       String subject = qm.value("subject");
       Boolean success = false;
       try {
-        success = CSSSheetMaker.writeCSSToFile(cssFile, subject);
+        success = CSSSheetMaker.writeJsonToFile(cssJson);
       } catch (IOException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
         //return JSON with error message.
@@ -199,7 +199,6 @@ public final class ApiHandler {
   /** Grabs the next flash card to display to the user
    * based on the data from each flashcard.
    * @author hsufi
-   *
    */
   public static class GetNextFlashCard implements Route {
     @Override

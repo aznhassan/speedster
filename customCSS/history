@@ -1,1 +1,1 @@
-.important {font-size: 1.5em}
+.note{text_decoration:underline;font-weight:bold;font-family:"Arrial Narrow";font-style:italic}.q{font-weight:bold;font-family:"Arial";font-style:italic}

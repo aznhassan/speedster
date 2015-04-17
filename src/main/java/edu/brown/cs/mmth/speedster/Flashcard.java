@@ -23,13 +23,9 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Computes a universal flashcard rank based on given data.
-   * 
-   * @param numDays
-   *          -
-   * @param noCorrect
-   *          - (no. of times user got card right)
-   * @param noWrong
-   *          - (no. of times user got card wrong)
+   * @param numDays -
+   * @param noCorrect - (no. of times user got card right)
+   * @param noWrong - (no. of times user got card wrong)
    * @return integer rank of flashcard
    */
   public static int computeFlashcardRank(final int numDays,
@@ -44,7 +40,6 @@ public class Flashcard implements Readable, Writeable {
    * The rank of the flash card.
    */
   private int rank;
-
   /**
    * The subject that Flashcard belongs to.
    */
@@ -133,9 +128,19 @@ public class Flashcard implements Readable, Writeable {
     return toReturn;
   }
 
+  @Override
+  public void updateFields(final List<String> fields) {
+    rank = Integer.parseInt(fields.get(0));
+    subjectName = fields.get(1);
+    numberTimesCorrect = Integer.parseInt(fields.get(2));
+    numberTimesWrong = Integer.parseInt(fields.get(3));
+    question = fields.get(4);
+    answer = fields.get(5);
+    lastUse = new Date(Long.parseLong(fields.get(6)));
+  }
+
   /**
    * Grabs the number of days since last use.
-   * 
    * @return - The number of days since last use
    */
   public long getElapsedDays() {
@@ -234,7 +239,7 @@ public class Flashcard implements Readable, Writeable {
    *          the _rank to set
    */
   public void set_rank(final int _rank) {
-    this.rank = _rank;
+    rank = _rank;
   }
 
   /**
@@ -317,14 +322,4 @@ public class Flashcard implements Readable, Writeable {
     return this.getDataToStore().toString();
   }
 
-  @Override
-  public void updateFields(final List<String> fields) {
-    rank = Integer.parseInt(fields.get(0));
-    subjectName = fields.get(1);
-    numberTimesCorrect = Integer.parseInt(fields.get(2));
-    numberTimesWrong = Integer.parseInt(fields.get(3));
-    question = fields.get(4);
-    answer = fields.get(5);
-    lastUse = new Date(Long.parseLong(fields.get(6)));
-  }
 }
