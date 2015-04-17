@@ -145,8 +145,8 @@ public final class ApiHandler {
         Map<String, Object> variables =
             ImmutableMap.of(
                     "title", "Speedster",
-                    "error", e.getMessage());
-            return new ModelAndView(variables, "note.ftl");
+                    "content", "Improper note id");
+            return new ModelAndView(variables, "error.ftl");
       }
       String subject = req.params("subject");
       Collection<Note> notes = NoteReader.readNotes(subject);
@@ -176,20 +176,17 @@ public final class ApiHandler {
   /** Updates the stylesheet of the current subject
    *  with the given rules.
    * @author hsufi
-   *
    */
   public static class UpdateCSS implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       String cssJson = qm.value("css");
-      String subject = qm.value("subject");
       Boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);
       } catch (IOException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
-        //return JSON with error message.
       }
       String toReturn = "";
       return toReturn;
@@ -214,7 +211,6 @@ public final class ApiHandler {
    *  adding to the number of right and wrongs as well as updating
    *  the time stamp of the flashcard.
    * @author hsufi
-   *
    */
   public static class UpdateFlashCard implements Route {
     @Override
