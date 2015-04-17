@@ -22,6 +22,25 @@ import edu.brown.cs.mmth.fileIo.Writeable;
 public class Flashcard implements Readable, Writeable {
 
   /**
+   * Computes a universal flashcard rank based on given data.
+   * 
+   * @param numDays
+   *          -
+   * @param noCorrect
+   *          - (no. of times user got card right)
+   * @param noWrong
+   *          - (no. of times user got card wrong)
+   * @return integer rank of flashcard
+   */
+  public static int computeFlashcardRank(final int numDays,
+      final int noCorrect, final int noWrong) {
+    int dayWeight = numDays * 10;
+    double ratio = noWrong / noCorrect * 100.0;
+    int rank = (int) (dayWeight + ratio);
+    return rank;
+  }
+
+  /**
    * The rank of the flash card.
    */
   private int rank;
@@ -30,7 +49,6 @@ public class Flashcard implements Readable, Writeable {
    * The subject that Flashcard belongs to.
    */
   private String subjectName;
-
   /**
    * The id of the Flashcard.
    */
@@ -47,6 +65,7 @@ public class Flashcard implements Readable, Writeable {
    * The question to display.
    */
   private String question;
+
   /**
    * The answer to the question.
    */
@@ -65,7 +84,7 @@ public class Flashcard implements Readable, Writeable {
   /**
    * Constructs a new flash card
    */
-  public Flashcard(String answer, String question) {
+  public Flashcard(final String answer, final String question) {
     numberTimesCorrect = 0;
     numberTimesWrong = 0;
     this.answer = answer;
@@ -74,13 +93,13 @@ public class Flashcard implements Readable, Writeable {
   }
 
   @Override
-  public long getId() {
-    return id;
-  }
+  public boolean equals(final Object obj) {
+    if (!(obj instanceof Flashcard)) {
+      return false;
+    }
 
-  @Override
-  public void setId(long idL) {
-    id = idL;
+    Flashcard otherCard = (Flashcard) obj;
+    return id == otherCard.id;
   }
 
   /**
@@ -93,156 +112,12 @@ public class Flashcard implements Readable, Writeable {
   }
 
   /**
-   * Mutator for _rank.
-   *
-   * @param _rank
-   *          the _rank to set
-   */
-  public void set_rank(int _rank) {
-    this.rank = _rank;
-  }
-
-  /**
-   * Accessor for subjectName.
-   *
-   * @return the subjectName
-   */
-  public String getSubjectName() {
-    return subjectName;
-  }
-
-  /**
-   * Mutator for subjectName.
-   *
-   * @param subjectName
-   *          the subjectName to set
-   */
-  public void setSubjectName(String subjectName) {
-    this.subjectName = subjectName;
-  }
-
-  /**
-   * Accessor for numberTimesCorrect.
-   *
-   * @return the numberTimesCorrect
-   */
-  public int getNumberTimesCorrect() {
-    return numberTimesCorrect;
-  }
-
-  /**
-   * Mutator for numberTimesCorrect.
-   *
-   * @param numberTimesCorrect
-   *          the numberTimesCorrect to set
-   */
-  public void setNumberTimesCorrect(int numberTimesCorrect) {
-    this.numberTimesCorrect = numberTimesCorrect;
-  }
-
-  /**
-   * Accessor for numberTimesWrong.
-   *
-   * @return the numberTimesWrong
-   */
-  public int getNumberTimesWrong() {
-    return numberTimesWrong;
-  }
-
-  /**
-   * Mutator for numberTimesWrong.
-   *
-   * @param numberTimesWrong
-   *          the numberTimesWrong to set
-   */
-  public void setNumberTimesWrong(int numberTimesWrong) {
-    this.numberTimesWrong = numberTimesWrong;
-  }
-
-  /**
-   * Accessor for question.
-   *
-   * @return the question
-   */
-  public String getQuestion() {
-    return question;
-  }
-
-
-  /** Grabs the number of days since last use.
-   * @return - The number of days since last use
-   */
-  public long getElapsedDays() {
-    Date now = new Date(System.currentTimeMillis());
-    long diffMili = now.getTime() - lastUse.getTime();
-    return TimeUnit.DAYS.convert(diffMili, TimeUnit.MILLISECONDS);
-  }
-
-  /**
-   * Mutator for question.
-   *
-   * @param question
-   *          the question to set
-   */
-  public void setQuestion(String question) {
-    this.question = question;
-  }
-
-  /**
    * Accessor for answer.
    *
    * @return the answer
    */
   public String getAnswer() {
     return answer;
-  }
-
-  /**
-   * Mutator for answer.
-   *
-   * @param answer
-   *          the answer to set
-   */
-  public void setAnswer(String answer) {
-    this.answer = answer;
-  }
-
-  /**
-   * Accessor for lastUse.
-   *
-   * @return the lastUse
-   */
-  public Date getLastUse() {
-    return lastUse;
-  }
-
-  /**
-   * Mutator for lastUse.
-   *
-   * @param lastUse
-   *          the lastUse to set
-   */
-  public void setLastUse(Date lastUse) {
-    this.lastUse = lastUse;
-  }
-
-  /**
-   * Accessor for displayForThisSession.
-   *
-   * @return the displayForThisSession
-   */
-  public boolean isDisplayForThisSession() {
-    return displayForThisSession;
-  }
-
-  /**
-   * Mutator for displayForThisSession.
-   *
-   * @param displayForThisSession
-   *          the displayForThisSession to set
-   */
-  public void setDisplayForThisSession(boolean displayForThisSession) {
-    this.displayForThisSession = displayForThisSession;
   }
 
   @Override
@@ -259,24 +134,67 @@ public class Flashcard implements Readable, Writeable {
   }
 
   /**
-   * Accessor method for rank. TODO: Updates rank based on other fields of
-   * flashcard.
+   * Grabs the number of days since last use.
+   * 
+   * @return - The number of days since last use
+   */
+  public long getElapsedDays() {
+    Date now = new Date(System.currentTimeMillis());
+    long diffMili = now.getTime() - lastUse.getTime();
+    return TimeUnit.DAYS.convert(diffMili, TimeUnit.MILLISECONDS);
+  }
+
+  @Override
+  public long getId() {
+    return id;
+  }
+
+  /**
+   * Accessor for lastUse.
+   *
+   * @return the lastUse
+   */
+  public Date getLastUse() {
+    return lastUse;
+  }
+
+  /**
+   * Accessor for numberTimesCorrect.
+   *
+   * @return the numberTimesCorrect
+   */
+  public int getNumberTimesCorrect() {
+    return numberTimesCorrect;
+  }
+
+  /**
+   * Accessor for numberTimesWrong.
+   *
+   * @return the numberTimesWrong
+   */
+  public int getNumberTimesWrong() {
+    return numberTimesWrong;
+  }
+
+  /**
+   * Accessor for question.
+   *
+   * @return the question
+   */
+  public String getQuestion() {
+    return question;
+  }
+
+  /**
+   * Accessor and updator method for rank.
    *
    * @return the _rank
    */
   public int getRank() {
+    rank =
+        computeFlashcardRank((int) this.getElapsedDays(), numberTimesCorrect,
+            numberTimesWrong);
     return rank;
-  }
-
-  @Override
-  public void updateFields(List<String> fields) {
-    rank = Integer.parseInt(fields.get(0));
-    subjectName = fields.get(1);
-    numberTimesCorrect = Integer.parseInt(fields.get(2));
-    numberTimesWrong = Integer.parseInt(fields.get(3));
-    question = fields.get(4);
-    answer = fields.get(5);
-    lastUse = new Date(Long.parseLong(fields.get(6)));
   }
 
   /**
@@ -287,18 +205,111 @@ public class Flashcard implements Readable, Writeable {
   }
 
   /**
-   * Computes a universal flashcard rank based on given data.
-   * @param numDays -
-   * @param noCorrect - (no. of times user got card right)
-   * @param noWrong - (no. of times user got card wrong)
-   * @return integer rank of flashcard
+   * Accessor for subjectName.
+   *
+   * @return the subjectName
    */
-  public static int
-      computeFlashcardRank(int numDays, int noCorrect, int noWrong) {
-    int dayWeight = numDays * 10;
-    double ratio = (noWrong / noCorrect) * 100.0;
-    int rank = (int) (dayWeight + ratio);
-    return rank;
+  public String getSubjectName() {
+    return subjectName;
+  }
+
+  @Override
+  public int hashCode() {
+    return new Long(id).hashCode();
+  }
+
+  /**
+   * Accessor for displayForThisSession.
+   *
+   * @return the displayForThisSession
+   */
+  public boolean isDisplayForThisSession() {
+    return displayForThisSession;
+  }
+
+  /**
+   * Mutator for _rank.
+   *
+   * @param _rank
+   *          the _rank to set
+   */
+  public void set_rank(final int _rank) {
+    this.rank = _rank;
+  }
+
+  /**
+   * Mutator for answer.
+   *
+   * @param answer
+   *          the answer to set
+   */
+  public void setAnswer(final String answer) {
+    this.answer = answer;
+  }
+
+  /**
+   * Mutator for displayForThisSession.
+   *
+   * @param displayForThisSession
+   *          the displayForThisSession to set
+   */
+  public void setDisplayForThisSession(final boolean displayForThisSession) {
+    this.displayForThisSession = displayForThisSession;
+  }
+
+  @Override
+  public void setId(final long idL) {
+    id = idL;
+  }
+
+  /**
+   * Mutator for lastUse.
+   *
+   * @param lastUse
+   *          the lastUse to set
+   */
+  public void setLastUse(final Date lastUse) {
+    this.lastUse = lastUse;
+  }
+
+  /**
+   * Mutator for numberTimesCorrect.
+   *
+   * @param numberTimesCorrect
+   *          the numberTimesCorrect to set
+   */
+  public void setNumberTimesCorrect(final int numberTimesCorrect) {
+    this.numberTimesCorrect = numberTimesCorrect;
+  }
+
+  /**
+   * Mutator for numberTimesWrong.
+   *
+   * @param numberTimesWrong
+   *          the numberTimesWrong to set
+   */
+  public void setNumberTimesWrong(final int numberTimesWrong) {
+    this.numberTimesWrong = numberTimesWrong;
+  }
+
+  /**
+   * Mutator for question.
+   *
+   * @param question
+   *          the question to set
+   */
+  public void setQuestion(final String question) {
+    this.question = question;
+  }
+
+  /**
+   * Mutator for subjectName.
+   *
+   * @param subjectName
+   *          the subjectName to set
+   */
+  public void setSubjectName(final String subjectName) {
+    this.subjectName = subjectName;
   }
 
   @Override
@@ -307,17 +318,13 @@ public class Flashcard implements Readable, Writeable {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (!(obj instanceof Flashcard)) {
-      return false;
-    }
-
-    Flashcard otherCard = (Flashcard) obj;
-    return id == otherCard.id;
-  }
-
-  @Override
-  public int hashCode() {
-    return new Long(id).hashCode();
+  public void updateFields(final List<String> fields) {
+    rank = Integer.parseInt(fields.get(0));
+    subjectName = fields.get(1);
+    numberTimesCorrect = Integer.parseInt(fields.get(2));
+    numberTimesWrong = Integer.parseInt(fields.get(3));
+    question = fields.get(4);
+    answer = fields.get(5);
+    lastUse = new Date(Long.parseLong(fields.get(6)));
   }
 }

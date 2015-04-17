@@ -43,16 +43,6 @@ public class FlashcardShuffler {
   private void calcRankOfCards() {
     List<Flashcard> lRankedCards = new ArrayList<>();
     lRankedCards.addAll(cards);
-
-    // We iterate through cards and update their rank.
-    for (Flashcard card : lRankedCards) {
-      // TODO: Update to Hassan's new method.
-      int rank =
-          Flashcard.computeFlashcardRank(10, card.getNumberTimesCorrect(),
-              card.getNumberTimesWrong());
-      card.set_rank(rank);
-    }
-
     // Sorting cards by rank.
     Collections.sort(lRankedCards, new FlashcardComparator());
     rankedCards = lRankedCards;
@@ -87,11 +77,14 @@ public class FlashcardShuffler {
     // We recompute rank every 3 cards.
     if (techniqueCounter % 3 == 0) {
       calcRankOfCards();
+      // Returns most difficult/urgent card.
       return rankedCards.get(0);
     } else if (techniqueCounter % 3 == 1) {
       int random = (int) (Math.random() * (rankedCards.size() - 1));
+      // Displays random card.
       return rankedCards.get(random);
     } else {
+      // Returns easiest card.
       rankedCards.get(rankedCards.size() - 1);
     }
 
