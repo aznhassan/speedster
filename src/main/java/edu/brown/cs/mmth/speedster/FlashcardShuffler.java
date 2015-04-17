@@ -12,9 +12,7 @@ import java.util.List;
  * Determines which flashcard to display next (in session). Uses difficulty,
  * randomness and contextual performance to determine the flashcard to show
  * next. Each object of this class represents one flashcard viewing session.
- *
  * @author tbhargav
- *
  */
 public class FlashcardShuffler {
 
@@ -30,7 +28,6 @@ public class FlashcardShuffler {
   /**
    * Parameterized constructor. Accepts flashcards to shuffle and display in
    * given session.
-   *
    * @param lCards
    *          the cards to display in given session.
    */
@@ -64,16 +61,13 @@ public class FlashcardShuffler {
   /**
    * Determines which card will be displayed next based on technique counter
    * value and shuffling logic.
-   *
    * @return flashcard object to display next. Null if session is over.
    */
   public Flashcard nextCard() {
-
     // Session over.
     if (rankedCards.isEmpty()) {
       return null;
     }
-
     // We recompute rank every 3 cards.
     if (techniqueCounter % 3 == 0) {
       calcRankOfCards();
@@ -87,9 +81,7 @@ public class FlashcardShuffler {
       // Returns easiest card.
       rankedCards.get(rankedCards.size() - 1);
     }
-
     return null;
-
   }
 
 }

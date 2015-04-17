@@ -41,8 +41,8 @@ public final class Web {
     Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.post("/notes", new ApiHandler.NoteMetaHandler());
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
-    Spark.post("/updateStyle", new ApiHandler.UpdateCSS());
-    Spark.get("/getNote/:id", new ApiHandler.GetNote(), freeMarker);
+    Spark.post("/updateCSS", new ApiHandler.UpdateCSS());
+    Spark.post("/getNote", new ApiHandler.GetNote(), freeMarker);
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
   }
@@ -73,8 +73,9 @@ public final class Web {
     public ModelAndView handle(final Request req, final Response res) {
       Map<String, Object> variables =
           ImmutableMap.of(
-              "title", "Maps");
-      return new ModelAndView(variables, "map.ftl");
+              "title", "Maps", "customCss", "",
+              "content", "");
+      return new ModelAndView(variables, "note.ftl");
     }
   }
 

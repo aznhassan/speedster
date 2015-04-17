@@ -64,7 +64,7 @@ public final class ApiHandler {
       String notes = qm.value("notes");
 
 
-      // #TODO: response if any!
+
       Map<String, Object> variables =
               ImmutableMap.of(
                       "title", "Welcome home");
@@ -140,7 +140,7 @@ public final class ApiHandler {
       QueryParamsMap qm = req.queryMap();
       int id;
       try {
-        id = Integer.parseInt(req.params(":id"));
+        id = Integer.parseInt(qm.value("id"));
       } catch (NumberFormatException e) {
         Map<String, Object> variables =
             ImmutableMap.of(
@@ -148,7 +148,7 @@ public final class ApiHandler {
                     "content", "Improper note id");
             return new ModelAndView(variables, "error.ftl");
       }
-      String subject = req.params("subject");
+      String subject = qm.value("subject");
       Collection<Note> notes = NoteReader.readNotes(subject);
       Note returnNote = null;
       for (Note note: notes) {
@@ -162,12 +162,14 @@ public final class ApiHandler {
         variables =
             ImmutableMap.of(
                 "title", "Speedster",
-                "node", returnNote.getTextData());
+                "note", returnNote.getTextData(),
+                "customCss", subject);
       } else {
         variables =
             ImmutableMap.of(
                 "title", "Speedster",
-                "node", "");
+                "note", "",
+                "customCss", subject);
       }
       return new ModelAndView(variables, "note.ftl");
     }
