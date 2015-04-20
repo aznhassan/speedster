@@ -11,51 +11,50 @@
 // each suggestion's height in the dropdown
 var SUGGESTION_CELL_HEIGHT = 30;
 
-var rules = [];
+var userRules = [];
+
+var NEWLINE = '<br>\u200b';
 
 
-/* GAME PLAN
+/* Config
 
-1. On keyUp, detect key and get selection
-	• if  space, get prior word
-	• if letter, get current word*
-	• if delete, get current word*
+config is requested on startup of the page. It is loaded once and sets user customization.
 
-* = may not have time; low initial priority
-
-2. Check if current selection matches a rule
-	• if letter and ambiguous match such as overlapping rules 'ru' and 'rule', do nothing (wait for space)
-	• if yes, remove current rule if exists and apply new rule
-	• if  no, do nothing
-
-----------
-
-On sudden change of selection (user clicks somewhere else in text) || On sudden loss of focus,
-	• use previous selection and call 1. with space character (enforce prediction)
-
-*/
-
-/* Rule Notation
+config = {
+	rules: Rule[] (Rule defined below),
+	otherThings??? (let me know if you think user customization can go further!)
+}
 
 Rule:
 {
+  name: "string"
   trigger:
   {
-    keyword: "string" // currently: "[a-zA-Z0-9]+[^\s]*" // future?: "[^\s]+"
-    style: { ... }
+    word: "string",
+    endSeq: "string", (charsequence to end the rule with--if not specified then we apply the rule to just the trigger word itself)
+    style: "string", (css classname)
   }
 
-  After:
+  after:
   {
-    style: { ... }
-    terminator: "string" // default/enforced?: "\n"
+    endSeq: "string", (charsequence to end the rule with--rule will be applied to text between trigger.word up to and including after.endSeq)
+    style: "string", (css classname)
   }
 
-  EntireSection:
+  container:
   {
-  
+  	style: "string" (css classname)
   }
 }
+
+Rules can take the following forms based on what is defined:
+
+<style1> trigger.word </style1>
+<style1> trigger.word (stuff) trigger.endSeq </style1>
+<style1> trigger.word </style1> <style2> (stuff) after.endSeq </style2>
+<style1> trigger.word (stuff) trigger.endSeq </style1> <style2> (stuff) after.endSeq </style2>
+
+... any of the above but inside of a div (if container and container.style are defined). The div can center things/box things/do whatever css can do.
 
 */
 
@@ -102,14 +101,6 @@ function getSelectionParentElement() {
         parentEl = sel.createRange().parentElement();
     }
     return parentEl;
-}
-
-
-// Mozilla's regular expression escape-ifier
-// Takes a regex in the form of a string and adds a \ before special characters so that you can use the regex as a string (i.e. new Regex(...))
-// ex. "\s" -> "\\s"
-function escapeRegExp(string) {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
 // The following code is used to save and restore the caret position in an HTML tree
@@ -196,15 +187,12 @@ function correct(res) {
 	});
 	
 	// word. word -> word. Word
-	res = res.replace(/([\.\?\!]|<br>\u200b)([^w]*?)([a-zA-Z])/g, function(x, a, b, c) {
+	res = res.replace(/([\.\?\!]|\u200b)([^w]*?)([a-zA-Z])/g, function(x, a, b, c) {
 		return a + b + c.toUpperCase();
 	});
 
 	// word i word -> word I word
-	res = res.replace(/\bi\s/g, 'I ');
-
-	// -- -> ––
-	res = res.replace(/--/g, '––');
+	res = res.replace(/\bi\b/g, 'I');
 
 	return res;
 }
@@ -213,10 +201,20 @@ function stylize(correcting) {
 	var savedSelection = saveSelection($("#noteArea")[0]);
 	var res = $("#noteArea").text();
 
+	// Common capitalization errors
+    if (correcting) {
+    	res = correct(res);
+    }
+
+    // Encode HTML special chars for distinction from our own insertions
+	res = escapeHTML(res);
+
 	// Invariants:
 	//	1) Extra visible characters are never added (maybe \u200b doesn't count?)
 	//	2) No <br> tags are inserted at the end of a replacement (these newlines will appear after the cursor)
 	
+	var offset = 0;
+
 	// \u200b -> <br>\u200b
 	res = res.replace(/\u200b/g, '<br>\u200b');
 
@@ -233,35 +231,178 @@ function stylize(correcting) {
 
 
 	// Q/A
-	res = res.replace(/\b(Q:)(.*?\?)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e, f) {
-        return '<div class="box">' + a + b + c + d + e + '</div>' + maybeUnNewline(f);
+	res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
+        return '<div class="box">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
     });
 	res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
         return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
     });
     res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>' + maybeUnNewline(c);
+        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>' + c;
     });
+
+
+    // User-defined Rules
+    res = applyUserRules(res);
 
 
     // Sections
-    res = res.replace(/(<br>\u200b<br>\u200b)([^\u200b]*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+    res = res.replace(/(<br>\u200b<br>\u200b)([^<\u200b]+?)(<br>\u200b|$)/gi, function(x, a, b, c) {
         return a + '<span class="section">' + b + '</span>' + c;
     });
 
-
-    // Common capitalization errors
-    if (correcting) {
-    	res = correct(res);
-    }
-
+    // Decode HTML special chars
+    res = unescapeHTML(res);
 
     $("#noteArea")[0].innerHTML = res;
     restoreSelection($("#noteArea")[0], savedSelection);
 }
 
 function maybeUnNewline(captured) {
-	return (captured == '<br>\u200b' ? '\u200b' : '');
+	return (captured == '<br>\u200b' ? '\u200b' : captured);
+}
+
+function applyUserRules(text) {
+	var t = text;
+	for (var i = 0; i < userRules.length; i++) {
+		var rule = userRules[i];
+		t = t.replace(rule.find, rule.replace);
+	}
+
+	return t;
+}
+
+// Mozilla's regular expression escape-ifier
+// Takes a regex in the form of a string and adds a \ before special characters so that you can use the regex as a string (i.e. new Regex(...))
+// ex. "\s" -> "\\s"
+function regEsc(string) {
+    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    //return string.replace(/[-\/\\^$*+?.\(\)|\[\]{}]/g, '\\$&')
+}
+
+function escapeHTML(text) {
+  	var map = {
+    	'&': '&amp;',
+    	'<': '&lt;',
+    	'>': '&gt;',
+    	'"': '&quot;',
+    	"'": '&#039;'
+  	};
+
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function unescapeHTML(html) {
+	var map = {
+		'&amp;': '&',
+    	'&lt;': '<',
+    	'&gt;': '>',
+    	'&quot;': '"',
+   		'&#039;': "'"
+  	};
+
+  return html.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/gi, function(m) { return map[m]; });
+}
+
+function encodeHTML(text) {
+  return text.replace(/[&"']/g, function(m) {
+    switch (m) {
+      case '&':
+        return '&amp;';
+      // case '<':
+      //   return '&lt;';
+      case '"':
+        return '&#34;';
+      case "'":
+      	return ''
+      default:
+        return '_';
+    }
+  });
+}
+
+function decodeHTML(text) {
+  return text.replace(/&amp;|&#34;/gi, function(m) {
+    switch (m) {
+      case '&amp;':
+        return '&';
+      // case '&lt;':
+      //   return '<';
+      case '&#34;':
+        return '"';
+      default:
+        return '_';
+    }
+  });
+}
+
+function compileUserRules(rules) {
+	return rules.map(compileUserRule);
+}
+
+function compileUserRule(rule) {
+	var trigger = '(' + regEsc(rule.trigger.word) + ')'
+	var triggerEndSeq = (rule.trigger.endSeq ? '(.*?)' + '(' + regEsc(rule.trigger.endSeq) + '|$)' : '');
+	var triggerStyle = rule.trigger.style;
+
+	var afterEndSeq = (rule.after && rule.after.endSeq ? '(.*?)' + '(' + regEsc(rule.after.endSeq) + '|$)' : '');
+	var afterStyle = (rule.after ? rule.after.style || '' : '');
+	var containerStyle = (rule.container ? rule.container.style : '');
+	var newline = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
+
+
+	var reg = (afterEndSeq ? (trigger + triggerEndSeq + afterEndSeq) + '|' + (trigger + triggerEndSeq) : trigger + triggerEndSeq);
+		
+
+	var rep = function() {
+		var a = arguments;
+
+		var res = '';
+
+		if (containerStyle) {
+			res += '<div class="' + containerStyle + '">';
+		}
+
+		res += '<span class="' + triggerStyle + '">' + a[1];
+
+		if (triggerEndSeq) {
+			res += a[2] + a[3];
+		}
+
+		res += '</span>'
+
+		if (afterEndSeq) {
+			res += '<span class="' + afterStyle + '">';
+			res += (triggerEndSeq ? a[4] : a[2]);
+			if (!newline) {
+				res += (triggerEndSeq ? a[5] : a[3]);
+			}
+		}
+
+		if (containerStyle) {
+			res += '</div>';
+		}
+
+		if (newline) {
+			res += maybeUnNewline(triggerEndSeq ? a[5] : a[3]);
+		}
+
+		return res;
+	}
+
+
+	var regex = new RegExp(reg, 'gi');
+	var replace = rep;
+		
+	console.log(rule.name);
+	console.log(regex);
+	console.log('------------');
+
+	return {
+		'name': rule.name,
+		'find': regex,
+		'replace': replace
+	}
 }
 
 ///////////////////////////////////////////////////////////////
@@ -270,12 +411,69 @@ function maybeUnNewline(captured) {
 
 
 $(document).ready(function() {
+	var config = {
+		'backgroundColor': 4
+	};
 
-	$("#noteArea").focus();
+	//document.body.style.backgroundColor = getBackgroundColorOption(config.backgroundColor);
+
+	var rules = config[rules] || [];
+
+	//////////// Testing ////
+	rules.push({
+		'name': 'inline quotes',
+		'trigger': {
+			'word': '"',
+			'endSeq': '"',
+			'style': 'quotes'
+		}
+	});
+
+	rules.push({
+	 'name': 'figure',
+		'trigger': {
+			'word': '[',
+			'endSeq': ']',
+			'style': 'equationcaption'
+		},
+		'after': {
+			'endSeq': '<br>\u200b',
+			'style': 'equation'
+		},
+		'container': {
+			'style': 'equationbox'
+		}
+	});
+
+	rules.push({
+		'name': 'large quotes',
+		'trigger': {
+			'word': "``",
+			'style': 'largequote'
+		},
+		'after': {
+			'endSeq': '<br>\u200b',
+			'style': 'largequoteafter'
+		},
+		'container': {
+			'style': 'largequotebox'
+		}
+	});	
+	////////////////////////
+
+	rules.forEach(function(v, i, arr) {
+		v.trigger.word = escapeHTML(v.trigger.word);
+		if (v.trigger.endSeq && v.trigger.endSeq != NEWLINE) {
+			v.trigger.endSeq = escapeHTML(v.trigger.endSeq);
+		}
+		if (v.after && v.after.endSeq && v.after.endSeq != NEWLINE) {
+			v.after.endSeq = escapeHTML(v.after.endSeq);
+		}
+	});
+
+	userRules = compileUserRules(rules);
 
 	$("#noteArea").keyup(function(event) {
-    // Save caret location
-
 		var caller = $(event.target)[0];
 		var input = caller.value;
 		var vars = {"text": input};
@@ -304,7 +502,7 @@ $(document).ready(function() {
 
         	parent.parentNode.insertBefore(elt, parent);
         	
-        	stylize();
+        	stylize(true);
         } else {
         	// Regular character?
         	
@@ -322,6 +520,20 @@ $(document).ready(function() {
         	stylize();
         }
 
-        
+        $("#noteArea").focus();
+		//$("#noteArea").keyup();
 	});
 });
+
+function getBackgroundColorOption(option) {
+	switch(option) {
+		case 0: return '#8EFF8E';  // Green
+		case 1: return '#8EE8FF';  // Blue
+		case 2: return '#BB8EFF';  // Purple
+		case 3: return '#FF8EBB';  // Pink
+		case 4: return '#FFE88E';  // Yellow
+		default: return '#8EE8FF'; // Blue
+
+	}
+}
+
