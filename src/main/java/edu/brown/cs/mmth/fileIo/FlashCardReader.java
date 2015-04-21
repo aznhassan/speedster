@@ -62,11 +62,7 @@ public final class FlashCardReader {
         Long id = Long.parseLong(file.getName().substring(1));
         card.setId(id);
         flashCards.add(card);
-      } catch (FileNotFoundException e) {
-        return null;
-      } catch (UnsupportedEncodingException e) {
-        return null;
-      } catch (IOException e1) {
+      } catch (IOException e) {
         return null;
       }
     }
