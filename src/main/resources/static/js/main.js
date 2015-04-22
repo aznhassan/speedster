@@ -226,8 +226,10 @@ $(document).ready(function() {
 	 		notes: JSON.stringify(newNotes)
 	 	}
 	 	$.post("/updateNotes", postParam, function(responseObject) {
-
+	 		window.location.replace('/notes');
 	 	});
+
+
 	 }
 
 	 // attach the click handler to the button
