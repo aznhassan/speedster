@@ -46,7 +46,7 @@ public final class ApiHandler {
   public static class NoteMetaHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
-      // Grab metadata from notes, return info as JSON.
+
       String toReturn = "";
       return toReturn;
     }
@@ -64,7 +64,7 @@ public final class ApiHandler {
       String notes = qm.value("notes");
 
 
-      // #TODO: response if any!
+
       Map<String, Object> variables =
               ImmutableMap.of(
                       "title", "Welcome home");
@@ -140,15 +140,15 @@ public final class ApiHandler {
       QueryParamsMap qm = req.queryMap();
       int id;
       try {
-        id = Integer.parseInt(req.params(":id"));
+        id = Integer.parseInt(qm.value("id"));
       } catch (NumberFormatException e) {
         Map<String, Object> variables =
             ImmutableMap.of(
                     "title", "Speedster",
-                    "error", e.getMessage());
-            return new ModelAndView(variables, "note.ftl");
+                    "content", "Improper note id");
+            return new ModelAndView(variables, "error.ftl");
       }
-      String subject = req.params("subject");
+      String subject = qm.value("subject");
       Collection<Note> notes = NoteReader.readNotes(subject);
       Note returnNote = null;
       for (Note note: notes) {
@@ -162,12 +162,14 @@ public final class ApiHandler {
         variables =
             ImmutableMap.of(
                 "title", "Speedster",
-                "node", returnNote.getTextData());
+                "note", returnNote.getTextData(),
+                "customCss", subject);
       } else {
         variables =
             ImmutableMap.of(
                 "title", "Speedster",
-                "node", "");
+                "note", "",
+                "customCss", subject);
       }
       return new ModelAndView(variables, "note.ftl");
     }
@@ -176,20 +178,17 @@ public final class ApiHandler {
   /** Updates the stylesheet of the current subject
    *  with the given rules.
    * @author hsufi
-   *
    */
   public static class UpdateCSS implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String cssFile = qm.value("css");
-      String subject = qm.value("subject");
+      String cssJson = qm.value("css");
       Boolean success = false;
       try {
-        success = CSSSheetMaker.writeCSSToFile(cssFile, subject);
+        success = CSSSheetMaker.writeJsonToFile(cssJson);
       } catch (IOException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
-        //return JSON with error message.
       }
       String toReturn = "";
       return toReturn;
@@ -199,7 +198,6 @@ public final class ApiHandler {
   /** Grabs the next flash card to display to the user
    * based on the data from each flashcard.
    * @author hsufi
-   *
    */
   public static class GetNextFlashCard implements Route {
     @Override
@@ -215,7 +213,6 @@ public final class ApiHandler {
    *  adding to the number of right and wrongs as well as updating
    *  the time stamp of the flashcard.
    * @author hsufi
-   *
    */
   public static class UpdateFlashCard implements Route {
     @Override

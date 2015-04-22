@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import edu.brown.cs.mmth.fileIo.NoteReader;
-import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.mmth.speedster.Note;
 
 import org.junit.Test;
@@ -23,7 +21,7 @@ import org.junit.Test;
 public class NoteRWTesting {
   @Test
   /**
-   * Tests whether text gets written to file and is 
+   * Tests whether text gets written to file and is
    * read from file accurately.
    */
   public void basicNoteRWTest() {
@@ -32,22 +30,22 @@ public class NoteRWTesting {
     // Adding dummy note to a collection (singleton collection).
     Collection<Note> notes=new ArrayList<>();
     notes.add(dummy);
-    // Writing the note to file. 
+    // Writing the note to file.
     boolean write=NoteWriter.writeNotes(notes);
-    
+
     // Checks whether writing operation was successful.
     assertTrue(write);
-    
+
     // We now read the note to ensure that its data is accurate.
     List<Note> rNotes=new ArrayList<>();
     rNotes.addAll(NoteReader.readNotes("CS"));
     assertTrue(!rNotes.isEmpty());
-    
+
     // Checking data for integrity.
     assertTrue(rNotes.get(0).getSubject().equals("CS"));
     assertTrue(rNotes.get(0).getTextData().equals("Hello world."));
   }
-  
+
   @Test
   /**
    * Tests for multiple line reading and writing.
@@ -58,20 +56,20 @@ public class NoteRWTesting {
     // Adding dummy note to a collection (singleton collection).
     Collection<Note> notes=new ArrayList<>();
     notes.add(dummy);
-    // Writing the note to file. 
+    // Writing the note to file.
     boolean write=NoteWriter.writeNotes(notes);
-    
+
     // Checks whether writing operation was successful.
     assertTrue(write);
-    
+
     // We now read the note to ensure that its data is accurate.
     List<Note> rNotes=new ArrayList<>();
     rNotes.addAll(NoteReader.readNotes("CS"));
     assertTrue(!rNotes.isEmpty());
-    
+
     // Checking data for integrity.
     assertTrue(rNotes.get(0).getSubject().equals("CS"));
     //assertTrue(rNotes.get(0).getTextData().equals("Hello world.\nI am your new overlord."));  
   }
-  
+
 }

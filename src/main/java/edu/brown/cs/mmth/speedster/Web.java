@@ -9,9 +9,9 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 
 import freemarker.template.Configuration;
+
 import spark.ExceptionHandler;
 import spark.ModelAndView;
-import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -39,10 +39,10 @@ public final class Web {
 
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
-    Spark.post("/allNotes", new ApiHandler.NoteMetaHandler());
+    Spark.post("/notes", new ApiHandler.NoteMetaHandler());
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
-    Spark.post("/updateStyle", new ApiHandler.UpdateCSS());
-    Spark.get("/getNote/:id", new ApiHandler.GetNote(), freeMarker);
+    Spark.post("/updateCSS", new ApiHandler.UpdateCSS());
+    Spark.post("/getNote", new ApiHandler.GetNote(), freeMarker);
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
   }
@@ -73,23 +73,9 @@ public final class Web {
     public ModelAndView handle(final Request req, final Response res) {
       Map<String, Object> variables =
           ImmutableMap.of(
-              "title", "Maps");
-      return new ModelAndView(variables, "map.ftl");
-    }
-  }
-
-  /** Handles map requests.
-   * @author hsufi
-   *
-   */
-  private static class ResultsHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      Map<String, Object> variables =
-          ImmutableMap.of(
-              "title", "C32: Maps");
-      return new ModelAndView(variables, "results.ftl");
+              "title", "Maps", "customCss", "",
+              "content", "");
+      return new ModelAndView(variables, "note.ftl");
     }
   }
 
