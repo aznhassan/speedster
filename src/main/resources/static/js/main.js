@@ -11,6 +11,7 @@ $(document).ready(function() {
 	// variables/DOM elements needed
 	// var editStyleButton = document.getElementById("");
 	var folder_num_counter = 0;
+	var prevEditingHTML = null;
 
 	
 /* JSON format for received folders from the server
@@ -91,6 +92,7 @@ $(document).ready(function() {
 	 		$(folder_div).attr('data-folder',folderList[i]);
 	 		folder_div.innerHTML = folderList[i].folder_name;
 	 		createCircleDiv(folder_div);
+	 		createFlashcardDiv(folder_div);
 	 		for(var j = 0; j < folderList[i].notes.length; j++) {
 	 			var notes_div = document.createElement("div");
 	 			notes_div.className = "note_name_div";
@@ -121,6 +123,21 @@ $(document).ready(function() {
 	 		// #TODO: send info about the new note to server.
 	 	});
 	 }
+
+
+	 /**
+	  * Helper function to create flashcard button
+	  */
+	  function createFlashcardDiv(folderDiv) {
+	  	var circle = document.createElement('div');
+	  	circle.className = 'circle';
+	  	circle.innerHTML = 'F';
+	  	folderDiv.appendChild(circle);
+	  	$(circle).attr('contenteditable', 'false');
+	  	$(circle).click(function(event) {
+	  		window.location.replace("/flashcard/" + folderDiv.id);
+	  	});
+	  }
 
 
 	 /**
@@ -229,6 +246,7 @@ $(document).ready(function() {
 		new_folder_div.id = folder_num_counter + 1;
 		$(new_folder_div).attr('contenteditable', 'true');
 		createCircleDiv(new_folder_div);
+		createFlashcardDiv(new_folder_div);
 		$('#main-div').append(new_folder_div);
 		folder_num_counter++;
 
@@ -269,7 +287,7 @@ $(document).ready(function() {
 			$(style_div).html('<h2 class="folder_style_header">' +  
 				fList[i].folder_name +   
 				'</h2>' + getStyleHTML('note', fList[i].folder_id) + 
-				getStyleHTML('q', fList[i].folder_id));
+				getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id));
 
 			// append font sizes to the font size dropdowns
 			$(style_div).find('.font-size').each(function() {
@@ -286,7 +304,9 @@ $(document).ready(function() {
 			setTextStyleToggle('q', fList[i].folder_id, 'font-weight');
 			setTextStyleToggle('q', fList[i].folder_id, 'font-style');
 			setTextStyleToggle('q', fList[i].folder_id, 'text-decoration');
-
+			setTextStyleToggle('section', fList[i].folder_id, 'font-weight');
+			setTextStyleToggle('section', fList[i].folder_id, 'font-style');
+			setTextStyleToggle('section', fList[i].folder_id, 'text-decoration');
 
 		}
 
@@ -320,6 +340,7 @@ $(document).ready(function() {
 		});
 
 		// clear the style editing overlay
+		prevEditingHTML = $('.example_content').html();
 		$('.example_content')[0].innerHTML = '<h1 id="rule-header">STYLE RULES</h1>';
 		$('.example_overlay')[0].style.display = "none";
 		$('.example_content')[0].style.display = "none";
@@ -367,7 +388,7 @@ function styleChangesToSave() {
 
 	// list of all existing folder ids, existing rules to style, existing styles possible to change
 	list_of_folder_ids = [1,2];
- 	list_of_styles_texts = ['note', 'q'];
+ 	list_of_styles_texts = ['note', 'q', 'section'];
 	list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
 
 	// this will contain all the info to be sent to the server.
@@ -479,7 +500,7 @@ One style html:
 	 */
 	function getStyleHTML(style, id) {
 		return '<h3 class=' + style + '_styles">Style for ' + style + ': </h3> \
-		<div class="style-toolbar">  \
+		<div class="style-toolbar" id="toolbar_' + style + id + '">  \
 			<div class="boldButton" id="' + style + id + '_font-weight" value="none" name="bold">B</div> \
 		 	<div class="italicButton" id="' +  style + id + '_font-style" value = "none" name="italic">i</div> \
 		  	<div class="underlineButton" id="' + style + id + '_text-decoration" value="none" name="underline">U</div> \
