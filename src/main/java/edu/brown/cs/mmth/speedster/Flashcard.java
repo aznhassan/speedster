@@ -35,7 +35,15 @@ public class Flashcard implements Readable, Writeable {
   public static int computeFlashcardRank(final int numDays,
       final int noCorrect, final int noWrong) {
     int dayWeight = numDays * 10;
-    double ratio = noWrong / noCorrect * 100.0;
+    double ratio;
+    
+    // Getting one card correct once is the same as getting it correct none (small edge case).
+    if(noCorrect==0) {
+      ratio=noWrong*100;
+    } else {
+      ratio = noWrong / noCorrect * 100.0;
+    }
+    
     int rank = (int) (dayWeight + ratio);
     return rank;
   }
