@@ -36,7 +36,7 @@ public final class FlashCardReader {
    * @return A list of Flashcard objects.
    */
   public static Collection<Flashcard> readCards(String subject) {
-    String pathToCards = Main.getBasePath() + "/subjects/" + subject;
+    String pathToCards = Main.getBasePath() + subject;
     File directory = new File(pathToCards);
     File[] files = directory.listFiles();
     List<Flashcard> flashCards = new ArrayList<>();

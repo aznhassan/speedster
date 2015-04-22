@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import edu.brown.cs.mmth.speedster.Flashcard;
+import edu.brown.cs.mmth.speedster.Main;
 
 /**
  * Writes FlashCards to their appropriate place in the file system.
@@ -45,9 +46,10 @@ public final class FlashCardWriter {
    *         operation.
    */
   public static boolean writeCards(Collection<Flashcard> flashCards) {
+    String basePath = Main.getBasePath();
     for (Flashcard card : flashCards) {
       File file =
-          new File("./data/" + card.getSubject() + "/f" + card.getId());
+          new File(basePath + card.getSubject() + "/f" + card.getId());
       file.getParentFile().mkdirs();
       try (BufferedWriter writer =
           new BufferedWriter(new OutputStreamWriter(

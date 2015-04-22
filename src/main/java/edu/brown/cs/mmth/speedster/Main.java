@@ -28,7 +28,7 @@ public final class Main {
   /**
    * The base folder path.
    */
-  private static String basePath = "./";
+  private static String basePath = "./data";
   /**
    * The next id value to be used for either a note or a flashcard.
    */
@@ -64,17 +64,10 @@ public final class Main {
   }
   
   /**
-   * Sets the current id
+   * Grabs the current id
    */
-  public static long getCurrentId() {
-    return id;
-  }
-  
-  /**
-   * Increments the current id.
-   */
-  public static void updateCurrentId() {
-    id += 1;
+  public synchronized static long getCurrentId() {
+    return id++;
   }
 
   /**
@@ -86,8 +79,9 @@ public final class Main {
       //No id file, either they're running it for the first 
       //time, or someone deleted the file which is a problem 
       //as we could now be in a inconsistent state. 
-      File notes = new File("./notes");
-      if (notes.isFile()) { //note folder exists, inconsistent state.
+      File notes = new File(basePath);
+      if (notes.isFile()) { //data folder exists, inconsistent state.
+        //Grab the highest value of every note or flashcard
         System.err.println("ERROR: Iconsistent state, no ID file but notes exist");
         System.exit(1);
       }
