@@ -415,7 +415,7 @@ $(document).ready(function() {
 		'backgroundColor': 4
 	};
 
-	//document.body.style.backgroundColor = getBackgroundColorOption(config.backgroundColor);
+	document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
 
 	var rules = config[rules] || [];
 
