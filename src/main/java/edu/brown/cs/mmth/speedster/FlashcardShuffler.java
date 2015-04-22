@@ -65,10 +65,6 @@ public class FlashcardShuffler {
    * @return flashcard object to display next. Null if session is over.
    */
   public Flashcard nextCard() {
-<<<<<<< HEAD
-     
-=======
->>>>>>> 38a1628212e4f54e1496bbe9935b7694c4adbd6e
     // Session over.
     if (rankedCards.isEmpty()) {
       return null;
@@ -92,10 +88,6 @@ public class FlashcardShuffler {
       techniqueCounter++;
       return rankedCards.get(rankedCards.size() - 1);
     }
-<<<<<<< HEAD
-=======
-    return null;
->>>>>>> 38a1628212e4f54e1496bbe9935b7694c4adbd6e
   }
 
 }
