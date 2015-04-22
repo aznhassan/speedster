@@ -16,7 +16,6 @@ import edu.brown.cs.mmth.speedster.Note;
 
 /**
  * Given a list of note objects writes them to file.
- * 
  * @author tbhargav
  *
  */
@@ -29,7 +28,6 @@ public final class NoteWriter {
   /**
    * Given a list of note objects writes them to file using our pre-determined
    * file structure.
-   * 
    * @param notes
    * @return true if operation successful, false if error occurred.
    */
