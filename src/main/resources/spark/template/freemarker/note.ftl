@@ -7,9 +7,10 @@ the page is written in-->
     <meta charset="utf-8">
     <title>Test</title>
     <link rel="stylesheet" href="../css/note.css">
-    <link href='http://fonts.googleapis.com/css?family=Bitter:400,700' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     
+    <link href='http://fonts.googleapis.com/css?family=Bitter:400,700|Open+Sans:400italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700italic,900italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
   </head>
   
   <body>

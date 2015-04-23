@@ -14,34 +14,12 @@
 Standard HTML Tags
 ////////////////////////////////////////////////////*/
 
-h2 {
-	font-family: 'Bitter', serif;
-	font-weight: 400;
-	font-size: 37px;
-	letter-spacing: 4px;
-	text-transform: uppercase;
-	text-align: center;
-}
-
-h3 {
-	font-family: 'Bitter', serif;
-	font-weight: 400;
-	font-size: 25px;
-	letter-spacing: 2.5px;
-	text-transform: uppercase;
-	text-align: center;
-}
-
 html, body {
     height: 99%;
 }
 
 body {
     background-color: #00E5DB;
-    color: #700000;
-    /*font-family: "Open Sans";*/
-    font-size: 18px;
-    letter-spacing: 1px;
 }
 
 input {
@@ -66,23 +44,40 @@ a:active {
 }
 
 
-
-
 /*////////////////////////////////////////////////////
-Custom Classes
+Body
 ////////////////////////////////////////////////////*/
 
-.centered {
-	margin: auto;
-	max-width: 400px;
+body {
+	color: rgba(0, 0, 0, 0.8);
+    font-family: "Open Sans", sans-serif;
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: 1px;
+    text-transform: none;
+}
+/*
+span {
+	vertical-align: baseline;
+}*/
+
+.section {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 3px;
+	color: rgba(0, 0, 0, 0.55);
+	text-transform: uppercase;
 }
 
-
-
-
-/*////////////////////////////////////////////////////
-IDs
-////////////////////////////////////////////////////*/
+/*.section * {
+	font-family: inherit;
+    font-weight: initial;
+    font-size: initial;
+    letter-spacing: initial;
+	color: initial;
+	text-transform: initial;
+}*/
 
 #noteArea {
 	width: 96%;
@@ -90,17 +85,124 @@ IDs
 	margin-left: 2%;
 	margin-top: 2%;
 	border-style: none;
-	background-color: rgba(0, 0, 0, 0);
 	outline: none;
 	resize: none;
-
+	white-space: pre-wrap;
 	color: rgba(0, 0, 0, 0.8);
 }
 
 
-#notecolon {
-	font-weight: bold;
+/*////////////////////////////////////////////////////
+Custom Classes
+////////////////////////////////////////////////////*/
+
+
+
+.centered {
+	margin: auto;
 }
+
+.box {
+	background-color: rgba(255, 255, 255, 0.35);
+	padding: 4px;
+	padding-left: 7px;
+	padding-right: 7px;
+}
+
+.notecolon {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 2px;
+	color: rgba(0, 0, 0, 0.7);
+	text-transform: uppercase;
+}
+
+.noteafter {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.qacolon {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 2px;
+	color: rgba(0, 0, 0, 0.7);
+	text-transform: uppercase;
+}
+
+.qaafter {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.title {
+	font-family: "Bitter", serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: 2px;
+	color: rgba(0, 0, 0, 0.7);
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.quotes {
+    font-style: italic;
+}
+
+.largequote {
+	font-family: "Playfair Display", serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 24px;
+    letter-spacing: 0px;
+    vertical-align: top;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.largequoteafter {
+	font-family: "Bitter", serif;
+    font-weight: 400;
+    font-size: 24px;
+    letter-spacing: 2px;
+    vertical-align: top;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.largequotebox {
+	text-align: center;
+	/*background-color: rgba(255, 255, 255, 0.35);*/
+}
+
+.equationcaption {
+	font-family: "Playfair Display", serif;
+    font-weight: 400;
+    letter-spacing: 0px;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.equation {
+	font-family: "Droid Sans Mono";
+    font-weight: 400;
+    letter-spacing: 1px;
+	color: rgba(0, 0, 0, 0.6);
+}
+
+.equationbox {
+	text-align: center;
+	background-color: rgba(255, 255, 255, 0.35);
+	padding: 4px;
+	padding-left: 7px;
+	padding-right: 7px;
+	margin: auto;
+	display: table;
+}
+
+
+/*////////////////////////////////////////////////////
+IDs
+////////////////////////////////////////////////////*/
+
+
 
 
 
