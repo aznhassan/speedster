@@ -39,12 +39,13 @@ public final class Web {
 
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
-    Spark.post("/notes", new ApiHandler.NoteMetaHandler());
+    Spark.get("/notes", new ApiHandler.NoteMetaHandler(), freeMarker);
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
     Spark.post("/updateCSS", new ApiHandler.UpdateCSS());
     Spark.post("/getNote", new ApiHandler.GetNote(), freeMarker);
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
+    Spark.post("/updateNotes", new ApiHandler.UpdateNotes());
   }
 
   /** Returns a freeMakerEngine.
