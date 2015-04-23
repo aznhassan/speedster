@@ -25,7 +25,12 @@
      <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-     <div class="flashcard_div"></div><br>
+     <div class="flashcard-container">
+         <div class="flashcard_div_front"></div>
+         <div class="flashcard_div_back"></div>
+     </div><br>
+    
+
      <div id="button-div">
         <div id="next-button">NEXT CARD</div>
         <div id="answer-button">SUBMIT ANSWER</div>

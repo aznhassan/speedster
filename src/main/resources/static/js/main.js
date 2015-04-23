@@ -536,8 +536,9 @@ One style html:
 					$(this).attr('value', new_val);
 					$(this).css('background-color', 'rgba(0,0,0,0.3)');
 				} else if($(this).attr('value') === style_type) {
+					console.log("HELLO");
 					$(this).attr('value', 'none');
-					$(this).css('background','transparent');
+					$(this).css('background','rgba(255,255,255,0.8');
 				}
 				console.log($(this).attr('value'));
 			});
