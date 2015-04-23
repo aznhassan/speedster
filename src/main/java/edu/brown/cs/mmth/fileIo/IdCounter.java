@@ -32,7 +32,7 @@ public class IdCounter implements Runnable {
           BufferedWriter writer =
               new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
                   file), "UTF-8"))) {
-        writer.write("" + Main.getCurrentId());
+        writer.write("" + Main.getId());
       } catch (IOException e) {
         System.out.println("ERROR: " + e.getMessage());
         return;
