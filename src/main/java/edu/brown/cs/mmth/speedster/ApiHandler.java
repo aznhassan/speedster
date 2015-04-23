@@ -57,26 +57,6 @@ public final class ApiHandler {
   }
 
   /**
-   * Handles updating notes per folder when new notes are added by the user on the main page.
-   * @author sm15
-   */
-  public static class UpdateNotes implements Route {
-    @Override
-    public Object handle(final Request req, final Response res) {
-
-      QueryParamsMap qm = req.queryMap();
-      String notes = qm.value("notes");
-
-
-      // #TODO: response if any!
-      Map<String, Object> variables =
-              ImmutableMap.of(
-                      "title", "Welcome home");
-      return new ModelAndView(variables, "main.ftl");
-    }
-  }
-
-  /**
    * Handles updating notes per folder when new notes are added by the
    * user on the main page.
    * @author sm15
@@ -86,9 +66,6 @@ public final class ApiHandler {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       String notes = qm.value("notes");
-
-
-
       Map<String, Object> variables =
               ImmutableMap.of(
                       "title", "Welcome home");
