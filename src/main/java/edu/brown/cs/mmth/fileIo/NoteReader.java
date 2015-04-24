@@ -6,7 +6,6 @@ package edu.brown.cs.mmth.fileIo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,8 +57,16 @@ public class NoteReader {
           return null;
         }
         // Converting retrieved data into note object.
+        long id=0;
+        try {
+          id=Long.parseLong(fileEntry.getName().substring(1));
+        } catch (NumberFormatException e) {
+          // The file is invalid so we skip it.
+          continue;
+        }
+
         Note note = new Note(text.toString(), subject);
-        note.setId(Long.parseLong(fileEntry.getName().substring(1)));
+        note.setId(id);
         notes.add(note);
       }
     }
