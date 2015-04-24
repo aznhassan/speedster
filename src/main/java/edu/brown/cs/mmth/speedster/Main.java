@@ -8,10 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.brown.cs.mmth.fileIo.IdCounter;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -24,10 +23,6 @@ import joptsimple.OptionSpec;
  */
 public final class Main {
   /**
-   * The arguments given to the program.
-   */
-  private final String[] args;
-  /**
    * The base folder path.
    */
   private static String basePath = "./.data";
@@ -37,41 +32,21 @@ public final class Main {
   private static volatile long id;
 
   /**
-   * Creates a main object.
-   * 
-   * @param args
-   *          - The arguments passed to the program.
+   * Grabs the current id and increments by one.
    */
-  public static void main(String[] args) {
-    new Main(args).run();
-  }
-
-  /**
-   * Constructs a Main object.
-   * 
-   * @param argsM
-   *          - The array of argument
-   */
-  private Main(final String[] argsM) {
-    args = argsM;
+  public synchronized static long getAndIncrementId() {
+    return id++;
   }
 
   /**
    * Returns base path to data folder of software.
-   * 
+   *
    * @return string with path structure.
    */
   public static String getBasePath() {
     return basePath;
   }
 
-  /**
-   * Grabs the current id and increments by one.
-   */
-  public synchronized static long getAndIncrementId() {
-    return id++;
-  }
-  
   /**
    * Grabs the current id.
    */
@@ -99,8 +74,8 @@ public final class Main {
       }
       try (
           BufferedWriter writer =
-              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                  file), "UTF-8"))) {
+          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+              file), "UTF-8"))) {
         writer.write("" + value); // starting the count.
       } catch (IOException e) {
         System.err.println("ERROR: " + e.getMessage());
@@ -111,8 +86,8 @@ public final class Main {
     }
     try (
         BufferedReader reader =
-            new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                "UTF-8"))) {
+        new BufferedReader(new InputStreamReader(new FileInputStream(file),
+            "UTF-8"))) {
       String line = "";
       line = reader.readLine();
       if (line != null && !line.isEmpty()) {
@@ -133,7 +108,7 @@ public final class Main {
   /**
    * Looks into the ./data folder for the highest id of any note or flashcard
    * fount within.
-   * 
+   *
    * @return - The largest id from any Note or Flashcard. -1 if there is an
    *         error.
    */
@@ -145,12 +120,12 @@ public final class Main {
     if (directories.length == 0) {
       return 0; // .data file exists with no data.
     }
-    for (File directory : directories) { //Subject Folders
+    for (File directory : directories) { // Subject Folders
       File[] files = directory.listFiles();
       if (files.length == 0) {
         continue;
       }
-      for (File file: files) { //Notes & Flashcards
+      for (File file : files) { // Notes & Flashcards
         String name = file.getName();
         name = name.substring(1);
         try {
@@ -164,6 +139,31 @@ public final class Main {
       }
     }
     return toReturn;
+  }
+
+  /**
+   * Creates a main object.
+   *
+   * @param args
+   *          - The arguments passed to the program.
+   */
+  public static void main(final String[] args) {
+    new Main(args).run();
+  }
+
+  /**
+   * The arguments given to the program.
+   */
+  private final String[] args;
+
+  /**
+   * Constructs a Main object.
+   *
+   * @param argsM
+   *          - The array of argument
+   */
+  private Main(final String[] argsM) {
+    args = argsM;
   }
 
   /**
