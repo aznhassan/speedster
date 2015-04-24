@@ -37,7 +37,7 @@ public final class ApiHandler {
   /**
    * Private Constructor.
    */
-  private ApiHandler() {
+  private ApiHandler() {   
   }
 
   /**
@@ -50,7 +50,11 @@ public final class ApiHandler {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-
+      
+      // TODO Surbhi: list of folder objects each object has id, name: "folder_id"
+      // "folder_name" ; "notes:" list of note objects which contain "note_id"
+      // "note_name"
+          
       // Grab the note with this id from the db
       Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
       return new ModelAndView(variables, "main.ftl");
@@ -214,8 +218,9 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map
+      // TODO: Surbhi gives session_number ; subject
       String toReturn = "";
+      // TODO: Return format: "Q: ______ A: _____ "
       return toReturn;
     }
   }
