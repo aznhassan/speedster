@@ -104,6 +104,8 @@ public final class Main {
         writer.write("" + value); // starting the count.
       } catch (IOException e) {
         System.err.println("ERROR: " + e.getMessage());
+        // TODO: Remember you have to remember stack trace.
+        e.printStackTrace();
         System.exit(1);
       }
     }
@@ -158,6 +160,8 @@ public final class Main {
           }
         } catch (NumberFormatException e1) {
           System.err.println("ERROR: " + e1.getMessage());
+          // TODO: Remember you have to remember stack trace.
+          e1.printStackTrace();
           return -1;
         }
       }
