@@ -27,6 +27,10 @@ public class CSSSheetMaker {
    */
   public static boolean
   writeJsonToFile(String cssJson) throws IOException {
+    if (cssJson == null) {
+      System.err.println("No JSON");
+      return false;
+    }
     boolean toReturn = true;
     JSONArray array = new JSONArray(cssJson);
     int length = array.length();
