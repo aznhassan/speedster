@@ -3,10 +3,8 @@ package edu.brown.cs.mmth.fileIo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +28,6 @@ public final class FlashCardReader {
 
   /**
    * Reads in a list of Flashcards from memory and creates a list of Flashcards.
-   *
    * @param pathToCards
    *          - The subject of the flashCard
    * @return A list of Flashcard objects.
@@ -59,7 +56,12 @@ public final class FlashCardReader {
         }
         Flashcard card = new Flashcard("", "");
         card.updateFields(fields);
-        Long id = Long.parseLong(file.getName().substring(1));
+        Long id;
+        try {
+          id = Long.parseLong(file.getName().substring(1));
+        } catch (NumberFormatException e) {
+          continue;
+        }
         card.setId(id);
         flashCards.add(card);
       } catch (IOException e) {

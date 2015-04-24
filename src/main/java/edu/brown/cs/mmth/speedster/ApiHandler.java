@@ -127,9 +127,7 @@ public final class ApiHandler {
       variables =
           ImmutableMap.of("title", "Hollywood Connections", "message", " ",
               "orig", inputText, "suggs", sb.toString());
-
       return gson.toJson(variables);
-
     }
   }
 
@@ -142,21 +140,28 @@ public final class ApiHandler {
   public static class GetNote implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      Map<String, Object> problem =
-          ImmutableMap.of("title", "Speedster", "content", "Improper note id");
       int id;
       try {
-        id = Integer.parseInt(req.params("id"));
+        id = Integer.parseInt(req.params(":id"));
       } catch (NumberFormatException e) {
+        Map<String, Object> problem =
+            ImmutableMap.of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
-      String subject = req.params("folder");
+      String subject = req.params(":folder");
       try {
         subject = URLDecoder.decode(subject, "UTF-8");
       } catch (UnsupportedEncodingException e) {
+        Map<String, Object> problem =
+            ImmutableMap.of("title", "Speedster", "content", "Decoding exception");
         return new ModelAndView(problem, "error.ftl");
       }
       Collection<Note> notes = NoteReader.readNotes(subject);
+      if (notes == null) {
+        Map<String, Object> problem =
+            ImmutableMap.of("title", "Speedster", "content", "No notes in subject");
+        return new ModelAndView(problem, "error.ftl");
+      }
       Note returnNote = null;
       for (Note note : notes) {
         if (note.getId() == id) {
@@ -171,7 +176,7 @@ public final class ApiHandler {
                 returnNote.getTextData(), "customCss", subject);
       } else {
         variables =
-            ImmutableMap.of("title", "Speedster", "note", "", "customCss",
+            ImmutableMap.of("title", "Speedster", "note", "Note doesn't exist!", "customCss",
                 subject);
       }
       return new ModelAndView(variables, "note.ftl");
