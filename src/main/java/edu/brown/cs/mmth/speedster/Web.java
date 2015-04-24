@@ -38,7 +38,6 @@ public final class Web {
     FreeMarkerEngine freeMarker = createEngine();
 
     // Setup Spark Routes
-    Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.get("/notes", new ApiHandler.NoteMetaHandler(), freeMarker);
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
     Spark.post("/updateCSS", new ApiHandler.UpdateCSS());
@@ -64,21 +63,6 @@ public final class Web {
       System.exit(1);
     }
     return new FreeMarkerEngine(config);
-  }
-
-  /** Launches a site where you can query the baconGraph.
-   * @author hsufi
-   *
-   */
-  private static class FrontHandler implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      Map<String, Object> variables =
-          ImmutableMap.of(
-              "title", "Maps", "customCss", "",
-              "content", "");
-      return new ModelAndView(variables, "note.ftl");
-    }
   }
 
   /** Prints out exceptions to the page.
