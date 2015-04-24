@@ -36,8 +36,8 @@ public class CSSSheetMaker {
     int length = array.length();
     for (int i = 0; i < length; i++) {
       JSONObject obj = array.getJSONObject(i);
-      String folder = obj.getString("associatedFolder");
-      JSONArray styleArray = obj.getJSONArray("styleClasses");
+      String folder = obj.getString("folder_name");
+      JSONArray styleArray = obj.getJSONArray("style_classes");
       int styleLength = styleArray.length();
       StringBuilder css = new StringBuilder();
       for (int j = 0; j < styleLength; j++) {
