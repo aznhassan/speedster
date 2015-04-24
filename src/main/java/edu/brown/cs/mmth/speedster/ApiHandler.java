@@ -138,10 +138,9 @@ public final class ApiHandler {
   public static class GetNote implements TemplateViewRoute  {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
       int id;
       try {
-        id = Integer.parseInt(qm.value("id"));
+        id = Integer.parseInt(req.params("id"));
       } catch (NumberFormatException e) {
         Map<String, Object> variables =
             ImmutableMap.of(
@@ -149,7 +148,7 @@ public final class ApiHandler {
                     "content", "Improper note id");
             return new ModelAndView(variables, "error.ftl");
       }
-      String subject = qm.value("subject");
+      String subject = req.params("folder");
       Collection<Note> notes = NoteReader.readNotes(subject);
       Note returnNote = null;
       for (Note note: notes) {
