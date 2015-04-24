@@ -196,7 +196,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String cssJson = qm.value("css");
+      String cssJson = qm.value("styles_on_save");
       Boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);
