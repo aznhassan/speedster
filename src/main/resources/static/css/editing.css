@@ -29,10 +29,13 @@
     font-size:35px;
 }
 
-h2 {
+.folder_style_header {
+ 
     margin-left: 3%;
     /* margin-top: -10%; */
     text-align: left;
+    font-size: 25px;
+    font-weight: bold;
 }
 
 h3 {
@@ -110,3 +113,10 @@ select {
     margin-left: 3%;
 }
 
+.style_div {
+    margin-top: 2%;
+}
+
+.circle {
+    text-align: center;
+}
