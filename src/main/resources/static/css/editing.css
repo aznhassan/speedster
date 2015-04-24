@@ -1,0 +1,132 @@
+.example_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 120%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 10;
+    display: none;
+    padding:0;
+}
+
+.example_content {
+    width: 80%;
+    height: 82%;
+    position:absolute;
+    margin-left: 10%;
+    margin-right:auto;
+    margin-bottom: 30%;
+    background-color: rgba(255,255,255,0.8);
+    z-index: 11; /* 1px higher than the overlay layer */
+    display: none;
+    overflow: scroll;
+    padding-bottom: 5%;
+}
+
+#rule-header {
+    text-align: center;
+    margin-bottom: 0px;
+    font-size:35px;
+}
+
+.folder_style_header {
+ 
+    margin-left: 3%;
+    /* margin-top: -10%; */
+    text-align: left;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+h3 {
+    margin-left: 6%;
+    text-align: left;
+}
+
+.note_style {
+    display: table;
+}
+
+.q_style {
+    display: table;
+}
+
+.style-toolbar {
+    border: 1px solid black;
+    float: left;
+    margin-left: 10%;
+    margin-top: 0%;
+    display: table;
+    width: 50%;
+}
+
+
+
+.boldButton, .italicButton, .underlineButton {
+    border: 1px dashed black;
+    text-align: center;
+    width: 9%;
+    font-weight: bolder;
+    cursor: pointer;
+    padding-right: 1%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.italicButton:hover, .boldButton:hover, .underlineButton:hover, #style-save-button:hover, #custom-style-button:hover {
+    background-color: rgba(0,0,0,0.3);
+}
+
+
+.underlineButton {
+    text-decoration: underline;
+}
+
+.italicButton {
+    font-style: italic;
+}
+
+.font-family {
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: 5%;
+    margin-right: 3%;
+}
+
+.style_button_div {
+    display: table;
+    vertical-align: middle;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#style-save-button, #custom-style-button {
+    border: 1px dashed black;
+    width: 5%;
+    margin-left: 5%;
+    margin-top:5%;
+    margin-bottom: 2%;
+    cursor: pointer;
+    text-align: center;
+    display: table-cell;
+}
+
+.main-text-style-toolbar {
+    margin-left: 7%;
+    margin-top: 3%;
+    display: none;
+}
+
+select {
+    margin-left: 3%;
+}
+
+.style_div {
+    margin-top: 2%;
+}
+
+.circle {
+    text-align: center;
+}
