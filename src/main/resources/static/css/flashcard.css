@@ -1,0 +1,101 @@
+* {
+	border: 1px dashed red;
+}
+
+body {
+	background-color: pink;
+    color: black;
+    font-family: "Bitter", serif;
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: 1px;
+}
+
+.flashcard-container {
+	background-color: black;
+	color: black;
+	height: 80%;
+	width: 80%;
+	position: absolute;
+	margin-left: 10%;
+	margin-right: auto;
+	margin-top: 10%;
+	margin-bottom: 10%;
+}
+
+.flashcard_div_front, .flashcard_div_back {
+	z-index: 900;
+	background-color: white;
+	color: black;
+	height: 80%;
+	width: 80%;
+	position: absolute;
+	margin-left: 10%;
+	margin-right: auto;
+	margin-top: 2.5%;
+	margin-bottom: 10%;
+	text-align:center;
+	font-size: 25px;
+	font-weight: bold;
+}
+
+.flashcard_div_front {
+	 -webkit-transform: rotateX(0deg) rotateY(0deg);
+    -webkit-transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    -moz-transform: rotateX(0deg) rotateY(0deg);
+    -moz-transform-style: preserve-3d;
+    -moz-backface-visibility: hidden;
+    /* -- transition is the magic sauce for animation -- */
+    -o-transition: all .4s ease-in-out;
+    -ms-transition: all .4s ease-in-out;
+    -moz-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.flashcard_div_back {
+	z-index: 800;
+	background-color:aquamarine;
+	-webkit-transform: rotateY(-180deg);
+    -webkit-transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+ 
+    -moz-transform: rotateY(-180deg);
+    -moz-transform-style: preserve-3d;
+    -moz-backface-visibility: hidden;
+    /* -- transition is the magic sauce for animation -- */
+    -o-transition: all .4s ease-in-out;
+    -ms-transition: all .4s ease-in-out;
+    -moz-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+
+.flip-front {
+	z-index: 900;
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+}
+
+.flip-back {
+	z-index: 1000;
+    -webkit-transform: rotateX(0deg) rotateY(0deg);
+    -moz-transform: rotateX(0deg) rotateY(0deg);
+}
+
+#button-div {
+	display: table;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+#next-button, #correct-button, #wrong-button {
+	display: table-cell;
+	cursor: pointer;
+}
+
+#next-button:hover, #correct-button:hover, #wrong-button:hover {
+	background-color:black;
+	color: white;
+}

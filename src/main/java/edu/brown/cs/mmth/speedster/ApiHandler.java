@@ -230,4 +230,22 @@ public final class ApiHandler {
       return toReturn;
     }
   }
+
+  /** Loads the note given by the id and then runs that
+   *  note on it's own page.
+   * @author hsufi
+   *
+   */
+  public static class FlashCardView implements TemplateViewRoute  {
+    @Override
+    public ModelAndView handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      int id = Integer.parseInt(req.params(":id"));
+      //Grab the note with this id from the db
+      Map<String, Object> variables =
+              ImmutableMap.of(
+                      "title", "Flashcards");
+      return new ModelAndView(variables, "flashcard.ftl");
+    }
+  }
 }

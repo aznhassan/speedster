@@ -17,7 +17,7 @@ the page is written in-->
     <script src="../js/jquery-2.1.1.js"></script>
     <script src="../js/note.js"></script>
     
-    <div contenteditable="true" id="noteArea">${note}</div>
+    <div contenteditable="true" id="noteArea"></div>
     
   
   </body>
