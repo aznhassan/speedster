@@ -505,7 +505,8 @@ Rules can take the following forms based on what is defined:
 /* Sending style editing changes by the user to the server:
 
 {
-    "associated_folder":folder_id,
+    "associated_folder_id":folder_id,
+    "associated_folder_name":folder_name,
     "style_classes": 
     [{".note": 
         {
@@ -540,6 +541,7 @@ function styleChangesToSave() {
 
     // list of all existing folder ids, existing rules to style, existing styles possible to change
     list_of_folder_ids = [1,2];
+    list_of_folder_names = ["CS 22: Discrete Structures and Probability", "POBS 990: Mapping Cross Cultural identities"]
     list_of_styles_texts = ['note', 'q', 'section'];
     list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
 
@@ -553,6 +555,7 @@ function styleChangesToSave() {
         var folder_style = 
         {
             "folder_id": list_of_folder_ids[i],
+            "folder_name": list_of_folder_names[i],
             "style_classes": []
         }
 
