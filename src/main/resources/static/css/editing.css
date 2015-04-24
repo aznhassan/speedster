@@ -102,7 +102,7 @@ h3 {
     margin-right: auto;
 }
 
-#style-save-button, #custom-style-button {
+#style-save-button {
     border: 1px dashed black;
     width: 5%;
     margin-left: 5%;
@@ -131,4 +131,9 @@ select {
     text-align: center;
     height: 40px;
     width: 40px;
+}
+
+
+.ruleform {
+    margin-left: 10%;
 }

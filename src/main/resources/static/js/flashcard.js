@@ -9,6 +9,8 @@ $(document).ready(function() {
     var correctButton = document.getElementById("correct-button");
     var wrongButton = document.getElementById("wrong-button");
 
+    var sessionIDCounter = 1;
+
       $('.flashcard_div_front').hover(function(){
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
@@ -46,6 +48,7 @@ $(document).ready(function() {
 
 {
     "associated_folder":folder_name
+    "session_number": sessionID
     "card_id": some id
     "q": some question
     "a": some answer
@@ -59,9 +62,12 @@ $(document).ready(function() {
      * request the next flascard from the server
      */
     function getNextFlashcard() {
+        var getParams = {
+            sessionId: sessionIDCounter
+        }
         $.get("/getNextFlashcard", function(responseJSON) {
             var responseObject = JSON.parse(responseJSON);
-
+            sessionIDCounter++;
             // #TODO: display flashcard
         });
     }
