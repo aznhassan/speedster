@@ -487,7 +487,7 @@ Rules can take the following forms based on what is defined:
             
         };
 
-        $.post('/updateStyle', postParam, function(responseJSON) {
+        $.post('/updateCSS', postParam, function(responseJSON) {
             // response may be not needed
         });
 
