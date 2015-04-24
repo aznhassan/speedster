@@ -212,7 +212,8 @@ public final class ApiHandler {
   /**
    * Grabs the next flashcard to display to the user based on the data from
    * each flashcard.
-   * 
+   * TODO: Still under progress. Might need extra handler to create new session.
+   * This handler can rely solely on session ID, or current session ID then.
    * @author hsufi
    */
   public static class GetNextFlashCard implements Route {
