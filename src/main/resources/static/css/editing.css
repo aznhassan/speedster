@@ -16,11 +16,12 @@
     position:absolute;
     margin-left: 10%;
     margin-right:auto;
-    margin-bottom:25%;
+    margin-bottom: 30%;
     background-color: rgba(255,255,255,0.8);
     z-index: 11; /* 1px higher than the overlay layer */
     display: none;
     overflow: scroll;
+    padding-bottom: 5%;
 }
 
 #rule-header {
@@ -73,7 +74,7 @@ h3 {
     vertical-align: middle;
 }
 
-.italicButton:hover, .boldButton:hover, .underlineButton:hover, #style-save-button:hover {
+.italicButton:hover, .boldButton:hover, .underlineButton:hover, #style-save-button:hover, #custom-style-button:hover {
     background-color: rgba(0,0,0,0.3);
 }
 
@@ -93,14 +94,23 @@ h3 {
     margin-right: 3%;
 }
 
-#style-save-button {
+.style_button_div {
+    display: table;
+    vertical-align: middle;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#style-save-button, #custom-style-button {
     border: 1px dashed black;
-    width: 15%;
+    width: 5%;
     margin-left: 5%;
     margin-top:5%;
     margin-bottom: 2%;
     cursor: pointer;
     text-align: center;
+    display: table-cell;
 }
 
 .main-text-style-toolbar {

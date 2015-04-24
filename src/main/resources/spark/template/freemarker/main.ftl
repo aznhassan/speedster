@@ -31,44 +31,6 @@
      <div class="example_content">
         <h1 id="rule-header">STYLE RULES</h1>
 
-
-     <!-- /************ Editing Section begins ********/ -->
-       <!-- <h2>Styles for Folder One</h2>
-       <div class="note_style">
-        <div class="style-toolbar">
-            <div class="boldButton" value="off">B</div>
-            <div class="italicButton" value = "off">i</div>
-            <select class="font-family">
-              <option value="Arial">Arial</option>
-              <option value="Helvetica">Helvetica</option>
-              <option value="Sans Serif">Sans Serif</option>
-              <option value="Times New Roman">Times New Roman</option>
-            </select>
-            <input type="checkbox" value="text-after" class="text-after-style"></input><span>  Style for text after</span>
-         </div>
-        </div>
-        <div class="q_style">
-        <div class="style-toolbar">
-            <div class="boldButton" value="off">B</div>
-            <div class="italicButton" value = "off">i</div>
-            <select class="font-family">
-              <option value="Arial">Arial</option>
-              <option value="Helvetica">Helvetica</option>
-              <option value="Sans Serif">Sans Serif</option>
-              <option value="Times New Roman">Times New Roman</option>
-            </select>
-            <input type="checkbox" value="text-after" class="text-after-style"></input><span>  Style for text after</span>
-         </div>
-        </div> -->
-         
-         <!-- /**************** Editing section ends **************/  -->
-
-
-
-         <!-- <div id="style-save-button">Save</div> -->
-
-
-
      </div>
      <div id="main-div"></div><br>
      <div class="button_div">

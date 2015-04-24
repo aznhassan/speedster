@@ -345,31 +345,134 @@ $(document).ready(function() {
 
         }
 
+        // add in button div
+        var button_div = document.createElement('div');
+        button_div.className = "style_button_div";
+        $('.example_content')[0].appendChild(document.createElement('br'));
+        $('.example_content')[0].appendChild(document.createElement('br'));
+        $('.example_content')[0].appendChild(document.createElement('br'));
+
+
+        $('.example_content')[0].appendChild(button_div);
+
         // add in a save styles button
         var style_save_button = document.createElement('div');
         style_save_button.id = "style-save-button";
         style_save_button.innerText = 'SAVE';
-        $(style_div)[0].appendChild(style_save_button);
+        $(button_div)[0].appendChild(style_save_button);
+
+        // add 'create new style button'
+        var add_custom_style_button = document.createElement('div');
+        add_custom_style_button.id = "custom-style-button";
+        add_custom_style_button.innerText = "ADD CUSTOM STYLE";
+        $(button_div)[0].appendChild(add_custom_style_button);
 
         // attach click handler to the save style button
         $(style_save_button).click(function(event) {
             saveStyleClick();
         });
 
+        $(add_custom_style_button).click(function(event) {
+            addCustomStyleForm();
+        });
   
     }
+/* 
+
+Rule:
+{
+  name: "string"
+  trigger:
+  {
+    word: "string",
+    endSeq: "string", (charsequence to end the rule with--if not specified then we apply the rule to just the trigger word itself)
+    style: "string", (css classname)
+  }
+
+  after:
+  {
+    endSeq: "string", (charsequence to end the rule with--rule will be applied to text between trigger.word up to and including after.endSeq)
+    style: "string", (css classname)
+  }
+
+  container:
+  {
+    style: "string" (css classname)
+  }
+}
+
+Rules can take the following forms based on what is defined:
+
+<style1> trigger.word </style1>
+<style1> trigger.word (stuff) trigger.endSeq </style1>
+<style1> trigger.word </style1> <style2> (stuff) after.endSeq </style2>
+<style1> trigger.word (stuff) trigger.endSeq </style1> <style2> (stuff) after.endSeq </style2>
+
+... any of the above but inside of a div (if container and container.style are defined). The div can center things/box things/do whatever css can do.
+
+*/
 
 
+    /**
+     * attempting to add a custom styling form based on the above rule format
+     */
+     function addCustomStyleForm() {
+        // save the current html of the style overlay
+        var currentHTML = $('.example_content').html();
+        console.log("CHANGING HTML");
+        $('.example_content').innerHTML =  '<div>  \
+            <input type="text" name="rulename" placeholder="Rule Name"></input> \
+            <div class "trigger-styles">    \
+                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
+                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
+            </div>  \
+            <div class="after-styles">  \
+                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
+                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
+            </div>  \
+            <div class="container-styles">  \
+                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
+            </div>  \
+        </div>';
+     }
+
+     /** 
+      * create form to fill in a custom rule style
+      */
+
+    function ruleFormHTML() {
+        /* HTML FORMAT FOR THE FORM */
+
+        // text box for rule.name
+        // rule.trigger styles div
+            // text box for rule.trigger.word
+            // text box for rule.trigger.endSeq
+            // text box for rule.trigger.style   (this will be a CSS classname)
+        // rule.after div
+            // text box for rule.after.endSeq
+            // text box for rule.after.style     (this will be a CSS classname)
+        // rule.container div
+            // text box for rule.container.style  (this will be a CSS classname)
 
 
-   /**
-    * attempting collapsing
-    */
-    function collapsingFolderStyleMenu() {
-        for(var i = 0; i < fList.length; i++) {
-            var style_div = document.getElementById(fList[i].folder_id);
-            console.log("I'm trying to collapse:    "  + $(style_div)[0]);
-        }
+        return 
+
+        '<div>  \
+            <input type="text" name="rulename" placeholder="Rule Name"></input> \
+            <div class "trigger-styles">    \
+                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
+                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
+            </div>  \
+            <div class="after-styles">  \
+                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
+                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
+            </div>  \
+            <div class="container-styles">  \
+                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
+            </div>  \
+        </div>';
+
+
     }
 
     /**
@@ -566,7 +669,7 @@ One style html:
                 <option value="center">center</option> \
                 <option value="right">right</option> \
             </select> \
-        </div><br>'
+        </div><br>';
 
     }
 

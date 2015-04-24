@@ -33,8 +33,8 @@
 
      <div id="button-div">
         <div id="next-button">NEXT CARD</div>
-        <div id="answer-button">SUBMIT ANSWER</div>
-        <div id="show-answer">SHOW ANSWER</div>
+        <div id="correct-button">CORRECT ANSWER</div>
+        <div id="wrong-button">WRONG ANSWER</div>
      </div>
 
     

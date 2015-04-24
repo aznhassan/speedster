@@ -6,8 +6,8 @@
 $(document).ready(function() {
 
     var nextButton = document.getElementById("next-button");
-    var answeredButton = document.getElementById("answer-button");
-    var showAnswerButton = document.getElementById("show-answer");
+    var correctButton = document.getElementById("correct-button");
+    var wrongButton = document.getElementById("wrong-button");
 
       $('.flashcard_div_front').hover(function(){
           $(this).addClass('flip-front');
@@ -30,17 +30,15 @@ $(document).ready(function() {
     /**
      * click handler for answered button
      */
-    $(answeredButton).click(function() {
+    $(correctButton).click(function() {
         sendFlashcardUpdates();
     }) 
 
     /**
      * click handler for show answer button
      */
-     $(showAnswerButton).click(function(event) {
-        var currHTML = flashcardHTML(cardOne);
-        currHTML = currHTML + '<p><b>A:  </b>' + cardOne.a + '</p>';
-        $('.flashcard_div_front').html(currHTML);
+     $(wrongButton).click(function(event) {
+        sendFlashcardUpdates();
      });
 
 

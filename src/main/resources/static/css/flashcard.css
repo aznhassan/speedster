@@ -3,8 +3,8 @@
 }
 
 body {
-	background-color: black;
-    color: white;
+	background-color: pink;
+    color: black;
     font-family: "Bitter", serif;
     font-weight: 400;
     font-size: 17px;
@@ -17,7 +17,7 @@ body {
 	height: 80%;
 	width: 80%;
 	position: absolute;
-	margin-left: auto;
+	margin-left: 10%;
 	margin-right: auto;
 	margin-top: 10%;
 	margin-bottom: 10%;
@@ -30,10 +30,13 @@ body {
 	height: 80%;
 	width: 80%;
 	position: absolute;
-	margin-left: auto;
+	margin-left: 10%;
 	margin-right: auto;
-	margin-top: 10%;
+	margin-top: 2.5%;
 	margin-bottom: 10%;
+	text-align:center;
+	font-size: 25px;
+	font-weight: bold;
 }
 
 .flashcard_div_front {
@@ -87,12 +90,12 @@ body {
 	margin-right:auto;
 }
 
-#next-button, #answer-button, #show-answer {
+#next-button, #correct-button, #wrong-button {
 	display: table-cell;
 	cursor: pointer;
 }
 
-#next-button:hover, #answer-button:hover, #show-answer:hover {
-	background-color:white;
-	color: black;
+#next-button:hover, #correct-button:hover, #wrong-button:hover {
+	background-color:black;
+	color: white;
 }
