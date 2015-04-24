@@ -2,7 +2,6 @@ package edu.brown.cs.mmth.speedster;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.List;
@@ -12,8 +11,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
+import edu.brown.cs.mmth.fileIo.FlashCardReader;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.tbhargav.tries.Word;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -209,7 +210,7 @@ public final class ApiHandler {
   }
 
   /**
-   * Grabs the next flash card to display to the user based on the data from
+   * Grabs the next flashcard to display to the user based on the data from
    * each flashcard.
    * 
    * @author hsufi
@@ -218,10 +219,38 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      // TODO: Surbhi gives session_number ; subject
-      String toReturn = "";
-      // TODO: Return format: "Q: ______ A: _____ "
-      return toReturn;
+      
+      String sessionNo=qm.value("session_number");
+      int sessionID=0;
+      try {
+        sessionID=Integer.parseInt(sessionNo);
+      } catch (NumberFormatException e) {
+        return "Invalid session ID provided.";
+      }
+      String subject=qm.value("subject");
+      
+      // Locating the FlashcardShuffler associated with current session. Or creating 
+      // a new one if none is found.
+      FlashcardShuffler currSession;
+      if(FlashcardShuffler.hasSession(sessionID)) {
+        currSession=FlashcardShuffler.getSession(sessionID);
+      } else {
+        // Getting all flashcards within specified subject.
+        Collection<Flashcard> subjectCards=FlashCardReader.readCards(subject.toLowerCase());
+        currSession=new FlashcardShuffler(subjectCards);
+        // Putting session with ID in cache.
+        FlashcardShuffler.addSession(sessionID, currSession);
+      }
+      
+      // Getting next card (shuffler object handles this decision).
+      Flashcard next=currSession.nextCard();
+      
+      Map<String, Object> variables;
+     
+      variables=ImmutableMap.of("q", next.getQuestion(), "a",
+          next.getAnswer(), "session_number", sessionID,"card_id",next.getId(),"associated_folder",subject);
+      
+      return gson.toJson(variables);
     }
   }
 
