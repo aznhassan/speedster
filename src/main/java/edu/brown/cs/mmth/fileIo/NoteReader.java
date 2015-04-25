@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.collect.Lists;
+
 import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
 
@@ -42,14 +44,14 @@ public class NoteReader {
         if (fileEntry.isFile() && fileEntry.getName().charAt(0) == 'N') {
 
           // Reading data from this file into string.
-          StringBuilder text = new StringBuilder();
+          StringBuilder json = new StringBuilder();
           try (
               BufferedReader br =
               new BufferedReader(new InputStreamReader(new FileInputStream(
                   fileEntry), "UTF-8"))) {
-            String s;
-            while ((s = br.readLine()) != null) {
-              text.append(s + "\n");
+            String line;
+            while ((line = br.readLine()) != null) {
+              json.append(line);
             }
           } catch (Exception e) {
             return null;
@@ -62,8 +64,10 @@ public class NoteReader {
             // The file is invalid so we skip it.
             continue;
           }
-
-          Note note = new Note(text.toString(), subject);
+          
+          
+          Note note = new Note("", subject, "");
+          note.updateFields(json.toString());
           note.setId(id);
           notes.add(note);
         }

@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONObject;
+
 import edu.brown.cs.mmth.fileIo.Readable;
 import edu.brown.cs.mmth.fileIo.Writeable;
 
@@ -126,25 +128,30 @@ public class Flashcard implements Readable, Writeable {
   @Override
   public List<String> getDataToStore() {
     List<String> toReturn = new ArrayList<>();
-    toReturn.add(new Long(rank).toString());
-    toReturn.add(subjectName);
-    toReturn.add(new Integer(numberTimesCorrect).toString());
-    toReturn.add(new Integer(numberTimesWrong).toString());
-    toReturn.add(question);
-    toReturn.add(answer);
-    toReturn.add(new Long(lastUse.getTime()).toString());
+    toReturn.add("rank:" + new Long(rank).toString());
+    toReturn.add("subjectName:" + subjectName);
+    toReturn.add("ntc:" + new Integer(numberTimesCorrect).toString());
+    toReturn.add("ntw:" + new Integer(numberTimesWrong).toString());
+    toReturn.add("question:" + question);
+    toReturn.add("answer:" + answer);
+    toReturn.add("lastUse:" + new Long(lastUse.getTime()).toString());
     return toReturn;
   }
 
+  /** Given a JSON object that has the fields, will update
+   * each field of the FlashCard.
+   * @param json - The FlashCard as JSON.
+   */
   @Override
-  public void updateFields(final List<String> fields) {
-    rank = Integer.parseInt(fields.get(0));
-    subjectName = fields.get(1);
-    numberTimesCorrect = Integer.parseInt(fields.get(2));
-    numberTimesWrong = Integer.parseInt(fields.get(3));
-    question = fields.get(4);
-    answer = fields.get(5);
-    lastUse = new Date(Long.parseLong(fields.get(6)));
+  public void updateFields(final String json) {
+    JSONObject object = new JSONObject(json);
+    rank = Integer.parseInt(object.getString("rank"));
+    subjectName = object.getString("subjectName");
+    numberTimesCorrect = Integer.parseInt(object.getString("ntc"));
+    numberTimesWrong = Integer.parseInt(object.getString("ntw"));
+    question = object.getString("question");
+    answer = object.getString("answer");
+    lastUse = new Date(Long.parseLong(object.getString("lastUse")));
   }
 
   /**

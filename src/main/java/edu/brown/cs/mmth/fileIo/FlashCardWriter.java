@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import edu.brown.cs.mmth.speedster.Flashcard;
 import edu.brown.cs.mmth.speedster.Main;
 
@@ -49,7 +51,7 @@ public final class FlashCardWriter {
     String basePath = Main.getBasePath();
     for (Flashcard card : flashCards) {
       File file =
-          new File(basePath + card.getSubject() + "/f" + card.getId());
+          new File(basePath + "/" + card.getSubject() + "/f" + card.getId());
       file.getParentFile().mkdirs();
       try (BufferedWriter writer =
           new BufferedWriter(new OutputStreamWriter(
@@ -57,10 +59,14 @@ public final class FlashCardWriter {
 
         List<String> dataToWrite = card.getDataToStore();
         int length = dataToWrite.size();
-        for (int i = 0; i < length - 2; i++) {
-          writer.write(dataToWrite.get(i) + ",");
+        JSONObject obj = new JSONObject();
+        for (int i = 0; i < length; i++) {
+          String data = dataToWrite.get(i);
+          String[] splitArray = data.split(":", 2);
+          obj.put(splitArray[0], splitArray[1]);
+          //writer.write(dataToWrite.get(i) + ",");
         }
-        writer.write(dataToWrite.get(length - 1));
+        writer.write(obj.toString());
         writer.write("\n");
       } catch (IOException e) {
         return false;

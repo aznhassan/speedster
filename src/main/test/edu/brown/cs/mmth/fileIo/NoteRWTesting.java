@@ -26,7 +26,7 @@ public class NoteRWTesting {
    */
   public void basicNoteRWTest() {
     // Creating the dummy note object we will write to file.
-    Note dummy=new Note("Hello world.","CS");
+    Note dummy=new Note("Hello world.","CS", "First Day");
     // Adding dummy note to a collection (singleton collection).
     Collection<Note> notes=new ArrayList<>();
     notes.add(dummy);
@@ -52,7 +52,7 @@ public class NoteRWTesting {
    */
   public void multipleLineNoteRWTest() {
     // Creating the dummy note object we will write to file.
-    Note dummy=new Note("Hello world.\nI am your new overlord.","CS");
+    Note dummy=new Note("Hello world.\nI am your new overlord.","CS", "test");
     // Adding dummy note to a collection (singleton collection).
     Collection<Note> notes=new ArrayList<>();
     notes.add(dummy);

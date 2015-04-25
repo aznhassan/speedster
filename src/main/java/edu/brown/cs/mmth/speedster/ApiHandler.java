@@ -1,5 +1,6 @@
 package edu.brown.cs.mmth.speedster;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -7,6 +8,8 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -50,7 +53,41 @@ public final class ApiHandler {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-
+/*
+ *
+ [
+ {
+    "folder_id":id,
+    "folder_name":name,
+    "notes": [{
+                "note_id":id,
+                "note_name":name
+              },
+              {
+                "note_id":id,
+                "note_name":name
+              }]
+}" ]
+*/
+      /*File baseDirectory = new File(Main.getBasePath());
+      File[] subjects = baseDirectory.listFiles();
+      String emptyJSON = "{}";
+      Map<String, Object> empty = ImmutableMap.of("title", "Welcome home", 
+          "folderJSON", emptyJSON);
+      if (subjects == null || subjects.length == 0) {
+        return new ModelAndView(empty, "main.ftl");
+      }
+      JSONObject obj = new JSONObject();
+      for (File subject : subjects) {
+        Collection<Note> noteList = NoteReader.readNotes(subject.getName());
+        if (noteList == null) {
+          return new ModelAndView(empty, "main.ftl");
+        }
+        for (Note note: noteList) {
+          obj.put("note_id", note.getId());
+          obj.put("note_name", note.)
+        }
+      }*/
       // Grab the note with this id from the db
       Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
       return new ModelAndView(variables, "main.ftl");
