@@ -108,15 +108,6 @@ public class Flashcard implements Readable, Writeable {
   }
 
   /**
-   * Accessor for _rank.
-   *
-   * @return the _rank
-   */
-  public int get_rank() {
-    return rank;
-  }
-
-  /**
    * Accessor for answer.
    *
    * @return the answer

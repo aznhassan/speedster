@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.brown.cs.mmth.speedster.Flashcard;
 import edu.brown.cs.mmth.speedster.Main;
@@ -20,12 +22,28 @@ import edu.brown.cs.mmth.speedster.Main;
  */
 public final class FlashCardReader {
 
+  private static Map<Long, Flashcard> cache = new HashMap<>();
+  
   /**
    * Private constructor.
    */
   private FlashCardReader() {
   }
 
+  /** 
+   * Returns flashcard from cache. Null if flashcard with given ID is not
+   * present.
+   * @param id the unique identifier for the flashcard
+   * @return the flashcard object corresponding to that ID. Null if not found.
+   */
+  public static Flashcard getFlashcardFromCache(long id) {
+    if(cache.containsKey(id)) {
+      return cache.get(id);
+    } else {
+      return null;
+    }
+  }
+  
   /**
    * Reads in a list of Flashcards from memory and creates a list of Flashcards.
    * @param pathToCards
@@ -66,6 +84,10 @@ public final class FlashCardReader {
           continue; //Skipping invalid file
         }
         card.setId(id);
+        
+        // Updating flashcard cache.
+        cache.put(id, card);
+        
         flashCards.add(card);
       } catch (IOException e) {
         return null;
