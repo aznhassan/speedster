@@ -3,7 +3,6 @@ package edu.brown.cs.mmth.speedster;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.List;
@@ -15,8 +14,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
+import edu.brown.cs.mmth.fileIo.FlashCardReader;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.tbhargav.tries.Word;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -36,6 +37,7 @@ public final class ApiHandler {
    * Gson object to make things into JSON.
    */
   private static final Gson gson = new Gson();
+  private static int sessionID = 0;
 
   /**
    * Private Constructor.
@@ -169,6 +171,29 @@ public final class ApiHandler {
   }
 
   /**
+   * Generates a new session with a new session ID.
+   * Needs to be provided subject.
+   * @author tbhargav
+   *
+   */
+  public static class GetNewSession implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(final Request req, final Response res) {
+      String subject=req.params(":subject");
+      Map<String, Object> variables =
+          ImmutableMap.of("title", "Speedster", "session_id", sessionID);
+      // Getting all flashcards within specified subject.
+      Collection<Flashcard> subjectCards =
+          FlashCardReader.readCards(subject);
+      FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
+      // Putting session with ID in cache.
+      FlashcardShuffler.addSession(sessionID, currSession);
+      sessionID++;
+      return new ModelAndView(variables, "flashcard.ftl");
+    }
+  }
+
+  /**
    * Loads the note given by the id and then runs that note on it's own page.
    * 
    * @author hsufi
@@ -182,7 +207,8 @@ public final class ApiHandler {
         id = Integer.parseInt(req.params(":id"));
       } catch (NumberFormatException e) {
         Map<String, Object> problem =
-            ImmutableMap.of("title", "Speedster", "content", "Improper note id");
+            ImmutableMap
+                .of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
       String subject = req.params(":folder");
@@ -190,13 +216,15 @@ public final class ApiHandler {
         subject = URLDecoder.decode(subject, "UTF-8");
       } catch (UnsupportedEncodingException e) {
         Map<String, Object> problem =
-            ImmutableMap.of("title", "Speedster", "content", "Decoding exception");
+            ImmutableMap.of("title", "Speedster", "content",
+                "Decoding exception");
         return new ModelAndView(problem, "error.ftl");
       }
       Collection<Note> notes = NoteReader.readNotes(subject);
       if (notes == null) {
         Map<String, Object> problem =
-            ImmutableMap.of("title", "Speedster", "content", "No notes in subject");
+            ImmutableMap.of("title", "Speedster", "content",
+                "No notes in subject");
         return new ModelAndView(problem, "error.ftl");
       }
       Note returnNote = null;
@@ -213,8 +241,8 @@ public final class ApiHandler {
                 returnNote.getTextData(), "customCss", subject);
       } else {
         variables =
-            ImmutableMap.of("title", "Speedster", "note", "Note doesn't exist!", "customCss",
-                subject);
+            ImmutableMap.of("title", "Speedster", "note",
+                "Note doesn't exist!", "customCss", subject);
       }
       return new ModelAndView(variables, "note.ftl");
     }
@@ -242,8 +270,10 @@ public final class ApiHandler {
   }
 
   /**
-   * Grabs the next flash card to display to the user based on the data from
-   * each flashcard.
+   * Grabs the next flashcard to display to the user based on the data from each
+   * flashcard. TODO: Still under progress. Might need extra handler to create
+   * new session. This handler can rely solely on session ID, or current session
+   * ID then.
    * 
    * @author hsufi
    */
@@ -251,9 +281,37 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map
-      String toReturn = "";
-      return toReturn;
+
+      String sessionNo = qm.value("session_number");
+      int sessionID = 0;
+      try {
+        sessionID = Integer.parseInt(sessionNo);
+      } catch (NumberFormatException e) {
+        return "Invalid session ID provided.";
+      }
+      String subject = qm.value("subject");
+
+      // Locating the FlashcardShuffler associated with current session. Or
+      // creating
+      // a new one if none is found.
+      FlashcardShuffler currSession;
+      if (FlashcardShuffler.hasSession(sessionID)) {
+        currSession = FlashcardShuffler.getSession(sessionID);
+      } else {
+        return null;
+      }
+
+      // Getting next card (shuffler object handles this decision).
+      Flashcard next = currSession.nextCard();
+
+      Map<String, Object> variables;
+
+      variables =
+          ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
+              "session_number", sessionID, "card_id", next.getId(),
+              "associated_folder", subject);
+
+      return gson.toJson(variables);
     }
   }
 
@@ -273,20 +331,19 @@ public final class ApiHandler {
     }
   }
 
-  /** Loads the note given by the id and then runs that
-   *  note on it's own page.
+  /**
+   * Loads the note given by the id and then runs that note on it's own page.
+   * 
    * @author hsufi
    *
    */
-  public static class FlashCardView implements TemplateViewRoute  {
+  public static class FlashCardView implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       int id = Integer.parseInt(req.params(":id"));
-      //Grab the note with this id from the db
-      Map<String, Object> variables =
-              ImmutableMap.of(
-                      "title", "Flashcards");
+      // Grab the note with this id from the db
+      Map<String, Object> variables = ImmutableMap.of("title", "Flashcards");
       return new ModelAndView(variables, "flashcard.ftl");
     }
   }
