@@ -76,7 +76,7 @@ public class CSSSheetMaker {
    * @return - Boolean indicating a successfull operation.
    */
   private static boolean writeCss(String css, String subject) {
-    File file = new File("./customCSS/" + subject);
+    File file = new File("./.customCSS/" + subject);
     file.getParentFile().mkdirs();
     try (BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(
