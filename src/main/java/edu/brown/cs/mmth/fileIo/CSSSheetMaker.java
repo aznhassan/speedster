@@ -19,20 +19,20 @@ public class CSSSheetMaker {
   private CSSSheetMaker() {}
 
   /**
-   * @param cssJson - The CSS JSON that will replace the current custom user
+   * @param jsonRules - The CSS JSON that will replace the current custom user
    * style sheet of the given subject.
    * @return - Boolean specifying whether or not writing operation was
    * successful.
    * @throws IOException - When an error writing to file occurs
    */
   public static boolean
-  writeJsonToFile(String cssJson) throws IOException {
-    if (cssJson == null) {
+  writeJsonToFile(String jsonRules) throws IOException {
+    if (jsonRules == null) {
       System.err.println("No JSON");
       return false;
     }
     boolean toReturn = true;
-    JSONArray array = new JSONArray(cssJson);
+    JSONArray array = new JSONArray(jsonRules);
     int length = array.length();
     for (int i = 0; i < length; i++) {
       JSONObject obj = array.getJSONObject(i);
