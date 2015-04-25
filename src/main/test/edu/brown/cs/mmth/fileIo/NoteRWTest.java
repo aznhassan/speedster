@@ -18,7 +18,7 @@ import org.junit.Test;
  * @author tbhargav
  *
  */
-public class NoteRWTesting {
+public class NoteRWTest {
   @Test
   /**
    * Tests whether text gets written to file and is

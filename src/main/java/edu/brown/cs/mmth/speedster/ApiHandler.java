@@ -140,20 +140,19 @@ public final class ApiHandler {
 
   /**
    * Generates a new session with a new session ID.
-   * 
+   * Needs to be provided subject.
    * @author tbhargav
    *
    */
   public static class GetNewSession implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      String subject = qm.value("subject");
+      String subject=req.params(":subject");
       Map<String, Object> variables =
           ImmutableMap.of("title", "Speedster", "session_id", sessionID);
       // Getting all flashcards within specified subject.
       Collection<Flashcard> subjectCards =
-          FlashCardReader.readCards(subject.toLowerCase());
+          FlashCardReader.readCards(subject);
       FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
       // Putting session with ID in cache.
       FlashcardShuffler.addSession(sessionID, currSession);
