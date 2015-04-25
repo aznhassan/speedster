@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.google.common.collect.Lists;
 
 import edu.brown.cs.mmth.speedster.Main;
@@ -64,10 +67,18 @@ public class NoteReader {
             // The file is invalid so we skip it.
             continue;
           }
-          
-          
           Note note = new Note("", subject, "");
-          note.updateFields(json.toString());
+          String jsonData = json.toString();
+          if (jsonData.isEmpty()) {
+            continue; //File has no data
+          } else {
+            try {
+              JSONObject testObj = new JSONObject(jsonData);
+            } catch (JSONException e) {
+              continue; //File isn't a proper JSON object.
+            }
+          }
+          note.updateFields(jsonData);
           note.setId(id);
           notes.add(note);
         }

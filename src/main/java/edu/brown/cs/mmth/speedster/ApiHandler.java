@@ -68,17 +68,17 @@ public final class ApiHandler {
         return new ModelAndView(empty, "main.ftl");
       }
       JSONArray array = new JSONArray();
-      JSONObject obj = new JSONObject();
       for (File subject : subjects) {
         Collection<Note> noteList = NoteReader.readNotes(subject.getName());
         if (noteList == null) {
           return new ModelAndView(empty, "main.ftl");
         }
         for (Note note : noteList) {
+          JSONObject obj = new JSONObject();
           obj.put("note_id", note.getId());
           obj.put("note_name", note.getName());
+          array.put(obj);
         }
-        array.put(obj);
       }
       // Grab the note with this id from the db
       Map<String, Object> variables =
