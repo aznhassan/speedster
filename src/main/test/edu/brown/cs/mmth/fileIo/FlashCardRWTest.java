@@ -16,9 +16,9 @@ public class FlashCardRWTest {
   @Test
   public void rwSingleCardTest() {
     String question =
-        "Name one thing from Dorestad that" + "can be found in Scandinavia";
-    String answer = "The bane of";
-    Flashcard card = new Flashcard(question, answer);
+        "Name one thing from Dorestad that \n can be found in Scandinavia";
+    String answer = "Lava Querns";
+    Flashcard card = new Flashcard(answer, question);
     card.setId(1);
     card.setSubjectName("History");
     card.set_rank(100);
@@ -26,18 +26,18 @@ public class FlashCardRWTest {
     card.setNumberTimesWrong(45);
 
     List<Flashcard> cardList = Lists.newArrayList(card);
-    assert (FlashCardWriter.writeCards(cardList));
+    assertTrue (FlashCardWriter.writeCards(cardList));
 
     Collection<Flashcard> cards = FlashCardReader.readCards("History");
-    assertTrue(!cards.isEmpty());
+    assertTrue(cards != null && !cards.isEmpty());
     for (Flashcard testCard : cards) {
-      assert (testCard.get_rank() == 100);
-      assert (testCard.getSubject().equals("History"));
-      assert (testCard.getId() == 1);
-      assert (testCard.getNumberTimesCorrect() == 10);
-      assert (testCard.getNumberTimesWrong() == 45);
-      assert (testCard.getAnswer().equals(answer));
-      assert (testCard.getQuestion().equals(question));
+      assertTrue (testCard.get_rank() == 100);
+      assertTrue (testCard.getSubject().equals("History"));
+      assertTrue (testCard.getId() == 1 || testCard.getId() == 3);
+      assertTrue (testCard.getNumberTimesCorrect() == 10);
+      assertTrue (testCard.getNumberTimesWrong() == 45);
+      assertTrue (testCard.getAnswer().equals(answer));
+      assertTrue(testCard.getQuestion().equals(question));
     }
   }
 }

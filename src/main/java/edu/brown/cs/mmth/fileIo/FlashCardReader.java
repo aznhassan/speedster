@@ -33,10 +33,13 @@ public final class FlashCardReader {
    * @return A list of Flashcard objects.
    */
   public static Collection<Flashcard> readCards(String subject) {
-    String pathToCards = Main.getBasePath() + subject;
+    String pathToCards = Main.getBasePath() + "/" + subject;
     File directory = new File(pathToCards);
     File[] files = directory.listFiles();
     List<Flashcard> flashCards = new ArrayList<>();
+    if (files == null || files.length == 0) {
+      return null;
+    }
     for (File file : files) {
       if (!file.isFile()) {
         return null;
@@ -49,18 +52,18 @@ public final class FlashCardReader {
           BufferedReader reader =
               new BufferedReader(new InputStreamReader(
                   new FileInputStream(file), "UTF-8"))) {
-        List<String> fields = new ArrayList<>();
+        StringBuilder object = new StringBuilder();
         String line = "";
         while ((line = reader.readLine()) != null) {
-          fields.add(line);
+          object.append(line);
         }
         Flashcard card = new Flashcard("", "");
-        card.updateFields(fields);
+        card.updateFields(object.toString());
         Long id;
         try {
           id = Long.parseLong(file.getName().substring(1));
         } catch (NumberFormatException e) {
-          continue;
+          continue; //Skipping invalid file
         }
         card.setId(id);
         flashCards.add(card);

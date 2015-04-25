@@ -1,11 +1,14 @@
 package edu.brown.cs.mmth.speedster;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONObject;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -52,12 +55,41 @@ public final class ApiHandler {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-
-      // TODO Surbhi: list of folder objects each object has id, name:
-      // "folder_id"
-      // "folder_name" ; "notes:" list of note objects which contain "note_id"
-      // "note_name"
-
+/*
+ *
+ [
+ {
+    "folder_id":id,
+    "folder_name":name,
+    "notes": [{
+                "note_id":id,
+                "note_name":name
+              },
+              {
+                "note_id":id,
+                "note_name":name
+              }]
+}" ]
+*/
+      /*File baseDirectory = new File(Main.getBasePath());
+      File[] subjects = baseDirectory.listFiles();
+      String emptyJSON = "{}";
+      Map<String, Object> empty = ImmutableMap.of("title", "Welcome home", 
+          "folderJSON", emptyJSON);
+      if (subjects == null || subjects.length == 0) {
+        return new ModelAndView(empty, "main.ftl");
+      }
+      JSONObject obj = new JSONObject();
+      for (File subject : subjects) {
+        Collection<Note> noteList = NoteReader.readNotes(subject.getName());
+        if (noteList == null) {
+          return new ModelAndView(empty, "main.ftl");
+        }
+        for (Note note: noteList) {
+          obj.put("note_id", note.getId());
+          obj.put("note_name", note.)
+        }
+      }*/
       // Grab the note with this id from the db
       Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
       return new ModelAndView(variables, "main.ftl");
@@ -140,20 +172,19 @@ public final class ApiHandler {
 
   /**
    * Generates a new session with a new session ID.
-   * 
+   * Needs to be provided subject.
    * @author tbhargav
    *
    */
   public static class GetNewSession implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      String subject = qm.value("subject");
+      String subject=req.params(":subject");
       Map<String, Object> variables =
           ImmutableMap.of("title", "Speedster", "session_id", sessionID);
       // Getting all flashcards within specified subject.
       Collection<Flashcard> subjectCards =
-          FlashCardReader.readCards(subject.toLowerCase());
+          FlashCardReader.readCards(subject);
       FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
       // Putting session with ID in cache.
       FlashcardShuffler.addSession(sessionID, currSession);

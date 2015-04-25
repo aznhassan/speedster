@@ -11,6 +11,8 @@ import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
 
@@ -46,7 +48,7 @@ public final class NoteWriter {
       String basePath = Main.getBasePath();
 
       String suffixPath =
-          "/" + note.getSubject().toLowerCase() + "/N" + note.getId();
+          "/" + note.getSubject() + "/N" + note.getId();
       String finalPath = basePath + suffixPath;
 
       File file = new File(finalPath);
@@ -56,9 +58,17 @@ public final class NoteWriter {
       try (BufferedWriter br = new BufferedWriter(
           new OutputStreamWriter(new FileOutputStream(file), "UTF-8"))) {
         // We will only get a single string to write.
-        for (String s : dataToWrite) {
-          br.write(s);
+        JSONObject obj = new JSONObject();
+        int length = dataToWrite.size();
+        for (int i = 0; i < length; i++) {
+          String data = dataToWrite.get(i);
+          String[] splitArray = data.split(":", 2);
+          obj.put(splitArray[0], splitArray[1]);
+          //writer.write(dataToWrite.get(i) + ",");
         }
+        br.write(obj.toString());
+        br.write("\n");
+        
       } catch (IOException e) {
         return false;
       }

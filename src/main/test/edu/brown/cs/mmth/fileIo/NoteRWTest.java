@@ -18,7 +18,7 @@ import org.junit.Test;
  * @author tbhargav
  *
  */
-public class NoteRWTesting {
+public class NoteRWTest {
   @Test
   /**
    * Tests whether text gets written to file and is
@@ -26,7 +26,7 @@ public class NoteRWTesting {
    */
   public void basicNoteRWTest() {
     // Creating the dummy note object we will write to file.
-    Note dummy=new Note("Hello world.","CS");
+    Note dummy=new Note("Hello world.","CS", "test");
     // Adding dummy note to a collection (singleton collection).
     Collection<Note> notes=new ArrayList<>();
     notes.add(dummy);
@@ -52,7 +52,7 @@ public class NoteRWTesting {
    */
   public void multipleLineNoteRWTest() {
     // Creating the dummy note object we will write to file.
-    Note dummy=new Note("Hello world.\nI am your new overlord.","CS");
+    Note dummy=new Note("Hello world.\nI am your new overlord.","CS", "test");
     // Adding dummy note to a collection (singleton collection).
     Collection<Note> notes=new ArrayList<>();
     notes.add(dummy);

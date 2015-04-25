@@ -3,6 +3,8 @@ package edu.brown.cs.mmth.speedster;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import edu.brown.cs.mmth.fileIo.Readable;
 import edu.brown.cs.mmth.fileIo.Writeable;
 
@@ -20,17 +22,27 @@ public class Note implements Readable, Writeable{
   private String textData;
   private String subject;
   private long id;
+  private String name;
 
   /**
    * Constructs a new note object with a unique ID.
    * @param d -- data to store
    * @param s -- subject to which note belongs
+   * @param n -- name of the note.
    */
-  public Note(String d, String s){
+  public Note(String d, String s, String n){
     textData=d;
     subject=s;
+    name = n;
   }
 
+  /** Grabs the name of the note
+   * @return - The name field of the note..
+   */
+  public String getName() {
+    return name;
+  }
+  
   /**
    * Gets the subject to which the note belongs.
    * @return the subject in string form.
@@ -53,7 +65,8 @@ public class Note implements Readable, Writeable{
   @Override
   public List<String> getDataToStore() {
     List<String> listString=new ArrayList<String>();
-    listString.add(textData);
+    listString.add("data:" + textData);
+    listString.add("name:" + name);
     return listString;
   }
 
@@ -65,12 +78,13 @@ public class Note implements Readable, Writeable{
   @Override
   public void setId(long idL) {
     id=idL;
-    
   }
 
   @Override
-  public void updateFields(List<String> fields) {
-    // TODO Auto-generated method stub 
+  public void updateFields(String jsonFields) {
+    JSONObject object = new JSONObject(jsonFields);
+    this.textData = object.getString("data");
+    this.name = object.getString("name");
   }
 
 }
