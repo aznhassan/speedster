@@ -6,6 +6,7 @@ package edu.brown.cs.mmth.fileIo;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -85,6 +86,37 @@ public class NoteReader {
       }
     }
     return notes;
+  }
+  
+  /** Grabs the ID associated with the Subject.
+   * @param subject - The subject of the note.
+   * @return - The ID of the subject, returns -1 on error.
+   */
+  public static long getNoteSubjectId(final String subject) {
+    if (subject == null || subject.isEmpty()) {
+      return -1l;
+    }
+    File file = new File(Main.getBasePath() + "/" + subject + "/id");
+    if (!file.isFile()) {
+      return -1l;
+    }
+    try (
+        BufferedReader br =
+        new BufferedReader(new InputStreamReader(new FileInputStream(
+            file), "UTF-8"))) {
+      String id = br.readLine();
+      Long toReturn = -1l;
+      try {
+        toReturn = Long.parseLong(id);
+        return toReturn;
+      } catch (NumberFormatException e) {
+        System.err.println("ERROR: Id improperly formated");
+        return -1l;
+      }
+    } catch (IOException e) {
+      System.err.println("ERROR in getNoteSubject:" + e.getMessage());
+      return -1l;
+    }
   }
 
   protected NoteReader() {

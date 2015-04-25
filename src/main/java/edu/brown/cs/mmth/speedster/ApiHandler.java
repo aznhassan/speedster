@@ -73,12 +73,22 @@ public final class ApiHandler {
         if (noteList == null) {
           return new ModelAndView(empty, "main.ftl");
         }
+        JSONObject folder = new JSONObject();
+        folder.put("folder_name", subject.getName());
+        Long id = NoteReader.getNoteSubjectId(subject.getName());
+        if (id == -1) {
+          continue; //Improper ID file.
+        }
+        folder.put("folder_id", id);
+        JSONArray noteArray = new JSONArray();
         for (Note note : noteList) {
           JSONObject obj = new JSONObject();
           obj.put("note_id", note.getId());
           obj.put("note_name", note.getName());
-          array.put(obj);
+          noteArray.put(obj);
         }
+        folder.put("notes", noteArray);
+        array.put(folder);
       }
       // Grab the note with this id from the db
       Map<String, Object> variables =
