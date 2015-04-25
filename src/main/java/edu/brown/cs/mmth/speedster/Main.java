@@ -80,7 +80,7 @@ public final class Main {
       } catch (IOException e) {
         System.err.println("ERROR: " + e.getMessage());
         // TODO: Remember you have to remember stack trace.
-        e.printStackTrace();
+        //e.printStackTrace();
         System.exit(1);
       }
     }
@@ -113,7 +113,7 @@ public final class Main {
    *         error.
    */
   private static long idRecovery() {
-    long toReturn = 0;
+    long toReturn = -1;
     File data = new File(basePath);
 
     File[] directories = data.listFiles();
@@ -123,6 +123,23 @@ public final class Main {
     for (File directory : directories) { // Subject Folders
       File[] files = directory.listFiles();
       if (files.length == 0) {
+        continue;
+      }
+      File idFile = new File(directory, "/id");
+      try (
+          BufferedReader reader =
+          new BufferedReader(new InputStreamReader(new FileInputStream(idFile),
+              "UTF-8"))) {
+        String line = reader.readLine();
+        try {
+          long folderId = Long.parseLong(line);
+          if (folderId > toReturn) {
+            toReturn = folderId;
+          }
+        } catch (NumberFormatException e) {
+          continue;
+        }
+      } catch (IOException e) {
         continue;
       }
       for (File file : files) { // Notes & Flashcards
