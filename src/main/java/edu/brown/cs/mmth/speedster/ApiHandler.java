@@ -173,17 +173,26 @@ public final class ApiHandler {
     public static class GetNewSession implements TemplateViewRoute {
       @Override
       public ModelAndView handle(final Request req, final Response res) {
-        String subject = req.params(":subject");
-        Map<String, Object> variables =
-            ImmutableMap.of("title", "Speedster", "session_id", sessionID);
-        // Getting all flashcards within specified subject.
-        Collection<Flashcard> subjectCards = FlashCardReader.readCards(subject);
-        FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
-        // Putting session with ID in cache.
-        FlashcardShuffler.addSession(sessionID, currSession);
-        sessionID++;
-        return new ModelAndView(variables, "flashcard.ftl");
+        String subjectE=req.params("subject");
+      String subject="";
+      try {
+        subject = URLDecoder.decode(subjectE, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
       }
+      Map<String, Object> variables =
+          ImmutableMap.of("title", "Speedster", "session_id", sessionID);
+      // Getting all flashcards within specified subject.
+      Collection<Flashcard> subjectCards =
+          FlashCardReader.readCards(subject);
+      FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
+      // Putting session with ID in cache.
+      FlashcardShuffler.addSession(sessionID, currSession);
+      sessionID++;
+      System.out.println("HELLO");
+      return new ModelAndView(variables, "flashcard.ftl");
+    }
+
     }
 
     /**
