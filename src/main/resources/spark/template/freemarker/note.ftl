@@ -5,19 +5,22 @@ the page is written in-->
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Test</title>
-    <link rel="stylesheet" href="../css/note.css">
+    <title>${title}</title>
+    <link rel="stylesheet" href="../../css/note.css">
     
     <link href='http://fonts.googleapis.com/css?family=Bitter:400,700|Open+Sans:400italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700italic,900italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="${customCss}">
   </head>
   
   <body>
     <script src="../js/jquery-2.1.1.js"></script>
     <script src="../js/note.js"></script>
-    ${note}
-    <div contenteditable="true" id="noteArea"></div>
+    
+    <div contenteditable="true" id="noteArea">
+    	${note}
+    </div>
     
   
   </body>

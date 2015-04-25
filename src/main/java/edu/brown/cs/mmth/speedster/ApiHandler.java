@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
@@ -15,16 +18,12 @@ import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
 import edu.brown.cs.mmth.fileIo.FlashCardReader;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.tbhargav.tries.Word;
-
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Handles the ajax requests sent by the front end.
@@ -35,155 +34,20 @@ import org.json.JSONObject;
 public final class ApiHandler {
 
   /**
-   * Loads the note given by the id and then runs that note on it's own page.
-   *
-   * @author hsufi
-   *
+   * Gson object to make things into JSON.
    */
-  public static class FlashCardView implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      int id = Integer.parseInt(req.params(":id"));
-      // Grab the note with this id from the db
-      Map<String, Object> variables = ImmutableMap.of("title", "Flashcards");
-      return new ModelAndView(variables, "flashcard.ftl");
-    }
-  }
+  private static final Gson gson = new Gson();
+  private static int sessionID = 0;
 
   /**
-   * Generates a new session with a new session ID. Needs to be provided
-   * subject.
-   *
-   * @author tbhargav
-   *
+   * Private Constructor.
    */
-  public static class GetNewSession implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      String subjectE = req.params("subject");
-      String subject = "";
-      try {
-        subject = URLDecoder.decode(subjectE, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        e.printStackTrace();
-      }
-      Map<String, Object> variables =
-          ImmutableMap.of("title", "Speedster", "session_id", sessionID);
-      // Getting all flashcards within specified subject.
-      Collection<Flashcard> subjectCards = FlashCardReader.readCards(subject);
-      FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
-      // Putting session with ID in cache.
-      FlashcardShuffler.addSession(sessionID, currSession);
-      sessionID++;
-      return new ModelAndView(variables, "flashcard.ftl");
-    }
-
-  }
-
-  /**
-   * Grabs the next flashcard to display to the user based on the data from each
-   * flashcard. TODO: Still under progress. Might need extra handler to create
-   * new session. This handler can rely solely on session ID, or current session
-   * ID then.
-   *
-   * @author hsufi
-   */
-  public static class GetNextFlashCard implements Route {
-    @Override
-    public Object handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-
-      String sessionNo = qm.value("session_number");
-
-      int sessionID = 0;
-      try {
-        sessionID = Integer.parseInt(sessionNo);
-      } catch (NumberFormatException e) {
-        // TODO: Decide on cleaner error format.
-        return "q: Invalid session ID provided.";
-      }
-
-      // Locating the FlashcardShuffler associated with current session. Or
-      // creating
-      // a new one if none is found.
-      FlashcardShuffler currSession;
-      if (FlashcardShuffler.hasSession(sessionID)) {
-        currSession = FlashcardShuffler.getSession(sessionID);
-      } else {
-        return null;
-      }
-
-      // Getting next card (shuffler object handles this decision).
-      Flashcard next = currSession.nextCard();
-
-      Map<String, Object> variables;
-      variables =
-          ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
-              "session_number", sessionID, "card_id", next.getId());
-
-      return gson.toJson(variables);
-    }
-  }
-
-  /**
-   * Loads the note given by the id and then runs that note on it's own page.
-   *
-   * @author hsufi
-   *
-   */
-  public static class GetNote implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      int id;
-      try {
-        id = Integer.parseInt(req.params(":id"));
-      } catch (NumberFormatException e) {
-        Map<String, Object> problem =
-            ImmutableMap
-            .of("title", "Speedster", "content", "Improper note id");
-        return new ModelAndView(problem, "error.ftl");
-      }
-      String subject = req.params(":folder");
-      try {
-        subject = URLDecoder.decode(subject, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        Map<String, Object> problem =
-            ImmutableMap.of("title", "Speedster", "content",
-                "Decoding exception");
-        return new ModelAndView(problem, "error.ftl");
-      }
-      Collection<Note> notes = NoteReader.readNotes(subject);
-      if (notes == null) {
-        Map<String, Object> problem =
-            ImmutableMap.of("title", "Speedster", "content",
-                "No notes in subject");
-        return new ModelAndView(problem, "error.ftl");
-      }
-      Note returnNote = null;
-      for (Note note : notes) {
-        if (note.getId() == id) {
-          returnNote = note;
-          break;
-        }
-      }
-      Map<String, Object> variables;
-      if (returnNote != null) {
-        variables =
-            ImmutableMap.of("title", "Speedster", "note",
-                returnNote.getTextData(), "customCss", subject);
-      } else {
-        variables =
-            ImmutableMap.of("title", "Speedster", "note",
-                "Note doesn't exist!", "customCss", subject);
-      }
-      return new ModelAndView(variables, "note.ftl");
-    }
+  private ApiHandler() {
   }
 
   /**
    * Loads metadata associated with all notes.
-   *
+   * 
    * @author hsufi
    *
    */
@@ -199,7 +63,7 @@ public final class ApiHandler {
       File[] subjects = baseDirectory.listFiles();
       String emptyJSON = "{}";
       Map<String, Object> empty =
-          ImmutableMap.of("title", "Not Speedster", "folderJSON", emptyJSON);
+          ImmutableMap.of("title", "Welcome home", "folderJSON", emptyJSON);
       if (subjects == null || subjects.length == 0) {
         return new ModelAndView(empty, "main.ftl");
       }
@@ -234,8 +98,25 @@ public final class ApiHandler {
   }
 
   /**
+   * Handles updating notes per folder when new notes are added by the user on
+   * the main page.
+   * 
+   * @author sm15
+   */
+  public static class UpdateNotes implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String folderJson = qm.value("folders");
+      String noteJson = qm.value("notes");
+      Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
+      return new ModelAndView(variables, "main.ftl");
+    }
+  }
+
+  /**
    * Generates autocorrect suggestions for the given word.
-   *
+   * 
    * @author tbhargav
    *
    */
@@ -292,8 +173,95 @@ public final class ApiHandler {
   }
 
   /**
-   * Updates the stylesheet of the current subject with the given rules.
+   * Generates a new session with a new session ID. Needs to be provided
+   * subject.
+   * 
+   * @author tbhargav
    *
+   */
+  public static class GetNewSession implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(final Request req, final Response res) {
+      String subjectE = req.params("subject");
+      String subject = "";
+      try {
+        subject = URLDecoder.decode(subjectE, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
+      Map<String, Object> variables =
+          ImmutableMap.of("title", "Speedster", "session_id", sessionID);
+      // Getting all flashcards within specified subject.
+      Collection<Flashcard> subjectCards = FlashCardReader.readCards(subject);
+      FlashcardShuffler currSession = new FlashcardShuffler(subjectCards);
+      // Putting session with ID in cache.
+      FlashcardShuffler.addSession(sessionID, currSession);
+      sessionID++;
+      return new ModelAndView(variables, "flashcard.ftl");
+    }
+  }
+
+  /**
+   * Loads the note given by the id and then runs that note on it's own page.
+   * 
+   * @author hsufi
+   *
+   */
+  public static class GetNote implements TemplateViewRoute {
+    @Override
+    public ModelAndView handle(final Request req, final Response res) {
+      int id;
+      try {
+        id = Integer.parseInt(req.params(":id"));
+      } catch (NumberFormatException e) {
+        Map<String, Object> problem =
+            ImmutableMap
+                .of("title", "Speedster", "content", "Improper note id");
+        return new ModelAndView(problem, "error.ftl");
+      }
+      String subject = req.params(":folder");
+      try {
+        subject = URLDecoder.decode(subject, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        Map<String, Object> problem =
+            ImmutableMap.of("title", "Speedster", "content",
+                "Decoding exception");
+        return new ModelAndView(problem, "error.ftl");
+      }
+      Collection<Note> notes = NoteReader.readNotes(subject);
+      Long subjectId = NoteReader.getNoteSubjectId(subject);
+      if (notes == null) {
+        Map<String, Object> problem =
+            ImmutableMap.of("title", "Speedster", "content",
+                "No notes in subject");
+        return new ModelAndView(problem, "error.ftl");
+      }
+      Note returnNote = null;
+      for (Note note : notes) {
+        if (note.getId() == id) {
+          returnNote = note;
+          break;
+        }
+      }
+      Map<String, Object> variables;
+      if (returnNote != null) {
+        variables =
+            ImmutableMap.of("title", "Speedster", "note",
+                returnNote.getTextData(), "customCss", "../../customCss/"
+                    + subjectId + ".css");
+      } else {
+        variables =
+            ImmutableMap.of("title", "Speedster", "note",
+                "Note doesn't exist!", "customCss", "../../customCss/"
+                    + subjectId + ".css");
+      }
+      return new ModelAndView(variables, "note.ftl");
+    }
+  }
+
+  /**
+   * Updates the stylesheet of the current subject with the given rules.
+   * 
    * @author hsufi
    */
   public static class UpdateCSS implements Route {
@@ -313,10 +281,53 @@ public final class ApiHandler {
   }
 
   /**
+   * Grabs the next flashcard to display to the user based on the data from each
+   * flashcard. 
+   * @author tbhargav
+   */
+  public static class GetNextFlashCard implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      String sessionNo = qm.value("session_number");
+      int sessionID = 0;
+      try {
+        sessionID = Integer.parseInt(sessionNo);
+      } catch (NumberFormatException e) {
+        return "Invalid session ID provided.";
+      }
+      String subject = qm.value("subject");
+
+      // Locating the FlashcardShuffler associated with current session. Or
+      // creating
+      // a new one if none is found.
+      FlashcardShuffler currSession;
+      if (FlashcardShuffler.hasSession(sessionID)) {
+        currSession = FlashcardShuffler.getSession(sessionID);
+      } else {
+        return null;
+      }
+
+      // Getting next card (shuffler object handles this decision).
+      Flashcard next = currSession.nextCard();
+
+      Map<String, Object> variables;
+
+      variables =
+          ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
+              "session_number", sessionID, "card_id", next.getId(),
+              "associated_folder", subject);
+
+      return gson.toJson(variables);
+    }
+  }
+
+  /*
    * Updates the meta-data of the given flashcard in simpler terms tells us
    * whether the user got the flashcard wrong or right and for which session
    * (and which flashcard).
-   *
+   * 
    * @author tbhargav
    */
   public static class UpdateFlashCard implements Route {
@@ -354,32 +365,20 @@ public final class ApiHandler {
     }
   }
 
-  /**
-   * Handles updating notes per folder when new notes are added by the user on
-   * the main page.
-   *
-   * @author sm15
-   */
-  public static class UpdateNotes implements Route {
-    @Override
-    public Object handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      String notes = qm.value("notes");
-      Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
-      return new ModelAndView(variables, "main.ftl");
+    /**
+     * Loads the note given by the id and then runs that note on it's own page.
+     * 
+     * @author hsufi
+     *
+     */
+    public static class FlashCardView implements TemplateViewRoute {
+      @Override
+      public ModelAndView handle(final Request req, final Response res) {
+        QueryParamsMap qm = req.queryMap();
+        int id = Integer.parseInt(req.params(":id"));
+        // Grab the note with this id from the db
+        Map<String, Object> variables = ImmutableMap.of("title", "Flashcards");
+        return new ModelAndView(variables, "flashcard.ftl");
+      }
     }
   }
-
-  /**
-   * Gson object to make things into JSON.
-   */
-  private static final Gson gson = new Gson();
-
-  private static int sessionID = 0;
-
-  /**
-   * Private Constructor.
-   */
-  private ApiHandler() {
-  }
-}
