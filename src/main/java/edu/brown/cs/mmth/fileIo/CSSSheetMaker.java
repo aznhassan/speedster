@@ -29,21 +29,32 @@ public class CSSSheetMaker {
   }
 
   /**
+<<<<<<< HEAD
    * @param cssJson
    *          - The CSS JSON that will replace the current custom user style
    *          sheet of the given subject.
+=======
+   * @param jsonRules - The CSS JSON that will replace the current custom user
+   * style sheet of the given subject.
+>>>>>>> branch 'master' of git@github.com:aznhassan/speedster.git
    * @return - Boolean specifying whether or not writing operation was
    *         successful.
    * @throws IOException
    *           - When an error writing to file occurs
    */
+<<<<<<< HEAD
   public static boolean writeJsonToFile(String cssJson) throws IOException {
     if (cssJson == null) {
+=======
+  public static boolean
+  writeJsonToFile(String jsonRules) throws IOException {
+    if (jsonRules == null) {
+>>>>>>> branch 'master' of git@github.com:aznhassan/speedster.git
       System.err.println("No JSON");
       return false;
     }
     boolean toReturn = true;
-    JSONArray array = new JSONArray(cssJson);
+    JSONArray array = new JSONArray(jsonRules);
     int length = array.length();
     for (int i = 0; i < length; i++) {
       JSONObject obj = array.getJSONObject(i);
