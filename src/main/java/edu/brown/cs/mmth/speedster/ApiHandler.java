@@ -158,6 +158,7 @@ public final class ApiHandler {
       // Putting session with ID in cache.
       FlashcardShuffler.addSession(sessionID, currSession);
       sessionID++;
+      System.out.println("HELLO");
       return new ModelAndView(variables, "flashcard.ftl");
     }
   }
