@@ -12,6 +12,7 @@ $(document).ready(function() {
     // var editStyleButton = document.getElementById("");
     var folder_num_counter = 0;
     var prevEditingHTML = null;
+    // window.glob 
 
     
 /* JSON format for received folders from the server
@@ -90,19 +91,45 @@ $(document).ready(function() {
             folder_div.id = folderList[i].folder_id;
             console.log("DATA: " + folderList[i]);
             $(folder_div).attr('data-folder',folderList[i]);
+
             folder_div.innerHTML = folderList[i].folder_name;
+            var collapse = document.createElement('div');
+            $(collapse).addClass('circle');
+            collapse.innerHTML = '<span class="arrow-down id="main-page-arrow></span>';
+            folder_div.appendChild(collapse);
             createCircleDiv(folder_div);
-            createFlashcardDiv(folder_div);
+            createFlashcardDiv(folder_div, fList[i].folder_name);
+            var main_note_div = document.createElement('main_note_div');
+            folder_div.appendChild(main_note_div);
+
+
+
             for(var j = 0; j < folderList[i].notes.length; j++) {
                 var notes_div = document.createElement("div");
                 notes_div.className = "note_name_div";
                 notes_div.id = folderList[i].notes[j].note_id;
                 notes_div.innerHTML = folderList[i].notes[j].note_name;
-                folder_div.appendChild(notes_div);
+                main_note_div.appendChild(notes_div);
                 $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
                     window.location.replace("/getNote/" + event.data.name + "/" +  this.id);
                 });
             }
+
+            $(collapse).bind('click', {notes: main_note_div}, function(event) {
+                console.log(event.data.notes);
+                if($(this.innerHTML)[0].className === 'arrow-down') {
+                    console.log("I'm at arrow down");
+                    $(this).html('<span class="arrow-up" id="main-page-arrow"></span>');
+                } else {
+                    $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
+                }
+                $(event.data.notes).slideToggle('medium', function() {
+                if ($(event.data.notes).is(':visible'))
+                    $(event.data.notes).css('display','block');
+                });
+                
+            });
+
             $('#main-div').append(folder_div);
         }
      }
@@ -127,26 +154,21 @@ $(document).ready(function() {
      /**
       * Helper function to create flashcard button
       */
-    function createFlashcardDiv(folderDiv) {
+    function createFlashcardDiv(folderDiv, folderName) {
         var circle = document.createElement('div');
         circle.className = 'circle';
         circle.innerHTML = 'F';
         folderDiv.appendChild(circle);
         $(circle).attr('contenteditable', 'false');
         $(circle).click(function(event) {
-            window.location.replace("/flashcard/" + folderDiv.id);
+            var getParam = {
+                subject: folderName
+            }
+            console.log(postParam.subject);
+            $.get('/getNewSession', getParam, function() {
+
+            });
         });
-    }
-
-
-    /**
-     * Helper function to create collapsible icon for the editing menu
-     */
-    function createCollapsibleButton() {
-        var circle = document.createElement('div');
-        circle.className = 'circle';
-        circle.innerHTML = '+';
-        return circle;
     }
 
 
@@ -303,24 +325,45 @@ $(document).ready(function() {
                 getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id)); */
             
             $(style_div).html('<span class="folder_style_header">' +   
-            fList[i].folder_name + '<span class="circle"> + </span>' + 
-            '</span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
-            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '</div>'); 
-
+            fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
+            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
+            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '<br><h3>Custom Style</h3>' + 
+        '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
+            <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
+            <div class "trigger-styles">    \
+                <input type="text" name="triggerword" placeholder="Trigger Word"></input><br>   \
+                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input><br>    \
+                <input type="text" name="triggerstyle" placeholder="Trigger Style"></input><br> \
+            </div><br>  \
+            <div class="after-styles">  \
+                <input type="text" name="afterend" placeholder="Text After End Seq."></input><br>   \
+                <input type="text" name="afterstyle" placeholder="Text After Style"></input><br>    \
+            </div><br>  \
+            <div class="container-styles">  \
+                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
+            </div><br>  \
+            <div class="submitStyle">ADD STYLE</div><br>    \
+        </div>' + '</div>'); 
+            
+            $('.submitStyle').css({
+                'margin': '1px dashed black'
+            });
           
            
-            var inner = $(style_div).find('#inner_style_div_' + fList[i].folder_id);
-            $(style_div).find('.circle').bind('click', {id: fList[i].folder_id}, function(event) {
+            $(style_div).find('.arrow').bind('click', {id: fList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
                 var divToCollapse = document.getElementById('inner_style_div_' + folderID);
                 $(divToCollapse).slideToggle();
 //                 alert(this.innerText === '+');
-                if(this.innerText === "+") {
-//                     alert("ugh");
-                    this.innerText = "-";
+                if($(this.innerHTML)[0].className === 'arrow-down') {
+                    $(this).html('<span class="arrow-up"></span>');
                 } else {
-                    this.innerText = "+";
+                    $(this).html('<span class="arrow-down"></span>');
                 }
+            });
+
+            $(style_div).find('.collapseCustom').bind('click', {id: fList[i].folder_id}, function(event) {
+                $('#form_' + event.data.id).slideToggle();
             });
 
             // append font sizes to the font size dropdowns
@@ -360,20 +403,11 @@ $(document).ready(function() {
         style_save_button.innerText = 'SAVE';
         $(button_div)[0].appendChild(style_save_button);
 
-        // add 'create new style button'
-        var add_custom_style_button = document.createElement('div');
-        add_custom_style_button.id = "custom-style-button";
-        add_custom_style_button.innerText = "ADD CUSTOM STYLE";
-        $(button_div)[0].appendChild(add_custom_style_button);
-
         // attach click handler to the save style button
         $(style_save_button).click(function(event) {
             saveStyleClick();
         });
 
-        $(add_custom_style_button).click(function(event) {
-            addCustomStyleForm();
-        });
   
     }
 /* 
@@ -417,22 +451,7 @@ Rules can take the following forms based on what is defined:
      */
      function addCustomStyleForm() {
         // save the current html of the style overlay
-        var currentHTML = $('.example_content').html();
-        console.log("CHANGING HTML");
-        $('.example_content').innerHTML =  '<div>  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
-            </div>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
-            </div>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div>  \
-        </div>';
+         
      }
 
      /** 
@@ -456,7 +475,7 @@ Rules can take the following forms based on what is defined:
 
         return 
 
-        '<div>  \
+        '<form method = "POST" name="ruleform">  \
             <input type="text" name="rulename" placeholder="Rule Name"></input> \
             <div class "trigger-styles">    \
                 <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
@@ -469,7 +488,7 @@ Rules can take the following forms based on what is defined:
             <div class="container-styles">  \
                 <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
             </div>  \
-        </div>';
+        </form>';
 
 
     }
@@ -702,6 +721,18 @@ One style html:
 });
 
 
+
+
+/*
+
+{
+    "session_number":
+    "subject":
+}
+
+
+
+*/
 
 
 

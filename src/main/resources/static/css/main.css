@@ -81,7 +81,7 @@ p {
 	-webkit-border-radius: 25px;
 	-moz-border-radius: 25px;
 	border-radius: 25px;
-	border:1px solid white;
+	border: 1px solid #FFF;
 	font-size:30px;
 	margin-left:5%;
 	display:inline-block;
