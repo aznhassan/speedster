@@ -179,7 +179,7 @@ public final class ApiHandler {
   public static class GetNewSession implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      String subject=req.params(":subject");
+      String subject=URLDecoder.decode(subject, "UTF-8");;
       Map<String, Object> variables =
           ImmutableMap.of("title", "Speedster", "session_id", sessionID);
       // Getting all flashcards within specified subject.

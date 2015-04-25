@@ -161,11 +161,9 @@ $(document).ready(function() {
         folderDiv.appendChild(circle);
         $(circle).attr('contenteditable', 'false');
         $(circle).click(function(event) {
-            var getParam = {
-                subject: folderName
-            }
+            
           
-            $.get("/getNewSession/" + getParam.subject, getParam, function() {
+            $.get("/getNewSession/" + encodeURIComponent(folderName), function() {
 
             });
         });
