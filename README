@@ -22,6 +22,11 @@ Project Authors (in reverse alphabetical order):
 
 Project Status: Individually functional, overall broken. Work in progress. 
 
+Current Bugs: 
+
+1.) Lack of testing data.
+
+
 How to build the program: mvn package
 
 How to run program from command line:
