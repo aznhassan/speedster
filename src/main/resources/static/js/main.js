@@ -70,9 +70,11 @@ $(document).ready(function() {
             // assuming server returns 'List<JSONStrings> folders'.
             // var folders = responseObject.folder;
             var folders = fList;
+            var json = $(".data");
+            var jsonArray = JSON.parse(json.text());
             // alert("CALLBACK");
-            
-            displayTitles(folders);
+            displayTitles(jsonArray);
+            //displayTitles(folders);
         });
     }
 
@@ -98,7 +100,7 @@ $(document).ready(function() {
             collapse.innerHTML = '<span class="arrow-down id="main-page-arrow></span>';
             folder_div.appendChild(collapse);
             createCircleDiv(folder_div);
-            createFlashcardDiv(folder_div, fList[i].folder_name);
+            createFlashcardDiv(folder_div, folderList[i].folder_name);
             var main_note_div = document.createElement('main_note_div');
             folder_div.appendChild(main_note_div);
 
