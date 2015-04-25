@@ -313,13 +313,17 @@ public final class ApiHandler {
       Flashcard next = currSession.nextCard();
 
       Map<String, Object> variables;
-
-      variables =
-          ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
-              "session_number", sessionID, "card_id", next.getId(),
-              "associated_folder", subject);
-
-      return gson.toJson(variables);
+      
+      // Session is over! Indicated by -1.
+      if(next==null) {
+        variables = ImmutableMap.of("q", "You are done reviewing!", "a", "Yes, you heard it right the first time!",
+            "session_number", sessionID, "card_id", "-1"); 
+      } else {
+        variables =
+            ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
+                "session_number", sessionID, "card_id", next.getId()); 
+      }
+        return gson.toJson(variables);
     }
   }
 
@@ -336,11 +340,11 @@ public final class ApiHandler {
       QueryParamsMap qm = req.queryMap();
       // Grab boolean status of card, as well as card ID and session number.
       try {
-        String ansCorrect = qm.value("answer_correct");
+        String ansCorrect = qm.value("ansCorrect");
         boolean isAnsCorrect = Boolean.parseBoolean(ansCorrect);
         String sessionNo = qm.value("session_no");
         int sNo = Integer.parseInt(sessionNo);
-        String cardIDStr = qm.value("card_id");
+        String cardIDStr = qm.value("cardID");
         long cardID = Long.parseLong(cardIDStr);
 
         // Getting card with given ID (we know it is in memory
@@ -357,11 +361,12 @@ public final class ApiHandler {
           currCard.setNumberTimesWrong(currCard.getNumberTimesWrong() + 1);
         }
       } catch (Exception e) {
+        // TODO: Better error handling rules!
         return null;
       }
 
       // Nothing to return.
-      return null;
+      return "";
     }
   }
 

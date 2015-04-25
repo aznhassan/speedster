@@ -92,6 +92,9 @@ public class FlashcardShuffler {
     if (cards.contains(card)) {
       cards.remove(card);
     }
+    if(rankedCards.contains(card)) {
+      rankedCards.remove(card);
+    }
   }
 
   /**
@@ -101,7 +104,7 @@ public class FlashcardShuffler {
    */
   public Flashcard nextCard() {
     // Session over.
-    if (rankedCards.isEmpty()) {
+    if (rankedCards.isEmpty() || cards.isEmpty()) {
       return null;
     }
     // We recompute rank every 3 cards.

@@ -97,6 +97,7 @@ $(document).ready(function() {
             cardID: currCard.id,
             ansCorrect: ansStatus
         }; 
+
         $.post("/finishedCard", postParams, function(responseJSON) {
             // We don't need to do anything, as the primarily role 
             // of is function was to update the back-end.
