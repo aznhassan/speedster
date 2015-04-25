@@ -164,8 +164,8 @@ $(document).ready(function() {
             var getParam = {
                 subject: folderName
             }
-            console.log(postParam.subject);
-            $.get('/getNewSession', getParam, function() {
+          
+            $.get("/getNewSession/" + getParam.subject, getParam, function() {
 
             });
         });
