@@ -247,13 +247,13 @@ public final class ApiHandler {
       if (returnNote != null) {
         variables =
             ImmutableMap.of("title", "Speedster", "note",
-                returnNote.getTextData(), "customCss",
-                "../../customCss/" + subjectId + ".css");
+                returnNote.getTextData(), "customCss", "../../customCss/"
+                    + subjectId + ".css");
       } else {
         variables =
             ImmutableMap.of("title", "Speedster", "note",
-                "Note doesn't exist!", "customCss",
-                "../../customCss/" + subjectId + ".css");
+                "Note doesn't exist!", "customCss", "../../customCss/"
+                    + subjectId + ".css");
       }
       return new ModelAndView(variables, "note.ftl");
     }
@@ -282,11 +282,8 @@ public final class ApiHandler {
 
   /**
    * Grabs the next flashcard to display to the user based on the data from each
-   * flashcard. TODO: Still under progress. Might need extra handler to create
-   * new session. This handler can rely solely on session ID, or current session
-   * ID then.
-   * 
-   * @author hsufi
+   * flashcard. 
+   * @author tbhargav
    */
   public static class GetNextFlashCard implements Route {
     @Override
@@ -326,36 +323,62 @@ public final class ApiHandler {
     }
   }
 
-  /**
-   * Updates the meta-data of the given flashcard, such as adding to the number
-   * of right and wrongs as well as updating the time stamp of the flashcard.
+  /*
+   * Updates the meta-data of the given flashcard in simpler terms tells us
+   * whether the user got the flashcard wrong or right and for which session
+   * (and which flashcard).
    * 
-   * @author hsufi
+   * @author tbhargav
    */
   public static class UpdateFlashCard implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      // Grab request specifics from the map
-      String toReturn = "";
-      return toReturn;
+      // Grab boolean status of card, as well as card ID and session number.
+      try {
+        String ansCorrect = qm.value("answer_correct");
+        boolean isAnsCorrect = Boolean.parseBoolean(ansCorrect);
+        String sessionNo = qm.value("session_no");
+        int sNo = Integer.parseInt(sessionNo);
+        String cardIDStr = qm.value("card_id");
+        long cardID = Long.parseLong(cardIDStr);
+
+        // Getting card with given ID (we know it is in memory
+        // as cards are loaded for flashcard shuffling).
+        Flashcard currCard = FlashCardReader.getFlashcardFromCache(cardID);
+
+        // Finding session and removing card if it was correct.
+        // Updating card stats as well.
+        if (isAnsCorrect) {
+          FlashcardShuffler session = FlashcardShuffler.getSession(sNo);
+          session.markCardCorrect(currCard);
+          currCard.setNumberTimesCorrect(currCard.getNumberTimesCorrect() + 1);
+        } else {
+          currCard.setNumberTimesWrong(currCard.getNumberTimesWrong() + 1);
+        }
+      } catch (Exception e) {
+        return null;
+      }
+
+      // Nothing to return.
+      return null;
     }
   }
 
-  /**
-   * Loads the note given by the id and then runs that note on it's own page.
-   * 
-   * @author hsufi
-   *
-   */
-  public static class FlashCardView implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      int id = Integer.parseInt(req.params(":id"));
-      // Grab the note with this id from the db
-      Map<String, Object> variables = ImmutableMap.of("title", "Flashcards");
-      return new ModelAndView(variables, "flashcard.ftl");
+    /**
+     * Loads the note given by the id and then runs that note on it's own page.
+     * 
+     * @author hsufi
+     *
+     */
+    public static class FlashCardView implements TemplateViewRoute {
+      @Override
+      public ModelAndView handle(final Request req, final Response res) {
+        QueryParamsMap qm = req.queryMap();
+        int id = Integer.parseInt(req.params(":id"));
+        // Grab the note with this id from the db
+        Map<String, Object> variables = ImmutableMap.of("title", "Flashcards");
+        return new ModelAndView(variables, "flashcard.ftl");
+      }
     }
   }
-}

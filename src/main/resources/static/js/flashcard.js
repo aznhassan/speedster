@@ -5,14 +5,24 @@
 
 $(document).ready(function() {
 
+    // TODO: Surbhi, the next button is slated for destruction.
     var nextButton = document.getElementById("next-button");
     var correctButton = document.getElementById("correct-button");
     var wrongButton = document.getElementById("wrong-button");
 
+    // TODO: Surbhi, I am adding a new object as a placeholder for current card :)
+    var currCard = { 
+      'q': "Demo",
+      'a': "Demo",
+      'id': 1  
+    }; 
 
 
-    var sessionIDCounter = $('#session_id')[0].innerHTML;
+    // Note from Tushar @Surbhi: The sessionIDCounter now works! (TODO: remove).
+    var sessionIDCounter = $('#session_div')[0].innerHTML;
+    
 
+      // TODO: Use different trigger to avoid  
       $('.flashcard_div_front').hover(function(){
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
@@ -25,27 +35,22 @@ $(document).ready(function() {
 
 
     /**
-     * click handler to next flashcard button
+     * click handler for 'wrong' flashcard button.
+     * When you get a card wrong the session remains unaffected, 
+     * but the global card stats change.
      */
-    $(nextButton).click(function() {
-        getNextFlashcard();
+    $(wrongButton).click(function() {
+        sendFlashcardUpdates(false);
     });
 
     /**
      * click handler for answered button
      */
     $(correctButton).click(function() {
-        sendFlashcardUpdates();
+        sendFlashcardUpdates(true);
     }) 
 
-    /**
-     * click handler for show answer button
-     */
-     $(wrongButton).click(function(event) {
-        sendFlashcardUpdates();
-     });
-
-
+  
 /*Format to recieve the next flashcard 
 
 {
@@ -64,26 +69,44 @@ $(document).ready(function() {
      * request the next flascard from the server
      */
     function getNextFlashcard() {
+        // TODO: Change from 'getParams' to postParams.
         var getParams = {
-            sessionId: sessionIDCounter
+            session_number: sessionIDCounter
         }
-        $.get("/getNextFlashcard", function(responseJSON) {
+        $.post("/getNextFlashcard", getParams, function(responseJSON) {
+            // Tushar to Surbhi: This works too now :P [ TODO, please remove this comment after reading.]
             var responseObject = JSON.parse(responseJSON);
-            // #TODO: display flashcard
+            currCard.q = responseObject.q;
+            currCard.a = responseObject.a;
+            currCard.id = responseObject.card_id;
+            displayFlashcard(currCard);
         });
     }
 
-    function sendFlashcardUpdates() {
+    /* 
+    * Gets the next flashcard and displays it. Also updates back-end with user's performance
+    * on the card. 
+    * @param ansCorrect true if the user got the answer right, false otherwise. 
+    */ 
+    function sendFlashcardUpdates(ansStatus) {
         /**
-         * send flashcard updates to server
+         * Update server on flashcard status.
          */
-        var postParams = {
-            currCard: getCurrCard()
-        }
+         var postParams = { 
+            session_no: sessionIDCounter,
+            cardID: currCard.id,
+            ansCorrect: ansStatus
+        }; 
+        $.post("/finishedCard", postParams, function(responseJSON) {
+            // We don't need to do anything, as the primarily role 
+            // of is function was to update the back-end.
+        }); 
 
-        $.post("/finishedCard", postParams, function() {
-            // #TODO: unsure what ?
-        });
+        /* 
+        * Display next flashcard.
+        */ 
+        getNextFlashcard();
+        
     }
     
 
@@ -91,10 +114,7 @@ $(document).ready(function() {
      * get card info as JSON
      */
     function getCurrCard() {
-        return {
-            "card_id": 1 /* somehow grab card id */,
-            "result" : "correct"
-        }
+        return currCard;
     }
 
 /* Flashcard format 
