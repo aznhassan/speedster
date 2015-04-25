@@ -42,14 +42,9 @@ public class CSSSheetMaker {
    * @throws IOException
    *           - When an error writing to file occurs
    */
-<<<<<<< HEAD
-  public static boolean writeJsonToFile(String cssJson) throws IOException {
-    if (cssJson == null) {
-=======
   public static boolean
   writeJsonToFile(String jsonRules) throws IOException {
     if (jsonRules == null) {
->>>>>>> branch 'master' of git@github.com:aznhassan/speedster.git
       System.err.println("No JSON");
       return false;
     }
