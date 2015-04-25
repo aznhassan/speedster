@@ -12,6 +12,7 @@ $(document).ready(function() {
     // var editStyleButton = document.getElementById("");
     var folder_num_counter = 0;
     var prevEditingHTML = null;
+    // window.glob 
 
     
 /* JSON format for received folders from the server
@@ -92,12 +93,12 @@ $(document).ready(function() {
             $(folder_div).attr('data-folder',folderList[i]);
 
             folder_div.innerHTML = folderList[i].folder_name;
-            var collapse = document.createElement("div");
-            collapse.className = "circle";
-            collapse.innerHTML = ">";
+            var collapse = document.createElement('div');
+            $(collapse).addClass('circle');
+            collapse.innerHTML = '<span class="arrow-down id="main-page-arrow></span>';
             folder_div.appendChild(collapse);
             createCircleDiv(folder_div);
-            createFlashcardDiv(folder_div);
+            createFlashcardDiv(folder_div, fList[i].folder_name);
             var main_note_div = document.createElement('main_note_div');
             folder_div.appendChild(main_note_div);
 
@@ -116,7 +117,17 @@ $(document).ready(function() {
 
             $(collapse).bind('click', {notes: main_note_div}, function(event) {
                 console.log(event.data.notes);
-                $(event.data.notes).slideToggle();
+                if($(this.innerHTML)[0].className === 'arrow-down') {
+                    console.log("I'm at arrow down");
+                    $(this).html('<span class="arrow-up" id="main-page-arrow"></span>');
+                } else {
+                    $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
+                }
+                $(event.data.notes).slideToggle('medium', function() {
+                if ($(event.data.notes).is(':visible'))
+                    $(event.data.notes).css('display','block');
+                });
+                
             });
 
             $('#main-div').append(folder_div);
@@ -143,26 +154,21 @@ $(document).ready(function() {
      /**
       * Helper function to create flashcard button
       */
-    function createFlashcardDiv(folderDiv) {
+    function createFlashcardDiv(folderDiv, folderName) {
         var circle = document.createElement('div');
         circle.className = 'circle';
         circle.innerHTML = 'F';
         folderDiv.appendChild(circle);
         $(circle).attr('contenteditable', 'false');
         $(circle).click(function(event) {
-            window.location.replace("/flashcard/" + folderDiv.id);
+            var getParam = {
+                subject: folderName
+            }
+            console.log(postParam.subject);
+            $.get('/getNewSession', getParam, function() {
+
+            });
         });
-    }
-
-
-    /**
-     * Helper function to create collapsible icon for the editing menu
-     */
-    function createCollapsibleButton() {
-        var circle = document.createElement('div');
-        circle.className = 'circle';
-        circle.innerHTML = '+';
-        return circle;
     }
 
 
@@ -319,9 +325,9 @@ $(document).ready(function() {
                 getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id)); */
             
             $(style_div).html('<span class="folder_style_header">' +   
-            fList[i].folder_name + '<span class="circle"> + </span>' + 
-            '</span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
-            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '<br><h3>Add custom style:</h3>' + 
+            fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
+            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
+            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '<br><h3>Custom Style</h3>' + 
         '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
             <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
             <div class "trigger-styles">    \
@@ -338,20 +344,26 @@ $(document).ready(function() {
             </div><br>  \
             <div class="submitStyle">ADD STYLE</div><br>    \
         </div>' + '</div>'); 
-
+            
+            $('.submitStyle').css({
+                'margin': '1px dashed black'
+            });
           
            
-            $(style_div).find('.circle').bind('click', {id: fList[i].folder_id}, function(event) {
+            $(style_div).find('.arrow').bind('click', {id: fList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
                 var divToCollapse = document.getElementById('inner_style_div_' + folderID);
                 $(divToCollapse).slideToggle();
 //                 alert(this.innerText === '+');
-                if(this.innerText === "+") {
-//                     alert("ugh");
-                    this.innerText = "-";
+                if($(this.innerHTML)[0].className === 'arrow-down') {
+                    $(this).html('<span class="arrow-up"></span>');
                 } else {
-                    this.innerText = "+";
+                    $(this).html('<span class="arrow-down"></span>');
                 }
+            });
+
+            $(style_div).find('.collapseCustom').bind('click', {id: fList[i].folder_id}, function(event) {
+                $('#form_' + event.data.id).slideToggle();
             });
 
             // append font sizes to the font size dropdowns
@@ -717,6 +729,9 @@ One style html:
     "session_number":
     "subject":
 }
+
+
+
 */
 
 

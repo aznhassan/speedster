@@ -58,7 +58,7 @@ h3 {
     margin-left: 10%;
     margin-top: 0%;
     display: table;
-    width: 50%;
+    width: 60%;
 }
 
 
@@ -136,4 +136,33 @@ select {
 
 .ruleform {
     margin-left: 10%;
+    display: none;
 }
+
+.arrow-down {
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    
+    border-top: 15px solid black;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 3%;
+    /* margin-top: -3%; */
+}
+
+.arrow-up {
+    width: 0; 
+    height: 0; 
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    
+    border-bottom: 15px solid black;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 3%;
+}
+
+
+

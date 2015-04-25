@@ -99,3 +99,7 @@ body {
 	background-color:black;
 	color: white;
 }
+
+#session_div {
+	display: none;
+}
