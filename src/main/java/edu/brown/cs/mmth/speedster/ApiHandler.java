@@ -163,17 +163,17 @@ public final class ApiHandler {
       }
     }
 
-
-  /**
-   * Generates a new session with a new session ID.
-   * Needs to be provided subject.
-   * @author tbhargav
-   *
-   */
-  public static class GetNewSession implements TemplateViewRoute {
-    @Override
-    public ModelAndView handle(final Request req, final Response res) {
-      String subjectE=req.params("subject");
+    /**
+     * Generates a new session with a new session ID. Needs to be provided
+     * subject.
+     * 
+     * @author tbhargav
+     *
+     */
+    public static class GetNewSession implements TemplateViewRoute {
+      @Override
+      public ModelAndView handle(final Request req, final Response res) {
+        String subjectE=req.params("subject");
       String subject="";
       try {
         subject = URLDecoder.decode(subjectE, "UTF-8");
@@ -191,6 +191,8 @@ public final class ApiHandler {
       sessionID++;
       System.out.println("HELLO");
       return new ModelAndView(variables, "flashcard.ftl");
+    }
+
     }
 
     /**
@@ -348,5 +350,4 @@ public final class ApiHandler {
         return new ModelAndView(variables, "flashcard.ftl");
       }
     }
-}
 }
