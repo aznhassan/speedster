@@ -6,7 +6,9 @@ package edu.brown.cs.mmth.speedster;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Determines which flashcard to display next (in session). Uses difficulty,
@@ -18,6 +20,7 @@ public class FlashcardShuffler {
 
   private final Collection<Flashcard> cards;
   private List<Flashcard> rankedCards;
+  private static Map<Integer, FlashcardShuffler> cache=new HashMap<>();
   /**
    * The shuffling relies on the value of this counter. 0 means using the
    * difficulty rank, 1 means random choice and 2 means easier card. Ranks are
@@ -38,6 +41,38 @@ public class FlashcardShuffler {
     rankedCards.addAll(cards);
   }
 
+  /**
+   * Checks whether cache has FlashcardShuffler object for given session.
+   * @param sessionID the unique identifier of given session.
+   * @return boolean true if session number is contained, false otherwise.
+   */
+  public static boolean hasSession(int sessionID) {
+    if(cache.containsKey(sessionID)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  /**
+   * Gets FlashcardShuffler associated with session ID. Returns null
+   * if ID not contained. 
+   * @param sessionID a unique session identifier.
+   * @return FlashcardShuffler linked with session ID.
+   */
+  public static FlashcardShuffler getSession(int sessionID) {
+    return cache.get(sessionID);
+  }
+  
+  /**
+   * Adds a new session to cache.
+   * @param sessionID unique session identifier (must not exist already).
+   * @param obj FlashcardShuffler object linked with ID.
+   */
+  public static void addSession(int sessionID, FlashcardShuffler obj) {
+    cache.put(sessionID, obj);
+  }
+  
   private void calcRankOfCards() {
     List<Flashcard> lRankedCards = new ArrayList<>();
     lRankedCards.addAll(cards);
