@@ -321,33 +321,32 @@ $(document).ready(function() {
 
             /* $(style_div).html('<h2 class="folder_style_header">' +  
                 fList[i].folder_name +   
-                '</h2>' + getStyleHTML('note', fList[i].folder_id) + 
-                getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id)); */
+                '</h2>' + createStyleToolbar('note', fList[i].folder_id) + 
+                createStyleToolbar('q', fList[i].folder_id) + createStyleToolbar('section', fList[i].folder_id)); */
             
             $(style_div).html('<span class="folder_style_header">' +   
             fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
-            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
-            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '<br><h3>Custom Style</h3>' + 
-        '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input><br>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input><br>    \
-                <input type="text" name="triggerstyle" placeholder="Trigger Style"></input><br> \
-            </div><br>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input><br>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input><br>    \
-            </div><br>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div><br>  \
-            <div class="submitStyle">ADD STYLE</div><br>    \
-        </div>' + '</div>'); 
+            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + 
+            '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
+                'Rule <input type="text" class="rulename" placeholder="Name"></input><br>    \
+                should start with <input type="text" class="rulestart" placeholder="Character String"></input><br>  \
+                and have these styles: <br>' + 
+                createStyleToolbar('custom', fList[i].folder_id) + 
+                'Extend these styles until<br>'   
+                + '<input type="text" class="trigger-end-sequence" placeholder = "Character String"></input>  OR \
+                <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+                'Style text after this rule until<br>'
+                + '<input type="text" class="text-after-end-sequence" placeholder = "Character String"></input>  OR \
+                <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+                'with these styles <br>' 
+                + createStyleToolbar('custom', fList[i].folder_id) +
+                '<input type="checkbox" name="boxed" value="box"></input>  Box this rule<br>' +
+                '<input type="checkbox" name="centered" value="center"></input>   Center this rule<br><br>' +
+                '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
+            '</div>'); 
             
-            $('.submitStyle').css({
-                'margin': '1px dashed black'
-            });
+            
+            addStyleClickHandler(styleDiv, fList[i].folder_id);
           
            
             $(style_div).find('.arrow').bind('click', {id: fList[i].folder_id}, function(event) {
@@ -366,12 +365,6 @@ $(document).ready(function() {
                 $('#form_' + event.data.id).slideToggle();
             });
 
-            // append font sizes to the font size dropdowns
-            $(style_div).find('.font-size').each(function() {
-                for(var i = 0; i < 40; i+=2) {
-                    $(this).append('<option>' + i + '</option>');
-                }
-            });
 
             // set up toggling values on click for the B, I, U styles
             $(style_div).find('h2').text(fList[i].folder_name);
@@ -410,6 +403,14 @@ $(document).ready(function() {
 
   
     }
+
+
+    function addStyleClickHandler(styleDiv, folderID) {
+        $('#submit_' + folderID).bind('click', {id: folderID, style_div: styleDiv}, function(event) {
+            var inner_div = $(event.data.style_div).find('#inner_style_div_' + event.data.id);
+            
+        });
+    }
 /* 
 
 Rule:
@@ -446,52 +447,8 @@ Rules can take the following forms based on what is defined:
 */
 
 
-    /**
-     * attempting to add a custom styling form based on the above rule format
-     */
-     function addCustomStyleForm() {
-        // save the current html of the style overlay
-         
-     }
 
-     /** 
-      * create form to fill in a custom rule style
-      */
-
-    function ruleFormHTML() {
-        /* HTML FORMAT FOR THE FORM */
-
-        // text box for rule.name
-        // rule.trigger styles div
-            // text box for rule.trigger.word
-            // text box for rule.trigger.endSeq
-            // text box for rule.trigger.style   (this will be a CSS classname)
-        // rule.after div
-            // text box for rule.after.endSeq
-            // text box for rule.after.style     (this will be a CSS classname)
-        // rule.container div
-            // text box for rule.container.style  (this will be a CSS classname)
-
-
-        return 
-
-        '<form method = "POST" name="ruleform">  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
-            </div>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
-            </div>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div>  \
-        </form>';
-
-
-    }
+     
 
     /**
      * Click handler for the save styles button
@@ -668,29 +625,29 @@ One style html:
      * given a rule to style, and the folder id, this creates the toolbar
      * for that folder and that rule with unique ids that include the folder id
      * and the rule word itself.
-     * ex: getStyleHTML('note', 2)
-     * or, getstyleHTML('q', 3);
+     * ex: createStyleToolbar('note', 2)
+     * or, createStyleToolbar('q', 3);
      *
      */
-    function getStyleHTML(style, id) {
-        return '<h3 class=' + style + '_styles">Style for ' + style + ': </h3> \
-        <div class="style-toolbar" id="toolbar_' + style + id + '">  \
+    function createStyleToolbar(style, id) {
+        return '<div class="style-toolbar" id="toolbar_' + style + id + '">  \
             <div class="boldButton" id="' + style + id + '_font-weight" value="none" name="bold">B</div> \
             <div class="italicButton" id="' +  style + id + '_font-style" value = "none" name="italic">i</div> \
             <div class="underlineButton" id="' + style + id + '_text-decoration" value="none" name="underline">U</div> \
             <select class="font-family" id="' + style + id + '_font-family">    \
+                <option selected="selected" disabled="disabled">Font Type</option>  \
                 <option value="Arial">Arial</option> \
                 <option value="Helvetica">Helvetica</option> \
                 <option value="Sans Serif">Sans Serif</option> \
                 <option value="Times New Roman">Times New Roman</option> \
             </select> \
-            <select class="font-size" id="' + style + id + '_font-size" ></select> \
-            <select class="text-align" id="' + style + id + '_text-align">  \
-                <option value="left">left</option> \
-                <option value="center">center</option> \
-                <option value="right">right</option> \
+            <select class="font-size" id="' + style + id + '_font-size" >   \
+                <option selected="selected" disabled="disabled">Font Size</option>  \
+                <option value="Small">Small</option>    \
+                <option value="Medium">Medium</option>  \
+                <option value="Big">Big</option>    \
             </select> \
-        </div><br>';
+        </div><br><br>';
 
     }
 
@@ -715,7 +672,28 @@ One style html:
                 console.log($(this).attr('value'));
             });
         }
-        
+    }
+
+
+    function createCustomStyleForm(folderID) {
+        return
+        '<div class="custom-style-form" id="' + folderID + '">  \
+            Rule <input type="text" class="rulename" placeholder="Name"></input><br>    \
+            should start with <input type="text" class="rulestart" placeholder="Character String"></input><br>  \
+            and have these styles: <br>' + 
+            createStyleToolbar() + 
+            '<span class="circle"><span class="arrow-up"></span></span>Extend these styles until<br>'   
+            + '<input type="text" class="trigger-end-sequence" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-trigger"></input>  Newline<br>' + 
+            '<span class="circle"><span class="arrow-up"></span></span>Style text after this rule<br>'
+            + '<input type="text" class="text-after-end-sequence" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+            'with thses styles <br>' 
+            + createStyleToolbar() +
+            '<input type="checkbox" name="boxed" value="box"></input>  Box this rule<br>' +
+            '<input type="checkbox" name="centered" value="center"></input>   Center this rule<br>'
+
+        + '</div>';
     }
 
 });
@@ -724,11 +702,24 @@ One style html:
 
 
 /*
++ '<br><h3>Custom Style</h3>' + 
+        '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
+            <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
+            <div class "trigger-styles">    \
+                <input type="text" name="triggerword" placeholder="Trigger Word"></input><br>   \
+                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input><br>    \
+                <input type="text" name="triggerstyle" placeholder="Trigger Style"></input><br> \
+            </div><br>  \
+            <div class="after-styles">  \
+                <input type="text" name="afterend" placeholder="Text After End Seq."></input><br>   \
+                <input type="text" name="afterstyle" placeholder="Text After Style"></input><br>    \
+            </div><br>  \
+            <div class="container-styles">  \
+                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
+            </div><br>  \
+            <div class="submitStyle">ADD STYLE</div><br>    \
+        </div>'
 
-{
-    "session_number":
-    "subject":
-}
 
 
 
