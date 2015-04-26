@@ -18,11 +18,13 @@ $(document).ready(function() {
     }; 
 
 
-    // Note from Tushar @Surbhi: The sessionIDCounter now works! (TODO: remove).
+    // Session ID retrieved from variables map ftl was initiated with.
     var sessionIDCounter = $('#session_div')[0].innerHTML;
     
-
-      // TODO: Use different trigger to avoid  
+     // Showing the first card!
+    getNextFlashcard();
+    
+      // TODO: Use different trigger to avoid back and forth. 
       $('.flashcard_div_front').hover(function(){
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
@@ -98,11 +100,15 @@ $(document).ready(function() {
             ansCorrect: ansStatus
         }; 
 
-        $.post("/finishedCard", postParams, function(responseJSON) {
+        // Avoiding updating the 'dummy' card that marks end of session.
+        if(currCard.id!=="-1") {
+            $.post("/finishedCard", postParams, function(responseJSON) {
             // We don't need to do anything, as the primarily role 
             // of is function was to update the back-end.
         }); 
 
+        }
+        
         /* 
         * Display next flashcard.
         */ 
@@ -150,10 +156,6 @@ $(document).ready(function() {
      function flashcardHTML(card) {
         return '<p><b>Q: </b>' + card.q + '</p>';
      }
-
-      
-
-     displayFlashcard(cardOne);
 });
 
 
