@@ -179,7 +179,8 @@ $(document).ready(function() {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         $(new_note_div).attr('contenteditable','true');
-        new_note_div.id = folderDiv.id;
+        $(new_note_div).attr('folder', folderDiv.innerHTML);
+        new_note_div.id = -1;
         console.log("NEW NOTE ID: " + new_note_div.id);
         new_note_div.innerHTML = "NEW  NOTE";
         folderDiv.appendChild(new_note_div);
@@ -232,33 +233,36 @@ $(document).ready(function() {
         console.log($(document).find('.new_folder_name_div'));
         var new_folders = [];
         $('.new_folder_name_div').each(function(j) {
-            this.id = fList.length + 1;
+            this.id = -1;
             var folder_data = {
                 "folder_id": this.id,
-                "title": this.innerText
+                "title": $(this).find('.title')[0].innerText
             }
-
+            new_folders.push(folder_data);
+            console.log(folder_data);
         });
+
 
         /* Find all new notes */
         console.log($(document).find('.new_note_name_div'));
         var newNotes = [];
         $('.new_note_name_div').each(function(i) {
             var noteData = {
-                "associated_folder_id":this.id,
+                "note_id":-1,
+                "associated_folder_name": $(this).attr('folder'),
                 "title":this.innerText
             }
-            console.log("NOTE DATA :::: " + noteData);
             newNotes.push(noteData);
+            console.log(noteData);
         });
-        console.log(newNotes);
+
         // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
         var postParam = {
             folders: JSON.stringify(new_folders),
             notes: JSON.stringify(newNotes)
         }
         $.post("/updateNotes", postParam, function(responseObject) {
-            window.location.replace('/notes');
+            // window.location.replace('/notes');
         });
 
 
@@ -276,9 +280,10 @@ $(document).ready(function() {
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
         new_folder_div.className = "new_folder_name_div";
-        new_folder_div.innerHTML = "NEW FOLDER";
+        new_folder_div.innerHTML = '<p class="title">NEW FOLDER</p>';
         new_folder_div.id = folder_num_counter + 1;
-        $(new_folder_div).attr('contenteditable', 'true');
+
+        $(new_folder_div).find('p').attr('contenteditable', 'true');
         createCircleDiv(new_folder_div);
         createFlashcardDiv(new_folder_div);
         $('#main-div').append(new_folder_div);
@@ -531,10 +536,15 @@ $(document).ready(function() {
     function getButtonValue(style_text, style_type, folder_id) {
         // ex: note2_bold
         if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
-            console.log('styleee!!!   ' + $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value'));
             return $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value');
         } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
-            return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
+            if($(document.getElementById(style_text + folder_id + '_' + style_type)).val()) {
+                return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
+            } else if(style_type === 'font-family') {
+                return 'Arial';
+            } else {
+                return 'Medium';
+            }
         }
     }
 
@@ -542,22 +552,14 @@ $(document).ready(function() {
      *
      */
     function getTriggerEndSequence(inner_div, folderID) {
-        if($(inner_div).find(".newline-trigger")[0].checked === true) {
-            return "<br>\u200b";
-        }
-        return document.getElementById('trigger-end-sequence_' + folderID).value;
+        return $(inner_div).find('.newline-trigger')[0].checked ? "<br>\u200b" : document.getElementById('trigger-end-sequence_' + folderID).value;
     }
 
     /*
      *
      */
     function getAfterEndSequence(inner_div, folderID) {
-        console.log(folderID);
-        console.log(document.getElementById('text-after-end-sequence_' + folderID));
-        if($(inner_div).find(".newline-text-after")[0].checked === true) {
-            return "<br>\u200b";
-        } 
-        return $(inner_div).find('.text-after-end-sequence')[0].value;
+        return $(inner_div).find(".newline-text-after")[0].checked ? "<br>\u200b" : $(inner_div).find('.text-after-end-sequence')[0].value;
     }
 
    
@@ -659,6 +661,10 @@ Rules can take the following forms based on what is defined:
     }
 
 
+/**
+ * new folders -> subject title and id of -1
+ * new notes -> subject title, note title, id of -1
+ */
 
 
 /* Sending style editing changes by the user to the server:
@@ -689,81 +695,6 @@ Rules can take the following forms based on what is defined:
 
 
 
-
-/* Here's how the style changes will be found and saved:
- list_of_folder_ids = [1,2,3];
- list_of_styles_texts = ['note', 'q', ...];
- list_of_style_types = ["bold", "italic", "underline", "font-family", ...]
-*/
-
-/** 
- * gets all the updated CSS that needs to be sent ot the server on clicking the save styles button
- */
-// function styleChangesToSave() {
-
-//     // list of all existing folder ids, existing rules to style, existing styles possible to change
-//     list_of_folder_ids = [1,2];
-//     list_of_folder_names = ["CS 22: Discrete Structures and Probability", "POBS 990: Mapping Cross Cultural identities"]
-//     list_of_styles_texts = ['note', 'q', 'section'];
-//     list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
-
-//     // this will contain all the info to be sent to the server.
-//     result_list = [];
-
-//     // go over all the folder ids
-//     for(var i = 0; i < list_of_folder_ids.length; i++) {
-
-//         // create a style object for each folder
-//         var folder_style = 
-//         {
-//             "folder_id": list_of_folder_ids[i],
-//             "folder_name": list_of_folder_names[i],
-//             "style_classes": []
-//         }
-
-//         // go over all possible rules to style for the folder
-//         for(var j = 0; j < list_of_styles_texts.length; j++) {
-
-//             // set a rule string to map the styles to
-//             var class_value = String(list_of_styles_texts[j]);
-//             console.log("VALUE: " + class_value);
-
-//             // create a styles object for this folder and this rule
-//             var style_text_object = 
-//             {
-
-//             };
-
-//             // container class object to map the rule to it's style object
-//             var container_class = {
-                
-//             };
-
-//             // map the rule to it's style object
-//             container_class[class_value] = style_text_object;
-
-//             // fill in the style object with all the styles' current values as of on clicking the save button
-//             for(var k = 0; k < list_of_style_types.length; k++) {
-//                 style_text_object[list_of_style_types[k]] = 
-//                     getButtonValue(list_of_styles_texts[j], list_of_style_types[k], list_of_folder_ids[i]);
-//             }
-
-//             // add the updates to the style object for this rule
-//             folder_style.style_classes.push(container_class);
-
-//         }
-
-//         // store everything in the results list
-//         result_list.push(folder_style);
-//     }
-
-//     console.log(result_list);
-//     return result_list;
-// }
-
-
-
- 
 
 
 /***********************
@@ -796,59 +727,8 @@ One style html:
 ************************/
 
 
-    
-
-
-    function createCustomStyleForm(folderID) {
-        return
-        '<div class="custom-style-form" id="' + folderID + '">  \
-            Rule <input type="text" class="rulename" placeholder="Name"></input><br>    \
-            should start with <input type="text" class="rulestart" placeholder="Character String"></input><br>  \
-            and have these styles: <br>' + 
-            createStyleToolbar() + 
-            '<span class="circle"><span class="arrow-up"></span></span>Extend these styles until<br>'   
-            + '<input type="text" class="trigger-end-sequence" placeholder = "Character String"></input>  OR \
-            <input type="checkbox" class="newline-trigger"></input>  Newline<br>' + 
-            '<span class="circle"><span class="arrow-up"></span></span>Style text after this rule<br>'
-            + '<input type="text" class="text-after-end-sequence" placeholder = "Character String"></input>  OR \
-            <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
-            'with thses styles <br>' 
-            + createStyleToolbar() +
-            '<input type="checkbox" name="boxed" value="box"></input>  Box this rule<br>' +
-            '<input type="checkbox" name="centered" value="center"></input>   Center this rule<br>'
-
-        + '</div>';
-    }
 
 });
-
-
-
-
-/*
-+ '<br><h3>Custom Style</h3>' + 
-        '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input><br>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input><br>    \
-                <input type="text" name="triggerstyle" placeholder="Trigger Style"></input><br> \
-            </div><br>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input><br>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input><br>    \
-            </div><br>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div><br>  \
-            <div class="submitStyle">ADD STYLE</div><br>    \
-        </div>'
-
-
-
-
-*/
-
 
 
 
