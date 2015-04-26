@@ -412,17 +412,26 @@ function compileUserRule(rule) {
 function sendNotes() {
     var urlparts = window.location.pathname.split('/');
 
+    var noteData = $('#noteArea')[0].innerHTML || '';
+    var title = $('.title')[0].innerText || '';
+
     var params = {
-      'data': $('#noteArea').innerHTML,
+      'data': noteData,
       'flashcards': gatherFlashcards(),
-      'title': $('.title').innerText;
+      'title': title,
       'noteid': urlparts[3],
-      'subject': urlparts[2]
+      'subject': decodeURIComponent(urlparts[2])
     }
+    console.log(params);
 
     $.post("/updateNote", params, function() {
         // merp...
     });
+}
+
+function gatherFlashcards() {
+    var qas = [];
+    return qas;
 }
 
 
@@ -437,7 +446,7 @@ $(document).ready(function() {
 		'backgroundColor': 4
 	};
 
-	document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
+	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
 
 	var rules = config[rules] || [];
 
@@ -533,35 +542,36 @@ $(document).ready(function() {
   var sendNotesCounter = 0;
 
 	$("#noteArea").keyup(function(event) {
-		var caller = $(event.target)[0];
-		var input = caller.value;
-		var vars = {"text": input};
+		  var caller = $(event.target)[0];
+		  var input = caller.value;
+		  var vars = {"text": input};
 
-		var code = event.keyCode || event.which;
-		if (code == 9) {
-   			  // Tab
-   			  //stylize();
-   		} else if (code == 32) {
-   			  // Space
-   			  stylize(true);
-          sendNotesCounter++;
-          if (sendNotesCounter % 5 == 0) {
-            sendNotes();
-            sendNotesCounter = 0;
-          }
-   		} else if (code == 13) {
+		  var code = event.keyCode || event.which;
+		  if (code == 9) {
+          // Tab
+          //stylize();
+      } else if (code == 32) {
+        	// Space
+          stylize(true);
+          // sendNotesCounter++;
+          // if (sendNotesCounter % 5 == 0) {
+          //     sendNotes();
+          //     sendNotesCounter = 0;
+          // }
+          sendNotes();
+   	  } else if (code == 13) {
         	// Line feed
-        	var parent = getSelectionParentElement(window.getSelection());
-        	var elt = document.createTextNode("\u200b");
-        	parent.parentNode.insertBefore(elt, parent);
+          var parent = getSelectionParentElement(window.getSelection());
+          var elt = document.createTextNode("\u200b");
+          parent.parentNode.insertBefore(elt, parent);
         	
-        	stylize(true);
+          stylize(true);
       } else {
-        stylize();
+          stylize(false);
       }
   });
 
-  $("#noteArea").focus();
+  //$("#noteArea").focus();
 });
 
 function getBackgroundColorOption(option) {

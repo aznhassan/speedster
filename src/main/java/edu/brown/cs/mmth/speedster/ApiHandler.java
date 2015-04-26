@@ -320,15 +320,20 @@ public final class ApiHandler {
       String noteID = qm.value("noteid");
       String subject = qm.value("subject");
       String title = qm.value("title");
-      String rawJSONCards = qm.value("flashcards");
-      
-      JSONArray jsonCards = new JSONArray(rawJSONCards);
       
       // Writing note to memory (overwriting old edition).
       Note note = new Note(noteData,subject,title);
       note.setId(Long.parseLong(noteID));
       NoteWriter.writeNotes(Lists.newArrayList(note));
-      
+
+      // Write flashcards to file if there are any
+      // (rawJSONCards will be null if no flashcards are sent)
+      String rawJSONCards = qm.value("flashcards");
+      if (rawJSONCards == null) {
+        return "";
+      }
+      JSONArray jsonCards = new JSONArray(rawJSONCards);
+
       Collection<Flashcard> cardsToWrite = new ArrayList<>();
       
       // Creating new flashcards (or merging pre-existing ones). 
@@ -357,8 +362,7 @@ public final class ApiHandler {
         FlashCardWriter.writeCards(cardsToWrite);        
       }
       
-      String toReturn = "";
-      return toReturn;
+      return "";
     }
   }
 
