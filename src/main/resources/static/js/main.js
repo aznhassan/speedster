@@ -321,33 +321,39 @@ $(document).ready(function() {
 
             /* $(style_div).html('<h2 class="folder_style_header">' +  
                 fList[i].folder_name +   
-                '</h2>' + getStyleHTML('note', fList[i].folder_id) + 
-                getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id)); */
+                '</h2>' + createStyleToolbar('note', fList[i].folder_id) + 
+                createStyleToolbar('q', fList[i].folder_id) + createStyleToolbar('section', fList[i].folder_id)); */
             
             $(style_div).html('<span class="folder_style_header">' +   
             fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
-            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
-            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '<br><h3>Custom Style</h3>' + 
-        '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input><br>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input><br>    \
-                <input type="text" name="triggerstyle" placeholder="Trigger Style"></input><br> \
-            </div><br>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input><br>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input><br>    \
-            </div><br>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div><br>  \
-            <div class="submitStyle">ADD STYLE</div><br>    \
-        </div>' + '</div>'); 
+            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + 
+            '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
+                'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
+                should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
+                and have these styles: <br>' + 
+                createStyleToolbar('start-style-bar', fList[i].folder_id) + 
+                'Extend these styles until<br>'   
+                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String"></input>  OR \
+                <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+                'Style text after this rule until<br>'
+                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
+                <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+                'with these styles <br>' 
+                + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
+                '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
+                '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
+                '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
+            '</div>'); 
             
-            $('.submitStyle').css({
-                'margin': '1px dashed black'
-            });
+            
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'font-weight');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'font-style');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'text-decoration');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'font-weight');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'font-style');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'text-decoration');
+
+            addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
           
            
             $(style_div).find('.arrow').bind('click', {id: fList[i].folder_id}, function(event) {
@@ -366,24 +372,18 @@ $(document).ready(function() {
                 $('#form_' + event.data.id).slideToggle();
             });
 
-            // append font sizes to the font size dropdowns
-            $(style_div).find('.font-size').each(function() {
-                for(var i = 0; i < 40; i+=2) {
-                    $(this).append('<option>' + i + '</option>');
-                }
-            });
 
             // set up toggling values on click for the B, I, U styles
-            $(style_div).find('h2').text(fList[i].folder_name);
-            setTextStyleToggle('note', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('note', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('note', fList[i].folder_id, 'text-decoration');
-            setTextStyleToggle('q', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('q', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('q', fList[i].folder_id, 'text-decoration');
-            setTextStyleToggle('section', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('section', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('section', fList[i].folder_id, 'text-decoration');
+            // $(style_div).find('h2').text(fList[i].folder_name);
+            // setTextStyleToggle('note', fList[i].folder_id, 'font-weight');
+            // setTextStyleToggle('note', fList[i].folder_id, 'font-style');
+            // setTextStyleToggle('note', fList[i].folder_id, 'text-decoration');
+            // setTextStyleToggle('q', fList[i].folder_id, 'font-weight');
+            // setTextStyleToggle('q', fList[i].folder_id, 'font-style');
+            // setTextStyleToggle('q', fList[i].folder_id, 'text-decoration');
+            // setTextStyleToggle('section', fList[i].folder_id, 'font-weight');
+            // setTextStyleToggle('section', fList[i].folder_id, 'font-style');
+            // setTextStyleToggle('section', fList[i].folder_id, 'text-decoration');
 
         }
 
@@ -407,32 +407,204 @@ $(document).ready(function() {
         $(style_save_button).click(function(event) {
             saveStyleClick();
         });
-
-  
     }
+
+    // eg: style_text == 'note', style_type = 'bold' ... 
+    // search for id --> 'note' + 'folder_id' + '_' + 'bold'
+    // to be used for B, I, U   .... text styles
+    // sets up the toggling of values for the B, I, U styles (or any others that can have only two states)
+    // ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
+    // toggle(text-after-style-bar, folder id, font-weight)
+    function setTextStyleToggle(style_text, folder_id, style_type) {
+        console.log($('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type));
+        var button = $('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type);
+        if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
+            button.click(function(event) {
+                if($(this).attr('value') === 'none') {
+                    var new_val = $(this).attr('name');
+                    $(this).attr('value', new_val);
+                    $(this).css('background-color', 'rgba(0,0,0,0.3)');
+                } else if($(this).attr('value') === style_type) {
+                    console.log("HELLO");
+                    $(this).attr('value', 'none');
+                    $(this).css('background','rgba(255,255,255,0.8');
+                }
+                console.log($(this).attr('value'));
+            });
+        }
+    }
+
+     /**
+     * given a rule to style, and the folder id, this creates the toolbar
+     * for that folder and that rule with unique ids that include the folder id
+     * and the rule word itself.
+     * ex: createStyleToolbar('note', 2)
+     * or, createStyleToolbar('q', 3);
+     * or, for custom styles
+     * ---- >     start-style-bar'id'
+
+     ex: createStyleToolbar('text-after-style-bar', fList[i].folder_id)
+     id of bold button:   text-after-style-bar'folder_id'_font-weight
+     */
+    function createStyleToolbar(style, id) {
+        return '<div class="style-toolbar" id="toolbar_' + style + id + '">  \
+            <div class="boldButton" id="' + style + id + '_font-weight" value="none" name="bold">B</div> \
+            <div class="italicButton" id="' +  style + id + '_font-style" value = "none" name="italic">i</div> \
+            <div class="underlineButton" id="' + style + id + '_text-decoration" value="none" name="underline">U</div> \
+            <select class="font-family" id="' + style + id + '_font-family">    \
+                <option selected="selected" disabled="disabled">Font Type</option>  \
+                <option value="Arial">Arial</option> \
+                <option value="Helvetica">Helvetica</option> \
+                <option value="Sans Serif">Sans Serif</option> \
+                <option value="Times New Roman">Times New Roman</option> \
+            </select> \
+            <select class="font-size" id="' + style + id + '_font-size" >   \
+                <option selected="selected" disabled="disabled">Font Size</option>  \
+                <option value="Small">Small</option>    \
+                <option value="Medium">Medium</option>  \
+                <option value="Big">Big</option>    \
+            </select> \
+        </div><br><br>';
+
+    }
+
+
+    function addStyleClickHandler(styleDiv, folderID, folderName) {
+        $('#submit_' + folderID).bind('click', {id: folderID, style_div: styleDiv, name: folderName}, function(event) {
+            var inner_div = $(event.data.style_div).find('#inner_style_div_' + event.data.id);
+            var rule = 
+            {   
+                "associated_folder_id": event.data.id,
+                "associated_folder_name": event.data.name,
+                "name": document.getElementById('rulename_' + event.data.id).value,
+                "trigger":
+                {
+                    "word": document.getElementById('rulestart_' + event.data.id).value,
+                    "endSeq": getTriggerEndSequence(inner_div, event.data.id),
+                    "style": 
+                    {
+                        "font-weight": getButtonValue('start-style-bar', 'font-weight', event.data.id),
+                        "font-style": getButtonValue('start-style-bar', 'font-style', event.data.id),
+                        "text-decoration": getButtonValue('start-style-bar', 'text-decoration', event.data.id),
+                        "font-family": getButtonValue('start-style-bar', 'font-family', event.data.id),
+                        "font-size": getButtonValue('start-style-bar', 'font-size', event.data.id),
+                    }
+                },
+
+                "after": 
+                {
+                    "endSeq": getAfterEndSequence(inner_div, event.data.id),
+                    "style": 
+                    {
+                        "font-weight": getButtonValue('text-after-style-bar', 'font-weight', event.data.id),
+                        "font-style": getButtonValue('text-after-style-bar', 'font-style', event.data.id),
+                        "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', event.data.id),
+                        "font-family": getButtonValue('text-after-style-bar', 'font-family', event.data.id),
+                        "font-size": getButtonValue('text-after-style-bar', 'font-size', event.data.id),
+                    }
+                },
+
+                "container": 
+                {
+                    "style":
+                    {
+                        "background-color": $(inner_div).find('.box')[0].checked ? "white" : "inherit",
+                        "text-align": $(inner_div).find(".center")[0].checked ? "center" : "left"
+                    }
+                }
+            }
+
+            console.log(rule);
+            
+        });
+    }
+
+    /**
+     * get the value for the styling toolbar buttons according to their unique id
+     * on clicking the save style button, so we can updates for each style
+
+     ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
+     style_text = 'text-after-style-bar'
+     style_type = 'font-weight'
+     folder_id = folder id ...
+     */
+    function getButtonValue(style_text, style_type, folder_id) {
+        // ex: note2_bold
+        if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
+            console.log('styleee!!!   ' + $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value'));
+            return $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value');
+        } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
+            return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
+        }
+    }
+
+    /*
+     *
+     */
+    function getTriggerEndSequence(inner_div, folderID) {
+        if($(inner_div).find(".newline-trigger")[0].checked === true) {
+            return "<br>\u200b";
+        }
+        return document.getElementById('trigger-end-sequence_' + folderID).value;
+    }
+
+    /*
+     *
+     */
+    function getAfterEndSequence(inner_div, folderID) {
+        console.log(folderID);
+        console.log(document.getElementById('text-after-end-sequence_' + folderID));
+        if($(inner_div).find(".newline-text-after")[0].checked === true) {
+            return "<br>\u200b";
+        } 
+        return $(inner_div).find('.text-after-end-sequence')[0].value;
+    }
+
+   
 /* 
 
 Rule:
 {
-  name: "string"
-  trigger:
+  "name": "string"
+  "trigger":
   {
-    word: "string",
-    endSeq: "string", (charsequence to end the rule with--if not specified then we apply the rule to just the trigger word itself)
-    style: "string", (css classname)
+    "word": "string",
+    "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
+    "style": 
+    {
+        "font-weight":"bold",
+        "font-style": "italic",
+        "text-decoration":"underline",
+        "font-family": "Times New Roman",
+        "font-size": "small/medium/big"
+
+    }
   }
 
-  after:
+  "after":
   {
-    endSeq: "string", (charsequence to end the rule with--rule will be applied to text between trigger.word up to and including after.endSeq)
-    style: "string", (css classname)
+    "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
+    "style": 
+    {
+        "font-weight":"bold",
+        "font-style": "italic",
+        "text-decoration":"underline",
+        "font-family": "Times New Roman",
+        "font-size": "small/medium/big"
+
+    }
   }
 
-  container:
+  "container":
   {
-    style: "string" (css classname)
+    "style": 
+    {
+        
+    }
   }
 }
+
+
 
 Rules can take the following forms based on what is defined:
 
@@ -445,53 +617,21 @@ Rules can take the following forms based on what is defined:
 
 */
 
-
-    /**
-     * attempting to add a custom styling form based on the above rule format
-     */
-     function addCustomStyleForm() {
-        // save the current html of the style overlay
-         
-     }
-
-     /** 
-      * create form to fill in a custom rule style
-      */
-
-    function ruleFormHTML() {
-        /* HTML FORMAT FOR THE FORM */
-
-        // text box for rule.name
-        // rule.trigger styles div
-            // text box for rule.trigger.word
-            // text box for rule.trigger.endSeq
-            // text box for rule.trigger.style   (this will be a CSS classname)
-        // rule.after div
-            // text box for rule.after.endSeq
-            // text box for rule.after.style     (this will be a CSS classname)
-        // rule.container div
-            // text box for rule.container.style  (this will be a CSS classname)
-
-
-        return 
-
-        '<form method = "POST" name="ruleform">  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
-            </div>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
-            </div>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div>  \
-        </form>';
-
-
+/*  if(no box is checked -- no style object)
+    
+    if 'boxed' is checked -- style {
+        "background-color": --
     }
+
+    if 'center' is checked -- style {
+        "text-align": --
+    }
+
+*/
+
+
+
+     
 
     /**
      * Click handler for the save styles button
@@ -547,6 +687,9 @@ Rules can take the following forms based on what is defined:
 
 */
 
+
+
+
 /* Here's how the style changes will be found and saved:
  list_of_folder_ids = [1,2,3];
  list_of_styles_texts = ['note', 'q', ...];
@@ -556,82 +699,71 @@ Rules can take the following forms based on what is defined:
 /** 
  * gets all the updated CSS that needs to be sent ot the server on clicking the save styles button
  */
-function styleChangesToSave() {
+// function styleChangesToSave() {
 
-    // list of all existing folder ids, existing rules to style, existing styles possible to change
-    list_of_folder_ids = [1,2];
-    list_of_folder_names = ["CS 22: Discrete Structures and Probability", "POBS 990: Mapping Cross Cultural identities"]
-    list_of_styles_texts = ['note', 'q', 'section'];
-    list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
+//     // list of all existing folder ids, existing rules to style, existing styles possible to change
+//     list_of_folder_ids = [1,2];
+//     list_of_folder_names = ["CS 22: Discrete Structures and Probability", "POBS 990: Mapping Cross Cultural identities"]
+//     list_of_styles_texts = ['note', 'q', 'section'];
+//     list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
 
-    // this will contain all the info to be sent to the server.
-    result_list = [];
+//     // this will contain all the info to be sent to the server.
+//     result_list = [];
 
-    // go over all the folder ids
-    for(var i = 0; i < list_of_folder_ids.length; i++) {
+//     // go over all the folder ids
+//     for(var i = 0; i < list_of_folder_ids.length; i++) {
 
-        // create a style object for each folder
-        var folder_style = 
-        {
-            "folder_id": list_of_folder_ids[i],
-            "folder_name": list_of_folder_names[i],
-            "style_classes": []
-        }
+//         // create a style object for each folder
+//         var folder_style = 
+//         {
+//             "folder_id": list_of_folder_ids[i],
+//             "folder_name": list_of_folder_names[i],
+//             "style_classes": []
+//         }
 
-        // go over all possible rules to style for the folder
-        for(var j = 0; j < list_of_styles_texts.length; j++) {
+//         // go over all possible rules to style for the folder
+//         for(var j = 0; j < list_of_styles_texts.length; j++) {
 
-            // set a rule string to map the styles to
-            var class_value = String(list_of_styles_texts[j]);
-            console.log("VALUE: " + class_value);
+//             // set a rule string to map the styles to
+//             var class_value = String(list_of_styles_texts[j]);
+//             console.log("VALUE: " + class_value);
 
-            // create a styles object for this folder and this rule
-            var style_text_object = 
-            {
+//             // create a styles object for this folder and this rule
+//             var style_text_object = 
+//             {
 
-            };
+//             };
 
-            // container class object to map the rule to it's style object
-            var container_class = {
+//             // container class object to map the rule to it's style object
+//             var container_class = {
                 
-            };
+//             };
 
-            // map the rule to it's style object
-            container_class[class_value] = style_text_object;
+//             // map the rule to it's style object
+//             container_class[class_value] = style_text_object;
 
-            // fill in the style object with all the styles' current values as of on clicking the save button
-            for(var k = 0; k < list_of_style_types.length; k++) {
-                style_text_object[list_of_style_types[k]] = 
-                    getButtonValue(list_of_styles_texts[j], list_of_style_types[k], list_of_folder_ids[i]);
-            }
+//             // fill in the style object with all the styles' current values as of on clicking the save button
+//             for(var k = 0; k < list_of_style_types.length; k++) {
+//                 style_text_object[list_of_style_types[k]] = 
+//                     getButtonValue(list_of_styles_texts[j], list_of_style_types[k], list_of_folder_ids[i]);
+//             }
 
-            // add the updates to the style object for this rule
-            folder_style.style_classes.push(container_class);
+//             // add the updates to the style object for this rule
+//             folder_style.style_classes.push(container_class);
 
-        }
+//         }
 
-        // store everything in the results list
-        result_list.push(folder_style);
-    }
+//         // store everything in the results list
+//         result_list.push(folder_style);
+//     }
 
-    console.log(result_list);
-    return result_list;
-}
+//     console.log(result_list);
+//     return result_list;
+// }
 
-/**
- * get the value for the styling toolbar buttons according to their unique id
- * on clicking the save style button, so we can updates for each style
- */
-function getButtonValue(style_text, style_type, folder_id) {
-    // ex: note2_bold
-    if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
-        console.log('styleee!!!   ' + $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value'));
-        return $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value');
-    } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
-        return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
-    }
-    
-}
+
+
+ 
 
 
 /***********************
@@ -664,58 +796,28 @@ One style html:
 ************************/
 
 
-    /**
-     * given a rule to style, and the folder id, this creates the toolbar
-     * for that folder and that rule with unique ids that include the folder id
-     * and the rule word itself.
-     * ex: getStyleHTML('note', 2)
-     * or, getstyleHTML('q', 3);
-     *
-     */
-    function getStyleHTML(style, id) {
-        return '<h3 class=' + style + '_styles">Style for ' + style + ': </h3> \
-        <div class="style-toolbar" id="toolbar_' + style + id + '">  \
-            <div class="boldButton" id="' + style + id + '_font-weight" value="none" name="bold">B</div> \
-            <div class="italicButton" id="' +  style + id + '_font-style" value = "none" name="italic">i</div> \
-            <div class="underlineButton" id="' + style + id + '_text-decoration" value="none" name="underline">U</div> \
-            <select class="font-family" id="' + style + id + '_font-family">    \
-                <option value="Arial">Arial</option> \
-                <option value="Helvetica">Helvetica</option> \
-                <option value="Sans Serif">Sans Serif</option> \
-                <option value="Times New Roman">Times New Roman</option> \
-            </select> \
-            <select class="font-size" id="' + style + id + '_font-size" ></select> \
-            <select class="text-align" id="' + style + id + '_text-align">  \
-                <option value="left">left</option> \
-                <option value="center">center</option> \
-                <option value="right">right</option> \
-            </select> \
-        </div><br>';
+    
 
-    }
 
-    // eg: style_text == 'note', style_type = 'bold' ... 
-    // search for id --> 'note' + 'folder_id' + '_' + 'bold'
-    // to be used for B, I, U   .... text styles
-    // sets up the toggling of values for the B, I, U styles (or any others that can have only two states)
-    function setTextStyleToggle(style_text, folder_id, style_type) {
-        console.log($('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type));
-        var button = $('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type);
-        if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
-            button.click(function(event) {
-                if($(this).attr('value') === 'none') {
-                    var new_val = $(this).attr('name');
-                    $(this).attr('value', new_val);
-                    $(this).css('background-color', 'rgba(0,0,0,0.3)');
-                } else if($(this).attr('value') === style_type) {
-                    console.log("HELLO");
-                    $(this).attr('value', 'none');
-                    $(this).css('background','rgba(255,255,255,0.8');
-                }
-                console.log($(this).attr('value'));
-            });
-        }
-        
+    function createCustomStyleForm(folderID) {
+        return
+        '<div class="custom-style-form" id="' + folderID + '">  \
+            Rule <input type="text" class="rulename" placeholder="Name"></input><br>    \
+            should start with <input type="text" class="rulestart" placeholder="Character String"></input><br>  \
+            and have these styles: <br>' + 
+            createStyleToolbar() + 
+            '<span class="circle"><span class="arrow-up"></span></span>Extend these styles until<br>'   
+            + '<input type="text" class="trigger-end-sequence" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-trigger"></input>  Newline<br>' + 
+            '<span class="circle"><span class="arrow-up"></span></span>Style text after this rule<br>'
+            + '<input type="text" class="text-after-end-sequence" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+            'with thses styles <br>' 
+            + createStyleToolbar() +
+            '<input type="checkbox" name="boxed" value="box"></input>  Box this rule<br>' +
+            '<input type="checkbox" name="centered" value="center"></input>   Center this rule<br>'
+
+        + '</div>';
     }
 
 });
@@ -724,11 +826,24 @@ One style html:
 
 
 /*
++ '<br><h3>Custom Style</h3>' + 
+        '<div class="ruleform" id="' + 'form_' + fList[i].folder_id + '" class="rule_forms">  \
+            <input type="text" name="rulename" placeholder="Rule Name"></input><br><br> \
+            <div class "trigger-styles">    \
+                <input type="text" name="triggerword" placeholder="Trigger Word"></input><br>   \
+                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input><br>    \
+                <input type="text" name="triggerstyle" placeholder="Trigger Style"></input><br> \
+            </div><br>  \
+            <div class="after-styles">  \
+                <input type="text" name="afterend" placeholder="Text After End Seq."></input><br>   \
+                <input type="text" name="afterstyle" placeholder="Text After Style"></input><br>    \
+            </div><br>  \
+            <div class="container-styles">  \
+                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
+            </div><br>  \
+            <div class="submitStyle">ADD STYLE</div><br>    \
+        </div>'
 
-{
-    "session_number":
-    "subject":
-}
 
 
 

@@ -166,3 +166,22 @@ select {
 
 
 
+.inner_style_div {
+    font-size: 18px;
+    margin-left: 5%;
+}
+
+.submit-button {
+    width:10%;
+    border: 1px dashed black;
+    text-align: center;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: black;
+    color: white;
+}
+
+
+

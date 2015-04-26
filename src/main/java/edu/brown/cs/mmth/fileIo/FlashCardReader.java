@@ -45,6 +45,15 @@ public final class FlashCardReader {
   }
   
   /**
+   * Accessor for all the cards in cache, that are the only ones
+   * that could have been potentially updated (with correct/wrong stats).
+   * @return collection of 'Flashcard'.
+   */
+  public static Collection<Flashcard> getUpdatedCards() {
+    return cache.values();
+  }
+  
+  /**
    * Reads in a list of Flashcards from memory and creates a list of Flashcards.
    * @param pathToCards
    *          - The subject of the flashCard
