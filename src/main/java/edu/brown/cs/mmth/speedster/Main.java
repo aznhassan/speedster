@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import edu.brown.cs.mmth.fileIo.IdCounter;
+import edu.brown.cs.mmth.fileIo.UpdaterThread;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -74,20 +74,20 @@ public final class Main {
       }
       try (
           BufferedWriter writer =
-          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-              file), "UTF-8"))) {
+              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                  file), "UTF-8"))) {
         writer.write("" + value); // starting the count.
       } catch (IOException e) {
         System.err.println("ERROR: " + e.getMessage());
         // TODO: Remember you have to remember stack trace.
-        //e.printStackTrace();
+        // e.printStackTrace();
         System.exit(1);
       }
     }
     try (
         BufferedReader reader =
-        new BufferedReader(new InputStreamReader(new FileInputStream(file),
-            "UTF-8"))) {
+            new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                "UTF-8"))) {
       String line = "";
       line = reader.readLine();
       if (line != null && !line.isEmpty()) {
@@ -128,8 +128,8 @@ public final class Main {
       File idFile = new File(directory, "/id");
       try (
           BufferedReader reader =
-          new BufferedReader(new InputStreamReader(new FileInputStream(idFile),
-              "UTF-8"))) {
+              new BufferedReader(new InputStreamReader(new FileInputStream(
+                  idFile), "UTF-8"))) {
         String line = reader.readLine();
         try {
           long folderId = Long.parseLong(line);
@@ -188,7 +188,6 @@ public final class Main {
    */
   private void run() {
     OptionParser parser = new OptionParser();
-    parser.accepts("gui");
     /*
      * OptionSpec<Integer> portSpec = parser.accepts("port")
      * .withRequiredArg().ofType(Integer.class);
@@ -210,11 +209,9 @@ public final class Main {
 
     File db = options.valueOf(fileSpec);
     Main.getIdFromMemory();
-    Thread thread = new Thread(new IdCounter());
+    Thread thread = new Thread(new UpdaterThread());
     thread.start();
-    if (options.has("gui")) {
-      Web.runSparkServer();
-    }
+    Web.runSparkServer();
   }
 
 }
