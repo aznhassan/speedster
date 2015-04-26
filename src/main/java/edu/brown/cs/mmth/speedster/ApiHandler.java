@@ -186,6 +186,7 @@ public final class ApiHandler {
       String subject = "";
       try {
         subject = URLDecoder.decode(subjectE, "UTF-8");
+        System.out.println(subject);
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
       }
