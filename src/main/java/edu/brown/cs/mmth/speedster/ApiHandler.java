@@ -27,7 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Handles the ajax requests sent by the front end.
+ * Handles the Ajax requests sent by the front end.
  *
  * @author hsufi
  *
@@ -310,7 +310,7 @@ public final class ApiHandler {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       String cssJson = qm.value("styles_on_save");
-      Boolean success = false;
+      boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);
       } catch (IOException e) {

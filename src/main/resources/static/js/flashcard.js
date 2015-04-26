@@ -30,7 +30,7 @@ $(document).ready(function() {
           $('.flashcard_div_back').addClass('flip-back');
       },function(){
           $(this).removeClass('flip-front');
-          $('.flashcard_div_back').removeClass('flip-back');
+          //$('.flashcard_div_back').removeClass('flip-back');
       });
 
      
@@ -43,6 +43,8 @@ $(document).ready(function() {
      */
     $(wrongButton).click(function() {
         sendFlashcardUpdates(false);
+        $('.flashcard_div_front').removeClass('flip-front');
+        $('.flashcard_div_back').removeClass('flip-back');
     });
 
     /**
@@ -50,6 +52,8 @@ $(document).ready(function() {
      */
     $(correctButton).click(function() {
         sendFlashcardUpdates(true);
+        $('.flashcard_div_front').removeClass('flip-front');
+        $('.flashcard_div_back').removeClass('flip-back');
     }) 
 
   
@@ -148,13 +152,8 @@ $(document).ready(function() {
      * Displaying a flashcard
      */
      function displayFlashcard(card) {
-        $('.flashcard_div_front').html(flashcardHTML(card));
-        $('.flashcard_div_back').html('<p><b>A: </b>' + card.a + '</p>');
-     }
-
-
-     function flashcardHTML(card) {
-        return '<p><b>Q: </b>' + card.q + '</p>';
+        $('.flashcard_div_front').html('<p><b>Q: </b>' + card.q + '</p>');
+        $('.flashcard_div_back').html('<p><b>Q: </b>' + card.q +'<hr>'+'</p><p><b>A: </b>' + card.a + '</p>');
      }
 });
 
