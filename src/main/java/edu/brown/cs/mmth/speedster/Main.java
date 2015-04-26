@@ -188,26 +188,33 @@ public final class Main {
    */
   private void run() {
     OptionParser parser = new OptionParser();
-    /*
-     * OptionSpec<Integer> portSpec = parser.accepts("port")
-     * .withRequiredArg().ofType(Integer.class);
-     */
-    OptionSpec<File> fileSpec = parser.nonOptions().ofType(File.class);
+    parser.accepts("h","Shows help.").forHelp();
+
     OptionSet options = null;
     try {
       options = parser.parse(args);
     } catch (joptsimple.OptionException e) {
-      System.out.println("ERROR: jopt exception " + e.getMessage());
+      System.out.println("ERROR: JOpt exception " + e.getMessage());
       System.exit(1);
     }
 
+    if (options.has("h")) {
+      try {
+        System.out.println("Usage: ./run");
+        parser.printHelpOn(System.out);
+      } catch (final IOException e) {
+        System.out.println("ERROR: Could not print help instructions.");
+      }
+      System.exit(0);
+    }
+
+    
     int length = args.length;
     if (length > 2) {
-      System.err.println("ERROR: Must match pattern [--gui]");
+      System.err.println("ERROR: Too many args. Simply use ./run to execute.");
       System.exit(1);
     }
 
-    File db = options.valueOf(fileSpec);
     Main.getIdFromMemory();
     Thread thread = new Thread(new UpdaterThread());
     thread.start();
