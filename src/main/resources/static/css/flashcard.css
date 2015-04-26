@@ -2,6 +2,12 @@
 	border: 1px dashed red;
 }
 
+/* The divider line used on the back of flashcards to separate Q from A. */
+hr {
+    color: black;
+    width: 4px;
+}
+
 body {
 	background-color: pink;
     color: black;
@@ -56,7 +62,7 @@ body {
 
 .flashcard_div_back {
 	z-index: 800;
-	background-color:aquamarine;
+	background-color:white;
 	-webkit-transform: rotateY(-180deg);
     -webkit-transform-style: preserve-3d;
     -webkit-backface-visibility: hidden;

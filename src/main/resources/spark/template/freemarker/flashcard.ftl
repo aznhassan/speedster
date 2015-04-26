@@ -32,7 +32,6 @@
     
 
      <div id="button-div">
-        <div id="next-button">NEXT CARD</div>
         <div id="correct-button">CORRECT ANSWER</div>
         <div id="wrong-button">WRONG ANSWER</div>
      </div>
