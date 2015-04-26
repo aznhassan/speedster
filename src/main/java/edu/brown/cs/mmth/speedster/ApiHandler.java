@@ -1,6 +1,7 @@
 package edu.brown.cs.mmth.speedster;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -9,11 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
 import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
 import edu.brown.cs.mmth.fileIo.FlashCardReader;
 import edu.brown.cs.mmth.fileIo.NoteReader;
+import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
 
 import spark.ModelAndView;
@@ -366,17 +369,49 @@ public final class ApiHandler {
   }
 
   /**
-   * Handles updating notes per folder when new notes are added by the user on
-   * the main page.
+   * Handles creating notes per folder when new notes are added by the user on
+   * the main page. (One time creator.)
    *
-   * @author sm15
+   * @author tbhargav
    */
-  public static class UpdateNotes implements Route {
+  public static class NotesCreator implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String folderJson = qm.value("folders");
-      String noteJson = qm.value("notes");
+      String foldersJson = qm.value("folders");
+      String notesJson = qm.value("notes");
+      JSONArray folders = new JSONArray(foldersJson);
+      JSONArray notes = new JSONArray(notesJson);
+      
+      int nLength=notes.length();
+      int fLength=folders.length();
+      
+      // Turning notes into 'Note' objects.
+      for(int i=0;i<nLength;i++) {
+        JSONObject noteJSON = notes.getJSONObject(i);
+        Note note = new Note("",noteJSON.getString("associated_folder_name"),noteJSON.getString("title"));
+        // Giving the note a unique ID.
+        note.setId(Main.getAndIncrementId());
+        // Writing note to file.
+        NoteWriter.writeNotes(Lists.newArrayList(note));
+      }
+      
+      for(int j=0;j<fLength;j++) {
+        File folder = new File(Main.getBasePath()+"/"+folders.getJSONObject(j).getString("title"));
+        // Making directories for blank folders.
+        folder.mkdirs();
+        File idFile = new File(Main.getBasePath()+"/"+folders.getJSONObject(j).getString("title")+"/"+"id");
+        try {
+          FileWriter fw = new FileWriter(idFile);
+          fw.write(Long.toString(Main.getAndIncrementId()));
+          fw.close();
+        } catch (IOException e) {
+          // TODO: better error handling.
+          continue;
+        }
+        
+      }
+      
       Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
       return new ModelAndView(variables, "main.ftl");
     }
