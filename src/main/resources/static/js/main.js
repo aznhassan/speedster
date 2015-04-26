@@ -117,7 +117,7 @@ $(document).ready(function() {
                 notes_div.innerHTML = folderList[i].notes[j].note_name;
                 main_note_div.appendChild(notes_div);
                 $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
-                    window.location.replace("/getNote/" + event.data.name + "/" +  this.id);
+                    window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
             }
 
@@ -268,7 +268,7 @@ $(document).ready(function() {
         }
         console.log(postParam);
         $.post("/updateNotes", postParam, function(responseObject) {
-            window.location.replace('/notes');
+            window.location.href = '/notes';
         });
 
 
