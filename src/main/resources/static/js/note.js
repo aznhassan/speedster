@@ -198,43 +198,37 @@ function correct(res) {
 }
 
 function stylize(correcting) {
-	var savedSelection = saveSelection($("#noteArea")[0]);
-	var res = $("#noteArea").text();
+    var savedSelection = saveSelection($("#noteArea")[0]);
+    var res = $("#noteArea").text();
 
-	// Common capitalization errors
+    // Common capitalization errors
     if (correcting) {
-    	res = correct(res);
+      	res = correct(res);
     }
 
     // Encode HTML special chars for distinction from our own insertions
-	res = escapeHTML(res);
+    res = escapeHTML(res);
 
-	// Invariants:
-	//	1) Extra visible characters are never added (maybe \u200b doesn't count?)
-	//	2) No <br> tags are inserted at the end of a replacement (these newlines will appear after the cursor)
-	
-	var offset = 0;
+    // \u200b -> <br>\u200b
+    res = res.replace(/\u200b/g, '<br>\u200b');
 
-	// \u200b -> <br>\u200b
-	res = res.replace(/\u200b/g, '<br>\u200b');
-
-	// TITLE
-	res = res.replace(/^(.*?)(<br>\u200b|$)/, function(x, a, b) {
+    // TITLE
+    res = res.replace(/^(.*?)(<br>\u200b|$)/, function(x, a, b) {
         return '<div class="title">' + a + '</div>' + b;
     });
 
-	// NOTE:
-	res = res.replace(/(note:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+    // NOTE:
+    res = res.replace(/(note:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
         return '<div class="box">' + '<span class="notecolon">' + a + '</span>' 
         + '<span class="noteafter">' + b + '</span>' + '</div>' + maybeUnNewline(c);
     });
 
 
-	// Q/A
-	res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
+    // Q/A
+    res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
         return '<div class="box">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
     });
-	res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
+    res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
         return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
     });
     res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
@@ -247,9 +241,9 @@ function stylize(correcting) {
 
 
     // Sections
-    res = res.replace(/(<br>\u200b<br>\u200b)([^<\u200b]+?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-        return a + '<span class="section">' + b + '</span>' + c;
-    });
+    // res = res.replace(/(<br>\u200b<br>\u200b)([^<\u200b]+?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+    //     return a + '<span class="section">' + b + '</span>' + c;
+    // });
 
     // Decode HTML special chars
     res = unescapeHTML(res);
@@ -348,11 +342,12 @@ function compileUserRule(rule) {
 	var afterEndSeq = (rule.after && rule.after.endSeq ? '(.*?)' + '(' + regEsc(rule.after.endSeq) + '|$)' : '');
 	var afterStyle = (rule.after ? rule.after.style || '' : '');
 	var containerStyle = (rule.container ? rule.container.style : '');
-	var newline = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
+	var newline1 = rule.trigger.endSeq && rule.trigger.endSeq == '<br>\u200b' && !rule.after;
+  var newline2 = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
 
 
 	var reg = (afterEndSeq ? (trigger + triggerEndSeq + afterEndSeq) + '|' + (trigger + triggerEndSeq) : trigger + triggerEndSeq);
-		
+
 
 	var rep = function() {
 		var a = arguments;
@@ -366,7 +361,10 @@ function compileUserRule(rule) {
 		res += '<span class="' + triggerStyle + '">' + a[1];
 
 		if (triggerEndSeq) {
-			res += a[2] + a[3];
+			res += a[2];
+      if (!newline1) {
+        res += a[3];
+      }
 		}
 
 		res += '</span>'
@@ -374,16 +372,21 @@ function compileUserRule(rule) {
 		if (afterEndSeq) {
 			res += '<span class="' + afterStyle + '">';
 			res += (triggerEndSeq ? a[4] : a[2]);
-			if (!newline) {
+			if (!newline2) {
 				res += (triggerEndSeq ? a[5] : a[3]);
 			}
+      res += '</span>';
 		}
 
 		if (containerStyle) {
 			res += '</div>';
 		}
 
-		if (newline) {
+    if (newline1) {
+      res += maybeUnNewline(a[3]);
+    }
+
+		if (newline2) {
 			res += maybeUnNewline(triggerEndSeq ? a[5] : a[3]);
 		}
 
@@ -404,6 +407,25 @@ function compileUserRule(rule) {
 		'replace': replace
 	}
 }
+
+
+function sendNotes() {
+    var urlparts = window.location.pathname.split('/');
+
+    var params = {
+      'data': $('#noteArea').innerHTML,
+      'flashcards': gatherFlashcards(),
+      'title': $('.title').innerText;
+      'noteid': urlparts[3],
+      'subject': urlparts[2]
+    }
+
+    $.post("/updateNote", params, function() {
+        // merp...
+    });
+}
+
+
 
 ///////////////////////////////////////////////////////////////
 ///////////////////////   MAIN   //////////////////////////////
@@ -459,8 +481,43 @@ $(document).ready(function() {
 			'style': 'largequotebox'
 		}
 	});	
+
+  rules.push({
+    'name': 'psuedo-sections',
+    'trigger': {
+      'word': '|',
+      'style': 'section',
+      'endSeq': '<br>\u200b'
+    }
+  });
+
+  rules.push({
+    'name': 'tab note',
+    'trigger': {
+      'word': '$',
+      'style': 'section',
+      'endSeq': '<br>\u200b'
+    },
+    'after': {
+      'endSeq': '<br>\u200b',
+      'style': 'noteafter'
+    },
+    'container': {
+      'style': 'box'
+    }
+  });
+
+  rules.push({
+    'name': 'important!',
+    'trigger': {
+      'word': 'important',
+      'style': 'important'
+    }
+  });
+
 	////////////////////////
 
+  // clean each rule by escaping bad characters
 	rules.forEach(function(v, i, arr) {
 		v.trigger.word = escapeHTML(v.trigger.word);
 		if (v.trigger.endSeq && v.trigger.endSeq != NEWLINE) {
@@ -473,6 +530,8 @@ $(document).ready(function() {
 
 	userRules = compileUserRules(rules);
 
+  var sendNotesCounter = 0;
+
 	$("#noteArea").keyup(function(event) {
 		var caller = $(event.target)[0];
 		var input = caller.value;
@@ -480,49 +539,29 @@ $(document).ready(function() {
 
 		var code = event.keyCode || event.which;
 		if (code == 9) {
-   			// Tab
-   			//stylize();
-   		} else if (code == 38) {
-   			// Up   Arrow
-   		} else if (code == 40) {
-   			// Down Arrow
+   			  // Tab
+   			  //stylize();
    		} else if (code == 32) {
-   			// Space
-   			stylize(true);
+   			  // Space
+   			  stylize(true);
+          sendNotesCounter++;
+          if (sendNotesCounter % 5 == 0) {
+            sendNotes();
+            sendNotesCounter = 0;
+          }
    		} else if (code == 13) {
         	// Line feed
-        	
-        	sel = window.getSelection();
-        	var parent = getSelectionParentElement(sel);
-        	
-        	//var elt = document.createElement("div");
-
+        	var parent = getSelectionParentElement(window.getSelection());
         	var elt = document.createTextNode("\u200b");
-        	//var elt = document.createTextNode("&#13;");
-
         	parent.parentNode.insertBefore(elt, parent);
         	
         	stylize(true);
-        } else {
-        	// Regular character?
-        	
-        	// TODO: if not styling
-        	if (false) {
-				// load autocomplete suggestions on every keyup
- 				var postParams = {
+      } else {
+        stylize();
+      }
+  });
 
- 				}
- 				$.post("/words", postParams, function(responseList) {
- 					// #TODO: populate a drop-down with words from the responseList
- 				});
-        	}
-
-        	stylize();
-        }
-
-        $("#noteArea").focus();
-		//$("#noteArea").keyup();
-	});
+  $("#noteArea").focus();
 });
 
 function getBackgroundColorOption(option) {
