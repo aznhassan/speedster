@@ -32,12 +32,11 @@
     
 
      <div id="button-div">
-        <div id="next-button">NEXT CARD</div>
         <div id="correct-button">CORRECT ANSWER</div>
         <div id="wrong-button">WRONG ANSWER</div>
      </div>
 
-    
+    <div id="session_div">${session_id}</div>
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

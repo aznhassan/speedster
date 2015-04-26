@@ -28,6 +28,6 @@ public interface Writeable {
    * 
    * @return - Unique ID of the object.
    */
-  int getId();
+  long getId();
 
 }

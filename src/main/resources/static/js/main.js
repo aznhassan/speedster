@@ -12,6 +12,7 @@ $(document).ready(function() {
     // var editStyleButton = document.getElementById("");
     var folder_num_counter = 0;
     var prevEditingHTML = null;
+    // window.glob 
 
     
 /* JSON format for received folders from the server
@@ -69,9 +70,15 @@ $(document).ready(function() {
             // assuming server returns 'List<JSONStrings> folders'.
             // var folders = responseObject.folder;
             var folders = fList;
+            var json = $(".data");
+            var jsonArray = JSON.parse(json.text());
+            fList = jsonArray;
             // alert("CALLBACK");
-            
-            displayTitles(folders);
+            displayTitles(jsonArray);
+
+
+
+            //displayTitles(folders);
         });
     }
 
@@ -90,20 +97,45 @@ $(document).ready(function() {
             folder_div.id = folderList[i].folder_id;
             console.log("DATA: " + folderList[i]);
             $(folder_div).attr('data-folder',folderList[i]);
-            folder_div.innerHTML = folderList[i].folder_name;
+
+            folder_div.innerHTML = '<p class="title">' + folderList[i].folder_name + '</p>';
+            var collapse = document.createElement('div');
+            $(collapse).addClass('circle');
+            collapse.innerHTML = '<span class="arrow-down id="main-page-arrow></span>';
+            folder_div.appendChild(collapse);
             createCircleDiv(folder_div);
-            createFlashcardDiv(folder_div);
+            createFlashcardDiv(folder_div, folderList[i].folder_name);
+            var main_note_div = document.createElement('main_note_div');
+            folder_div.appendChild(main_note_div);
+
+
+
             for(var j = 0; j < folderList[i].notes.length; j++) {
                 var notes_div = document.createElement("div");
                 notes_div.className = "note_name_div";
                 notes_div.id = folderList[i].notes[j].note_id;
                 notes_div.innerHTML = folderList[i].notes[j].note_name;
-                folder_div.appendChild(notes_div);
-                $(notes_div).click(function(event) {
-                    console.log("NOTE ID: " + this.id);
-                    window.location.replace("/getNote/" + this.id);
+                main_note_div.appendChild(notes_div);
+                $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
+                    window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
             }
+
+            $(collapse).bind('click', {notes: main_note_div}, function(event) {
+                console.log(event.data.notes);
+                if($(this.innerHTML)[0].className === 'arrow-down') {
+                    console.log("I'm at arrow down");
+                    $(this).html('<span class="arrow-up" id="main-page-arrow"></span>');
+                } else {
+                    $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
+                }
+                $(event.data.notes).slideToggle('medium', function() {
+                if ($(event.data.notes).is(':visible'))
+                    $(event.data.notes).css('display','block');
+                });
+                
+            });
+
             $('#main-div').append(folder_div);
         }
      }
@@ -128,26 +160,19 @@ $(document).ready(function() {
      /**
       * Helper function to create flashcard button
       */
-    function createFlashcardDiv(folderDiv) {
+    function createFlashcardDiv(folderDiv, folderName) {
         var circle = document.createElement('div');
         circle.className = 'circle';
         circle.innerHTML = 'F';
         folderDiv.appendChild(circle);
         $(circle).attr('contenteditable', 'false');
         $(circle).click(function(event) {
-            window.location.replace("/flashcard/" + folderDiv.id);
+            
+          
+            $.get("/getNewSession/" + encodeURIComponent(folderName), function() {
+
+            });
         });
-    }
-
-
-    /**
-     * Helper function to create collapsible icon for the editing menu
-     */
-    function createCollapsibleButton() {
-        var circle = document.createElement('div');
-        circle.className = 'circle';
-        circle.innerHTML = '+';
-        return circle;
     }
 
 
@@ -158,7 +183,9 @@ $(document).ready(function() {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         $(new_note_div).attr('contenteditable','true');
-        new_note_div.id = folderDiv.id;
+
+        $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
+        new_note_div.id = -1;
         console.log("NEW NOTE ID: " + new_note_div.id);
         new_note_div.innerHTML = "NEW  NOTE";
         folderDiv.appendChild(new_note_div);
@@ -211,33 +238,37 @@ $(document).ready(function() {
         console.log($(document).find('.new_folder_name_div'));
         var new_folders = [];
         $('.new_folder_name_div').each(function(j) {
-            this.id = fList.length + 1;
+            this.id = -1;
             var folder_data = {
                 "folder_id": this.id,
-                "title": this.innerText
+                "title": $(this).find('.title')[0].innerText
             }
-
+            new_folders.push(folder_data);
+            // console.log(folder_data);
         });
+
 
         /* Find all new notes */
         console.log($(document).find('.new_note_name_div'));
         var newNotes = [];
         $('.new_note_name_div').each(function(i) {
             var noteData = {
-                "associated_folder_id":this.id,
+                "note_id":-1,
+                "associated_folder_name": $(this).attr('folder'),
                 "title":this.innerText
             }
-            console.log("NOTE DATA :::: " + noteData);
             newNotes.push(noteData);
+            // console.log(noteData);
         });
-        console.log(newNotes);
+
         // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
         var postParam = {
             folders: JSON.stringify(new_folders),
             notes: JSON.stringify(newNotes)
         }
+        console.log(postParam);
         $.post("/updateNotes", postParam, function(responseObject) {
-            window.location.replace('/notes');
+            window.location.href = '/notes';
         });
 
 
@@ -255,9 +286,10 @@ $(document).ready(function() {
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
         new_folder_div.className = "new_folder_name_div";
-        new_folder_div.innerHTML = "NEW FOLDER";
+        new_folder_div.innerHTML = '<p class="title">NEW FOLDER</p>';
         new_folder_div.id = folder_num_counter + 1;
-        $(new_folder_div).attr('contenteditable', 'true');
+
+        $(new_folder_div).find('p').attr('contenteditable', 'true');
         createCircleDiv(new_folder_div);
         createFlashcardDiv(new_folder_div);
         $('#main-div').append(new_folder_div);
@@ -279,7 +311,9 @@ $(document).ready(function() {
     });
 
 /************************************
- * STYLE EDITING OVERLAY
+ ************************************
+ * STYLE EDITING OVERLAY STUFF ******
+ ************************************
  ************************************/
 
     /**
@@ -300,48 +334,72 @@ $(document).ready(function() {
 
             /* $(style_div).html('<h2 class="folder_style_header">' +  
                 fList[i].folder_name +   
-                '</h2>' + getStyleHTML('note', fList[i].folder_id) + 
-                getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id)); */
+                '</h2>' + createStyleToolbar('note', fList[i].folder_id) + 
+                createStyleToolbar('q', fList[i].folder_id) + createStyleToolbar('section', fList[i].folder_id)); */
             
             $(style_div).html('<span class="folder_style_header">' +   
-            fList[i].folder_name + '<span class="circle"> + </span>' + 
-            '</span>' + '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + getStyleHTML('note', fList[i].folder_id) + 
-            getStyleHTML('q', fList[i].folder_id) + getStyleHTML('section', fList[i].folder_id) + '</div>'); 
+            fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
+            '<span class="circle collapse-main"><span class="arrow-down"></span></span>' + '<span>' + 
+            '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
+                '<span class="new-style-header"> New Style <span class="circle arrow" id="style-circle"><span class="arrow-down"></span></span></span>' + 
+                '<div class="rule_div" id="rule_div_' + fList[i].folder_id + '">' +
+                'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
+                should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
+                and have these styles: <br>' + 
+                createStyleToolbar('start-style-bar', fList[i].folder_id) + 
+                'Extend these styles until<br>'   
+                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String"></input>  OR \
+                <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+                'Style text after this rule until<br>'
+                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
+                <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+                '<span>with these styles</span> <br>' 
+                + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
+                '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
+                '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
+                '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
+                '</div>' + 
+            '</div>'); 
+            
+            
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'font-weight');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'font-style');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'text-decoration');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'font-weight');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'font-style');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'text-decoration');
 
+            addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
           
            
-            var inner = $(style_div).find('#inner_style_div_' + fList[i].folder_id);
-            $(style_div).find('.circle').bind('click', {id: fList[i].folder_id}, function(event) {
+            $(style_div).find('#style-circle').bind('click', {id: fList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
-                var divToCollapse = document.getElementById('inner_style_div_' + folderID);
+                var divToCollapse = document.getElementById('rule_div_' + folderID);
                 $(divToCollapse).slideToggle();
 //                 alert(this.innerText === '+');
-                if(this.innerText === "+") {
-//                     alert("ugh");
-                    this.innerText = "-";
+                if($(this.innerHTML)[0].className === 'arrow-down') {
+                    $(this).html('<span class="arrow-up"></span>');
                 } else {
-                    this.innerText = "+";
+                    $(this).html('<span class="arrow-down"></span>');
                 }
             });
 
-            // append font sizes to the font size dropdowns
-            $(style_div).find('.font-size').each(function() {
-                for(var i = 0; i < 40; i+=2) {
-                    $(this).append('<option>' + i + '</option>');
-                }
+            $(style_div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
+                $('#inner_style_div_' + event.data.id).slideToggle();
             });
+
 
             // set up toggling values on click for the B, I, U styles
-            $(style_div).find('h2').text(fList[i].folder_name);
-            setTextStyleToggle('note', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('note', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('note', fList[i].folder_id, 'text-decoration');
-            setTextStyleToggle('q', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('q', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('q', fList[i].folder_id, 'text-decoration');
-            setTextStyleToggle('section', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('section', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('section', fList[i].folder_id, 'text-decoration');
+            // $(style_div).find('h2').text(fList[i].folder_name);
+            // setTextStyleToggle('note', fList[i].folder_id, 'font-weight');
+            // setTextStyleToggle('note', fList[i].folder_id, 'font-style');
+            // setTextStyleToggle('note', fList[i].folder_id, 'text-decoration');
+            // setTextStyleToggle('q', fList[i].folder_id, 'font-weight');
+            // setTextStyleToggle('q', fList[i].folder_id, 'font-style');
+            // setTextStyleToggle('q', fList[i].folder_id, 'text-decoration');
+            // setTextStyleToggle('section', fList[i].folder_id, 'font-weight');
+            // setTextStyleToggle('section', fList[i].folder_id, 'font-style');
+            // setTextStyleToggle('section', fList[i].folder_id, 'text-decoration');
 
         }
 
@@ -361,322 +419,18 @@ $(document).ready(function() {
         style_save_button.innerText = 'SAVE';
         $(button_div)[0].appendChild(style_save_button);
 
-        // add 'create new style button'
-        var add_custom_style_button = document.createElement('div');
-        add_custom_style_button.id = "custom-style-button";
-        add_custom_style_button.innerText = "ADD CUSTOM STYLE";
-        $(button_div)[0].appendChild(add_custom_style_button);
-
         // attach click handler to the save style button
         $(style_save_button).click(function(event) {
             saveStyleClick();
         });
-
-        $(add_custom_style_button).click(function(event) {
-            addCustomStyleForm();
-        });
-  
-    }
-/* 
-
-Rule:
-{
-  name: "string"
-  trigger:
-  {
-    word: "string",
-    endSeq: "string", (charsequence to end the rule with--if not specified then we apply the rule to just the trigger word itself)
-    style: "string", (css classname)
-  }
-
-  after:
-  {
-    endSeq: "string", (charsequence to end the rule with--rule will be applied to text between trigger.word up to and including after.endSeq)
-    style: "string", (css classname)
-  }
-
-  container:
-  {
-    style: "string" (css classname)
-  }
-}
-
-Rules can take the following forms based on what is defined:
-
-<style1> trigger.word </style1>
-<style1> trigger.word (stuff) trigger.endSeq </style1>
-<style1> trigger.word </style1> <style2> (stuff) after.endSeq </style2>
-<style1> trigger.word (stuff) trigger.endSeq </style1> <style2> (stuff) after.endSeq </style2>
-
-... any of the above but inside of a div (if container and container.style are defined). The div can center things/box things/do whatever css can do.
-
-*/
-
-
-    /**
-     * attempting to add a custom styling form based on the above rule format
-     */
-     function addCustomStyleForm() {
-        // save the current html of the style overlay
-        var currentHTML = $('.example_content').html();
-        console.log("CHANGING HTML");
-        $('.example_content').innerHTML =  '<div>  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
-            </div>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
-            </div>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div>  \
-        </div>';
-     }
-
-     /** 
-      * create form to fill in a custom rule style
-      */
-
-    function ruleFormHTML() {
-        /* HTML FORMAT FOR THE FORM */
-
-        // text box for rule.name
-        // rule.trigger styles div
-            // text box for rule.trigger.word
-            // text box for rule.trigger.endSeq
-            // text box for rule.trigger.style   (this will be a CSS classname)
-        // rule.after div
-            // text box for rule.after.endSeq
-            // text box for rule.after.style     (this will be a CSS classname)
-        // rule.container div
-            // text box for rule.container.style  (this will be a CSS classname)
-
-
-        return 
-
-        '<div>  \
-            <input type="text" name="rulename" placeholder="Rule Name"></input> \
-            <div class "trigger-styles">    \
-                <input type="text" name="triggerword" placeholder="Trigger Word"></input>   \
-                <input type="text" name="triggerend" placeholder="Trigger End Sequence"></input>    \
-            </div>  \
-            <div class="after-styles">  \
-                <input type="text" name="afterend" placeholder="Text After End Seq."></input>   \
-                <input type="text" name="afterstyle" placeholder="Text After Style"></input>    \
-            </div>  \
-            <div class="container-styles">  \
-                <input type="text" name="containerstyle" placeholder="Container Div Name"></input>  \
-            </div>  \
-        </div>';
-
-
-    }
-
-    /**
-     * Click handler for the save styles button
-     * Sends updated styles to the server as a JSON string
-     * in a POST request '/updateStyle'.
-     */
-    function saveStyleClick() {
-        var updated_styles = styleChangesToSave();
-        console.log("POST PARAMS: " + JSON.stringify(updated_styles));
-        var postParam = {
-            styles_on_save: JSON.stringify(updated_styles)
-            
-        };
-
-        $.post('/updateStyle', postParam, function(responseJSON) {
-            // response may be not needed
-        });
-
-        // clear the style editing overlay
-        prevEditingHTML = $('.example_content').html();
-        $('.example_content')[0].innerHTML = '<h1 id="rule-header">STYLE RULES</h1>';
-        $('.example_overlay')[0].style.display = "none";
-        $('.example_content')[0].style.display = "none";
-
-    }
-
-
-
-
-/* Sending style editing changes by the user to the server:
-
-{
-    "associated_folder":folder_id,
-    "style_classes": 
-    [{".note": 
-        {
-            "font-weight":"bold",
-            "font-style":"italic",
-            "text_decoration":"underline",
-            "font-family":"Helvetica"
-        }
-     },
-
-    {".q": 
-        {
-            "font-weight":"bold",
-            "font-style":"italic",
-            "font-family":"Arial"
-        }
-    }],
-}
-
-*/
-
-/* Here's how the style changes will be found and saved:
- list_of_folder_ids = [1,2,3];
- list_of_styles_texts = ['note', 'q', ...];
- list_of_style_types = ["bold", "italic", "underline", "font-family", ...]
-*/
-
-/** 
- * gets all the updated CSS that needs to be sent ot the server on clicking the save styles button
- */
-function styleChangesToSave() {
-
-    // list of all existing folder ids, existing rules to style, existing styles possible to change
-    list_of_folder_ids = [1,2];
-    list_of_styles_texts = ['note', 'q', 'section'];
-    list_of_style_types = ["font-weight", "font-style", "text-decoration", "font-family", "font-size", "text-align"]
-
-    // this will contain all the info to be sent to the server.
-    result_list = [];
-
-    // go over all the folder ids
-    for(var i = 0; i < list_of_folder_ids.length; i++) {
-
-        // create a style object for each folder
-        var folder_style = 
-        {
-            "folder_id": list_of_folder_ids[i],
-            "style_classes": []
-        }
-
-        // go over all possible rules to style for the folder
-        for(var j = 0; j < list_of_styles_texts.length; j++) {
-
-            // set a rule string to map the styles to
-            var class_value = String(list_of_styles_texts[j]);
-            console.log("VALUE: " + class_value);
-
-            // create a styles object for this folder and this rule
-            var style_text_object = 
-            {
-
-            };
-
-            // container class object to map the rule to it's style object
-            var container_class = {
-                
-            };
-
-            // map the rule to it's style object
-            container_class[class_value] = style_text_object;
-
-            // fill in the style object with all the styles' current values as of on clicking the save button
-            for(var k = 0; k < list_of_style_types.length; k++) {
-                style_text_object[list_of_style_types[k]] = 
-                    getButtonValue(list_of_styles_texts[j], list_of_style_types[k], list_of_folder_ids[i]);
-            }
-
-            // add the updates to the style object for this rule
-            folder_style.style_classes.push(container_class);
-
-        }
-
-        // store everything in the results list
-        result_list.push(folder_style);
-    }
-
-    console.log(result_list);
-    return result_list;
-}
-
-/**
- * get the value for the styling toolbar buttons according to their unique id
- * on clicking the save style button, so we can updates for each style
- */
-function getButtonValue(style_text, style_type, folder_id) {
-    // ex: note2_bold
-    if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
-        console.log('styleee!!!   ' + $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value'));
-        return $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value');
-    } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
-        return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
-    }
-    
-}
-
-
-/***********************
-
-
-One style html:
-
-// pass in style_text --> 'note'
-// folder_id --> 1
-// style_type --> 'font-weight'
-// id for that style button is --> 'note' + folder_id + '_' + 'font-weight';
-
-<h3 class="note_styles">Style for "note:"</h3> \
-    <div class="style-toolbar">  \
-        <div class="boldButton" id="note_bold" value="off">B</div> \
-        <div class="italicButton" id="note_italic" value = "off">i</div> \
-        <div class="underlineButton" id="note_underline" value="off">U</div> \
-        <select class="font-family" id="note_font"> \
-            <option value="Arial">Arial</option> \
-            <option value="Helvetica">Helvetica</option> \
-            <option value="Sans Serif">Sans Serif</option> \
-            <option value="Times New Roman">Times New Roman</option> \
-        </select> \
-    </div><br> \
-
-
-
-
-
-************************/
-
-
-    /**
-     * given a rule to style, and the folder id, this creates the toolbar
-     * for that folder and that rule with unique ids that include the folder id
-     * and the rule word itself.
-     * ex: getStyleHTML('note', 2)
-     * or, getstyleHTML('q', 3);
-     *
-     */
-    function getStyleHTML(style, id) {
-        return '<h3 class=' + style + '_styles">Style for ' + style + ': </h3> \
-        <div class="style-toolbar" id="toolbar_' + style + id + '">  \
-            <div class="boldButton" id="' + style + id + '_font-weight" value="none" name="bold">B</div> \
-            <div class="italicButton" id="' +  style + id + '_font-style" value = "none" name="italic">i</div> \
-            <div class="underlineButton" id="' + style + id + '_text-decoration" value="none" name="underline">U</div> \
-            <select class="font-family" id="' + style + id + '_font-family">    \
-                <option value="Arial">Arial</option> \
-                <option value="Helvetica">Helvetica</option> \
-                <option value="Sans Serif">Sans Serif</option> \
-                <option value="Times New Roman">Times New Roman</option> \
-            </select> \
-            <select class="font-size" id="' + style + id + '_font-size" ></select> \
-            <select class="text-align" id="' + style + id + '_text-align">  \
-                <option value="left">left</option> \
-                <option value="center">center</option> \
-                <option value="right">right</option> \
-            </select> \
-        </div><br>';
-
     }
 
     // eg: style_text == 'note', style_type = 'bold' ... 
     // search for id --> 'note' + 'folder_id' + '_' + 'bold'
     // to be used for B, I, U   .... text styles
     // sets up the toggling of values for the B, I, U styles (or any others that can have only two states)
+    // ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
+    // toggle(text-after-style-bar, folder id, font-weight)
     function setTextStyleToggle(style_text, folder_id, style_type) {
         console.log($('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type));
         var button = $('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type);
@@ -694,13 +448,366 @@ One style html:
                 console.log($(this).attr('value'));
             });
         }
-        
     }
 
+     /**
+     * given a rule to style, and the folder id, this creates the toolbar
+     * for that folder and that rule with unique ids that include the folder id
+     * and the rule word itself.
+     * ex: createStyleToolbar('note', 2)
+     * or, createStyleToolbar('q', 3);
+     * or, for custom styles
+     * ---- >     start-style-bar'id'
+
+     ex: createStyleToolbar('text-after-style-bar', fList[i].folder_id)
+     id of bold button:   text-after-style-bar'folder_id'_font-weight
+     */
+    function createStyleToolbar(style, id) {
+        return '<div class="style-toolbar" id="toolbar_' + style + id + '">  \
+            <div class="boldButton" id="' + style + id + '_font-weight" value="none" name="bold">B</div> \
+            <div class="italicButton" id="' +  style + id + '_font-style" value = "none" name="italic">i</div> \
+            <div class="underlineButton" id="' + style + id + '_text-decoration" value="none" name="underline">U</div> \
+            <select class="font-family" id="' + style + id + '_font-family">    \
+                <option selected="selected" disabled="disabled">Font Type</option>  \
+                <option value="Arial">Arial</option> \
+                <option value="Helvetica">Helvetica</option> \
+                <option value="Sans Serif">Sans Serif</option> \
+                <option value="Times New Roman">Times New Roman</option> \
+            </select> \
+            <select class="font-size" id="' + style + id + '_font-size" >   \
+                <option selected="selected" disabled="disabled">Font Size</option>  \
+                <option value="Small">Small</option>    \
+                <option value="Medium">Medium</option>  \
+                <option value="Big">Big</option>    \
+            </select> \
+        </div><br><br>';
+
+    }
+
+
+    function addStyleClickHandler(styleDiv, folderID, folderName) {
+        $('#submit_' + folderID).bind('click', {id: folderID, style_div: styleDiv, name: folderName}, function(event) {
+            var inner_div = $(event.data.style_div).find('#inner_style_div_' + event.data.id);
+            var rule = 
+            {   
+                "associated_folder_id": event.data.id,
+                "associated_folder_name": event.data.name,
+                "name": document.getElementById('rulename_' + event.data.id).value,
+                "trigger":
+                {
+                    "word": document.getElementById('rulestart_' + event.data.id).value,
+                    "endSeq": getTriggerEndSequence(inner_div, event.data.id),
+                    "style": 
+                    {
+                        "font-weight": getButtonValue('start-style-bar', 'font-weight', event.data.id),
+                        "font-style": getButtonValue('start-style-bar', 'font-style', event.data.id),
+                        "text-decoration": getButtonValue('start-style-bar', 'text-decoration', event.data.id),
+                        "font-family": getButtonValue('start-style-bar', 'font-family', event.data.id),
+                        "font-size": getButtonValue('start-style-bar', 'font-size', event.data.id),
+                    }
+                },
+
+                "after": 
+                {
+                    "endSeq": getAfterEndSequence(inner_div, event.data.id),
+                    "style": 
+                    {
+                        "font-weight": getButtonValue('text-after-style-bar', 'font-weight', event.data.id),
+                        "font-style": getButtonValue('text-after-style-bar', 'font-style', event.data.id),
+                        "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', event.data.id),
+                        "font-family": getButtonValue('text-after-style-bar', 'font-family', event.data.id),
+                        "font-size": getButtonValue('text-after-style-bar', 'font-size', event.data.id),
+                    }
+                },
+
+                "container": 
+                {
+                    "style":
+                    {
+                        "background-color": $(inner_div).find('.box')[0].checked ? "white" : "inherit",
+                        "text-align": $(inner_div).find(".center")[0].checked ? "center" : "left"
+                    }
+                }
+            }
+
+            var postParam = {
+                rule: rule
+            }
+            $.post('/updateCSS', postParam, function() {
+
+            });
+            
+        });
+    }
+
+    /**
+     * get the value for the styling toolbar buttons according to their unique id
+     * on clicking the save style button, so we can updates for each style
+
+     ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
+     style_text = 'text-after-style-bar'
+     style_type = 'font-weight'
+     folder_id = folder id ...
+     */
+    function getButtonValue(style_text, style_type, folder_id) {
+        // ex: note2_bold
+        if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
+            return $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value');
+        } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
+            if($(document.getElementById(style_text + folder_id + '_' + style_type)).val()) {
+                return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
+            } else if(style_type === 'font-family') {
+                return 'Arial';
+            } else {
+                return 'Medium';
+            }
+        }
+    }
+
+    /*
+     *
+     */
+    function getTriggerEndSequence(inner_div, folderID) {
+        return $(inner_div).find('.newline-trigger')[0].checked ? "<br>\u200b" : document.getElementById('trigger-end-sequence_' + folderID).value;
+    }
+
+    /*
+     *
+     */
+    function getAfterEndSequence(inner_div, folderID) {
+        return $(inner_div).find(".newline-text-after")[0].checked ? "<br>\u200b" : $(inner_div).find('.text-after-end-sequence')[0].value;
+    }
+
+   
+/* 
+
+Rule:
+{
+  "associated_folder_id": event.data.id,
+  "associated_folder_name": event.data.name,
+  "name": "string"
+  "trigger":
+  {
+    "word": "string",
+    "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
+    "style": 
+    {
+        "font-weight":"bold",
+        "font-style": "italic",
+        "text-decoration":"underline",
+        "font-family": "Times New Roman",
+        "font-size": "small/medium/big"
+
+    }
+  }
+
+  "after":
+  {
+    "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
+    "style": 
+    {
+        "font-weight":"bold",
+        "font-style": "italic",
+        "text-decoration":"underline",
+        "font-family": "Times New Roman",
+        "font-size": "small/medium/big"
+
+    }
+  }
+
+  "container":
+  {
+    "style": 
+    {
+        
+    }
+  }
+}
+
+
+
+Rules can take the following forms based on what is defined:
+
+<style1> trigger.word </style1>
+<style1> trigger.word (stuff) trigger.endSeq </style1>
+<style1> trigger.word </style1> <style2> (stuff) after.endSeq </style2>
+<style1> trigger.word (stuff) trigger.endSeq </style1> <style2> (stuff) after.endSeq </style2>
+
+... any of the above but inside of a div (if container and container.style are defined). The div can center things/box things/do whatever css can do.
+
+*/
+
+/*  if(no box is checked -- no style object)
+    
+    if 'boxed' is checked -- style {
+        "background-color": --
+    }
+
+    if 'center' is checked -- style {
+        "text-align": --
+    }
+
+*/
+
+
+
+     
+
+    /**
+     * Click handler for the save styles button
+     * #TODO: DO we need this ?
+     */
+    function saveStyleClick() {
+        // var updated_styles = styleChangesToSave();
+        // console.log("POST PARAMS: " + JSON.stringify(updated_styles));
+        var postParam = {
+            // styles_on_save: JSON.stringify(updated_styles)
+            
+        };
+
+        $.post('/updateCSS', postParam, function(responseJSON) {
+            // response may be not needed
+        });
+
+        // clear the style editing overlay
+        prevEditingHTML = $('.example_content').html();
+        $('.example_content')[0].innerHTML = '<h1 id="rule-header">STYLE RULES</h1>';
+        $('.example_overlay')[0].style.display = "none";
+        $('.example_content')[0].style.display = "none";
+
+    }
+
+
+/* 
+
+Rule:
+{
+    "associated_folder_id": event.data.id,
+    "associated_folder_name": event.data.name,
+    "name": "string"
+    "trigger":
+      {
+        "word": "string",
+        "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
+        "style": 
+        {
+            "font-weight":"bold",
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
+        }
+      }
+
+      "after":
+      {
+        "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
+        "style": 
+        {
+            "font-weight":"bold",
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
+        }
+      }
+
+      "container":
+      {
+        "style": 
+        {
+            
+        }
+      }
+}
+
+
+    /**
+     * Trying to populate a custom style menu with existing style rules
+     * Input --> List of 'rule objects in the exact format I sent them back to the server'
+     *
+     */
+    function createExistingStyleRules(rules) {
+        for(var i = 0; i < rules.length; i++) {
+            var rule = rules[i];
+            var rulename = rule.name;
+            var folder_id = rule.associated_folder_id;
+            var folder_name = rule.associated_folder_name;
+            var inner_div = document.getElementById('inner_style_div_' + folder_id);
+            $(inner_div).append(createRuleForm(folder_id, rulename));
+            var ruleform = $(inner_div).find('#rule_div_' + folderID);
+            $(ruleform).find('#rulename_' + folder_id)[0].value = rulename;
+            $(ruleform).find('#rulestart_' + folder_id)[0].value = rule.trigger.word;
+            if(rule.trigger.endSeq != '<br>') {
+                $(ruleform).find('#trigger-end-sequence_' + folder_id)[0].value = rule.trigger.endSeq;
+            } else {
+                $(ruleform).find('#newline-trigger').checked = true;
+            }
+            
+            if(rule.after.endSeq != '<br>') {
+                $(ruleform).find('#text-after-end-sequence_' + folder_id)[0].value ;
+            } else {
+
+            }
+        }
+    }
+
+    /** 
+     * create rule form
+     */
+    function createRuleForm(folderID, rulename) {
+        return '<span class="new-style-header">' + rulename + '<span class="circle arrow" id="style-circle"><span class="arrow-down"></span></span></span>' + 
+        '<div class="rule_div" id="rule_div_' + folderID + '">' +
+            'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + folderID + '"></input><br>    \
+            should start with <input type="text" class="rulestart" id="rulestart_' + folderID + '" placeholder="Character String"></input><br>  \
+            and have these styles: <br>' + 
+            createStyleToolbar('start-style-bar', folderID) + 
+            'Extend these styles until<br>'   
+            + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + folderID+ '" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+            'Style text after this rule until<br>'
+            + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + folderID + '" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+            '<span>with these styles </span><br>' 
+            + createStyleToolbar('text-after-style-bar', folderID) +
+            '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
+            '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
+            '<div class="submit-button" id="submit_' + folderID + '">SUBMIT</div>' + 
+        '</div>'
+    }
+
+/***********************
+
+
+'<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
+    'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
+    should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
+    and have these styles: <br>' + 
+    createStyleToolbar('start-style-bar', fList[i].folder_id) + 
+    'Extend these styles until<br>'   
+    + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String"></input>  OR \
+    <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+    'Style text after this rule until<br>'
+    + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
+    <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+    'with these styles <br>' 
+    + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
+    '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
+    '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
+    '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
+'</div>'
+
+
+
+
+
+************************/
+
+
+
 });
-
-
-
 
 
 
