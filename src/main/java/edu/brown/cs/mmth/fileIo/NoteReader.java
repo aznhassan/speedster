@@ -74,7 +74,7 @@ public class NoteReader {
             continue; //File has no data
           } else {
             try {
-              JSONObject testObj = new JSONObject(jsonData);
+              new JSONObject(jsonData);
             } catch (JSONException e) {
               continue; //File isn't a proper JSON object.
             }

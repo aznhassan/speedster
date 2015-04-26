@@ -45,7 +45,7 @@ public final class Web {
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.get("/getNewSession/:subject", new ApiHandler.GetNewSession(),freeMarker);
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
-    Spark.post("/updateNotes", new ApiHandler.UpdateNotes());
+    Spark.post("/updateNotes", new ApiHandler.NotesCreator());
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
   }
 
