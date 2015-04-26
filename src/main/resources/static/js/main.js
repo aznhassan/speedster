@@ -338,7 +338,7 @@ $(document).ready(function() {
             
             $(style_div).html('<span class="folder_style_header">' +   
             fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
-            '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + 
+            '<span class="circle collapse-main"><span class="arrow-down"></span></span>' + '<span>' + 
             '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
                 '<span class="new-style-header"> New Style <span class="circle arrow" id="style-circle"><span class="arrow-down"></span></span></span>' + 
                 '<div class="rule_div" id="rule_div_' + fList[i].folder_id + '">' +
@@ -383,8 +383,7 @@ $(document).ready(function() {
                 }
             });
 
-            $(style_div).find('.collapseCustom').bind('click', {id: fList[i].folder_id}, function(event) {
-                
+            $(style_div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
                 $('#inner_style_div_' + event.data.id).slideToggle();
             });
 
