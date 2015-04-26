@@ -194,7 +194,7 @@ public final class Main {
     try {
       options = parser.parse(args);
     } catch (joptsimple.OptionException e) {
-      System.out.println("ERROR: JOpt exception " + e.getMessage());
+      System.out.println("ERROR: JOpt exception " + e.getMessage()+". Run with -h flag for assistance.");
       System.exit(1);
     }
 
@@ -208,7 +208,6 @@ public final class Main {
       System.exit(0);
     }
 
-    
     int length = args.length;
     if (length > 2) {
       System.err.println("ERROR: Too many args. Simply use ./run to execute.");
