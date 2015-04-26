@@ -29,14 +29,11 @@ public class CSSSheetMaker {
   }
 
   /**
-<<<<<<< HEAD
    * @param cssJson
    *          - The CSS JSON that will replace the current custom user style
    *          sheet of the given subject.
-=======
    * @param jsonRules - The CSS JSON that will replace the current custom user
    * style sheet of the given subject.
->>>>>>> branch 'master' of git@github.com:aznhassan/speedster.git
    * @return - Boolean specifying whether or not writing operation was
    *         successful.
    * @throws IOException
