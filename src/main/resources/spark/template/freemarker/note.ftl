@@ -15,8 +15,8 @@ the page is written in-->
   </head>
   
   <body>
-    <script src="../js/jquery-2.1.1.js"></script>
-    <script src="../js/note.js"></script>
+    <script src="../../js/jquery-2.1.1.js"></script>
+    <script src="../../js/note.js"></script>
     
     <div contenteditable="true" id="noteArea">
     	${note}
