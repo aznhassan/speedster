@@ -353,7 +353,7 @@ $(document).ready(function() {
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
                 <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
-                'with these styles <br>' 
+                '<span>with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
                 '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
@@ -530,7 +530,12 @@ $(document).ready(function() {
                 }
             }
 
-            console.log(rule);
+            var postParam = {
+                rule: rule
+            }
+            $.post('/updateCSS', postParam, function() {
+
+            });
             
         });
     }
@@ -727,10 +732,50 @@ Rule:
     function createExistingStyleRules(rules) {
         for(var i = 0; i < rules.length; i++) {
             var rule = rules[i];
+            var rulename = rule.name;
             var folder_id = rule.associated_folder_id;
             var folder_name = rule.associated_folder_name;
+            var inner_div = document.getElementById('inner_style_div_' + folder_id);
+            $(inner_div).append(createRuleForm(folder_id, rulename));
+            var ruleform = $(inner_div).find('#rule_div_' + folderID);
+            $(ruleform).find('#rulename_' + folder_id)[0].value = rulename;
+            $(ruleform).find('#rulestart_' + folder_id)[0].value = rule.trigger.word;
+            if(rule.trigger.endSeq != '<br>') {
+                $(ruleform).find('#trigger-end-sequence_' + folder_id)[0].value = rule.trigger.endSeq;
+            } else {
+                $(ruleform).find('#newline-trigger').checked = true;
+            }
+            
+            if(rule.after.endSeq != '<br>') {
+                $(ruleform).find('#text-after-end-sequence_' + folder_id)[0].value ;
+            } else {
 
+            }
         }
+    }
+
+    /** 
+     * create rule form
+     */
+    function createRuleForm(folderID, rulename) {
+        return '<span class="new-style-header">' + rulename + '<span class="circle arrow" id="style-circle"><span class="arrow-down"></span></span></span>' + 
+        '<div class="rule_div" id="rule_div_' + folderID + '">' +
+            'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + folderID + '"></input><br>    \
+            should start with <input type="text" class="rulestart" id="rulestart_' + folderID + '" placeholder="Character String"></input><br>  \
+            and have these styles: <br>' + 
+            createStyleToolbar('start-style-bar', folderID) + 
+            'Extend these styles until<br>'   
+            + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + folderID+ '" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+            'Style text after this rule until<br>'
+            + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + folderID + '" placeholder = "Character String"></input>  OR \
+            <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+            '<span>with these styles </span><br>' 
+            + createStyleToolbar('text-after-style-bar', folderID) +
+            '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
+            '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
+            '<div class="submit-button" id="submit_' + folderID + '">SUBMIT</div>' + 
+        '</div>'
     }
 
 /***********************
