@@ -70,6 +70,10 @@ span {
 	text-transform: uppercase;
 }
 
+.important {
+	font-weight: bold;
+}
+
 /*.section * {
 	font-family: inherit;
     font-weight: initial;

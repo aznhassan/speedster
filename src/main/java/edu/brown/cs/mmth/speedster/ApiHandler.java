@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import com.google.gson.Gson;
 
 import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
 import edu.brown.cs.mmth.fileIo.FlashCardReader;
+import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
@@ -304,6 +306,63 @@ public final class ApiHandler {
     }
   }
 
+  
+  /**
+   * Updates the notes and flashcards with data from front-end.
+   *
+   * @author tbhargav
+   */
+  public static class UpdateNotes implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String noteData = qm.value("data");
+      String noteID = qm.value("noteid");
+      String subject = qm.value("subject");
+      String title = qm.value("title");
+      String rawJSONCards = qm.value("flashcards");
+      
+      JSONArray jsonCards = new JSONArray(rawJSONCards);
+      
+      // Writing note to memory (overwriting old edition).
+      Note note = new Note(noteData,subject,title);
+      note.setId(Long.parseLong(noteID));
+      NoteWriter.writeNotes(Lists.newArrayList(note));
+      
+      Collection<Flashcard> cardsToWrite = new ArrayList<>();
+      
+      // Creating new flashcards (or merging pre-existing ones). 
+      for(int i=0;i<jsonCards.length();i++) {
+        JSONObject currCard = jsonCards.getJSONObject(i);
+        // Reading all flashcards from associated note. 
+        Collection<Flashcard> cards = FlashCardReader.getCardsLinkedWithNote(note);
+        // Iterating through cards to see if we want to update an old one or create a new one.
+        boolean cardExisted = false;
+        for(Flashcard card: cards) {
+          // If card with same question exists, update answer.
+          if(card.getQuestion().equals(currCard.getString("question"))) {
+            card.setAnswer(currCard.getString("answer"));
+            cardsToWrite.add(card);
+            cardExisted = true;
+          }
+        }
+        
+        // We need to make a new card.
+        if(!cardExisted) {
+          Flashcard toAdd = new Flashcard(currCard.getString("answer"),currCard.getString("question"));
+          cards.add(toAdd);
+        }
+        
+        // Writing these cards to disk.
+        FlashCardWriter.writeCards(cardsToWrite);        
+      }
+      
+      String toReturn = "";
+      return toReturn;
+    }
+  }
+
+  
   /**
    * Updates the stylesheet of the current subject with the given rules, 
    * as well as the rules for the current subject.
@@ -340,7 +399,6 @@ public final class ApiHandler {
       try {
         String ansCorrect = qm.value("ansCorrect");
         boolean isAnsCorrect = Boolean.parseBoolean(ansCorrect);
-        System.out.println("Boolean val: " + isAnsCorrect);
         String sessionNo = qm.value("session_no");
         int sNo = Integer.parseInt(sessionNo);
         String cardIDStr = qm.value("cardID");
