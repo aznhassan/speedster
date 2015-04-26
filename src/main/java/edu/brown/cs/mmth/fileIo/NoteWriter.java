@@ -45,7 +45,9 @@ public final class NoteWriter {
       // We now create the file path where we want to write the note.
       String basePath = Main.getBasePath();
 
-      String suffixPath = "/" + note.getSubject() + "/N" + note.getId();
+      String suffixPath =
+          "/" + note.getSubject() + "/N" + note.getId()
+          + "/" + "/N" + note.getId();
       String finalPath = basePath + suffixPath;
 
       File file = new File(finalPath);

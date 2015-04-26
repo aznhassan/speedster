@@ -43,46 +43,54 @@ public class NoteReader {
     Collection<Note> notes = new ArrayList<Note>();
 
     if (folder.listFiles() != null) {
-      for (File fileEntry : folder.listFiles()) {
-        // Making sure we're only reading notes and not flashcards/directories.
-        if (fileEntry.isFile() && fileEntry.getName().charAt(0) == 'N') {
-
-          // Reading data from this file into string.
-          StringBuilder json = new StringBuilder();
-          try (
-              BufferedReader br =
-              new BufferedReader(new InputStreamReader(new FileInputStream(
-                  fileEntry), "UTF-8"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-              json.append(line);
-            }
-          } catch (Exception e) {
-            return null;
-          }
-          // Converting retrieved data into note object.
-          long id = 0;
-          try {
-            id = Long.parseLong(fileEntry.getName().substring(1));
-          } catch (NumberFormatException e) {
-            // The file is invalid so we skip it.
-            continue;
-          }
-          Note note = new Note("", subject, "");
-          String jsonData = json.toString();
-          if (jsonData.isEmpty()) {
-            continue; //File has no data
-          } else {
-            try {
-              new JSONObject(jsonData);
-            } catch (JSONException e) {
-              continue; //File isn't a proper JSON object.
-            }
-          }
-          note.updateFields(jsonData);
-          note.setId(id);
-          notes.add(note);
+      for (File noteFolder : folder.listFiles()) {
+        //fileEntry is the folder for a note
+        File[] noteFiles = noteFolder.listFiles();
+        if (noteFiles == null || noteFiles.length == 0) {
+          continue;
         }
+        for (File fileEntry : noteFiles) {
+       // Making sure we're only reading notes and not flashcards/directories.
+          if (fileEntry.isFile() && fileEntry.getName().charAt(0) == 'N') {
+
+            // Reading data from this file into string.
+            StringBuilder json = new StringBuilder();
+            try (
+                BufferedReader br =
+                new BufferedReader(new InputStreamReader(new FileInputStream(
+                    fileEntry), "UTF-8"))) {
+              String line;
+              while ((line = br.readLine()) != null) {
+                json.append(line);
+              }
+            } catch (Exception e) {
+              return null;
+            }
+            // Converting retrieved data into note object.
+            long id = 0;
+            try {
+              id = Long.parseLong(fileEntry.getName().substring(1));
+            } catch (NumberFormatException e) {
+              // The file is invalid so we skip it.
+              continue;
+            }
+            Note note = new Note("", subject, "");
+            String jsonData = json.toString();
+            if (jsonData.isEmpty()) {
+              continue; //File has no data
+            } else {
+              try {
+                JSONObject testObj = new JSONObject(jsonData);
+              } catch (JSONException e) {
+                continue; //File isn't a proper JSON object.
+              }
+            }
+            note.updateFields(jsonData);
+            note.setId(id);
+            notes.add(note);
+          }
+        }
+        
       }
     }
     return notes;
