@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import edu.brown.cs.mmth.fileIo.IdCounter;
+import edu.brown.cs.mmth.fileIo.UpdaterThread;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -209,7 +209,7 @@ public final class Main {
 
     File db = options.valueOf(fileSpec);
     Main.getIdFromMemory();
-    Thread thread = new Thread(new IdCounter());
+    Thread thread = new Thread(new UpdaterThread());
     thread.start();
     Web.runSparkServer();
   }
