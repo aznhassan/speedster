@@ -57,20 +57,14 @@ public final class FlashCardReader {
   }
   
   /**
-   * Reads in a list of Flashcards from memory and creates a list of Flashcards.
-   * @param pathToCards
-   *          - The subject of the flashCard
-   * @return A list of Flashcard objects.
+   * Reads flashcards (if any) from within folder. 
+   * @param folder to look into.
+   * @return collection of flashcards read from given folder.
    */
-  public static Collection<Flashcard> readCards(String subject) {
-    String pathToCards = Main.getBasePath() + "/" + subject;
-    File directory = new File(pathToCards);
-    File[] files = directory.listFiles();
+  private static Collection<Flashcard> readCardsInFolder(File folder) {
     List<Flashcard> flashCards = new ArrayList<>();
-    if (files == null || files.length == 0) {
-      return null;
-    }
-    for (File file : files) {
+    // Looking into the files in the given folder.
+    for(File file: folder.listFiles()) {
       if (!file.isFile()) {
         continue;
       }
@@ -113,6 +107,29 @@ public final class FlashCardReader {
         flashCards.add(card);
       } catch (IOException e) {
         return null;
+      }
+    }
+    return flashCards;
+  }
+  
+  /**
+   * Reads in a list of Flashcards from memory and creates a list of Flashcards.
+   * @param pathToCards
+   *          - The subject of the flashCard.
+   * @return A list of Flashcard objects.
+   */
+  public static Collection<Flashcard> readCards(String subject) {
+    String pathToCards = Main.getBasePath() + "/" + subject;
+    File directory = new File(pathToCards);
+    File[] files = directory.listFiles();
+    List<Flashcard> flashCards = new ArrayList<>();
+    if (files == null || files.length == 0) {
+      return null;
+    }
+    for (File file : files) {
+      // All flashcards are one level deep in folders!
+      if (!file.isFile()) {
+        flashCards.addAll(readCardsInFolder(file));
       }
     }
     return flashCards;
