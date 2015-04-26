@@ -62,7 +62,7 @@ body {
 
 .flashcard_div_back {
 	z-index: 800;
-	background-color:white;
+	background-color:white	;
 	-webkit-transform: rotateY(-180deg);
     -webkit-transform-style: preserve-3d;
     -webkit-backface-visibility: hidden;

@@ -14,6 +14,9 @@ import java.util.Map;
 import edu.brown.cs.mmth.speedster.Flashcard;
 import edu.brown.cs.mmth.speedster.Main;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Reads Flashcards from disk.
  *
@@ -69,10 +72,10 @@ public final class FlashCardReader {
     }
     for (File file : files) {
       if (!file.isFile()) {
-        return null;
+        continue;
       }
       String name = file.getName();
-      if (!name.startsWith("f")) {
+      if (!(Character.toLowerCase(name.charAt(0))=='f')) {
         continue;
       }
       try (
@@ -83,6 +86,16 @@ public final class FlashCardReader {
         String line = "";
         while ((line = reader.readLine()) != null) {
           object.append(line);
+        }
+        String jsonData = object.toString();
+        if (jsonData.isEmpty()) {
+          continue; //File has no data
+        } else {
+          try {
+            JSONObject testObj = new JSONObject(jsonData);
+          } catch (JSONException e) {
+            continue; //File isn't a proper JSON object.
+          }
         }
         Flashcard card = new Flashcard("", "");
         card.updateFields(object.toString());
