@@ -48,7 +48,8 @@ public final class NoteWriter {
       String basePath = Main.getBasePath();
 
       String suffixPath =
-          "/" + note.getSubject() + "/N" + note.getId();
+          "/" + note.getSubject() + "/N" + note.getId()
+          + "/" + "/N" + note.getId();
       String finalPath = basePath + suffixPath;
 
       File file = new File(finalPath);
