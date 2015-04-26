@@ -72,8 +72,12 @@ $(document).ready(function() {
             var folders = fList;
             var json = $(".data");
             var jsonArray = JSON.parse(json.text());
+            fList = jsonArray;
             // alert("CALLBACK");
             displayTitles(jsonArray);
+
+
+
             //displayTitles(folders);
         });
     }
@@ -179,7 +183,7 @@ $(document).ready(function() {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         $(new_note_div).attr('contenteditable','true');
-        $(new_note_div).attr('folder', folderDiv.innerHTML);
+        $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
         new_note_div.id = -1;
         console.log("NEW NOTE ID: " + new_note_div.id);
         new_note_div.innerHTML = "NEW  NOTE";
@@ -239,7 +243,7 @@ $(document).ready(function() {
                 "title": $(this).find('.title')[0].innerText
             }
             new_folders.push(folder_data);
-            console.log(folder_data);
+            // console.log(folder_data);
         });
 
 
@@ -253,7 +257,7 @@ $(document).ready(function() {
                 "title":this.innerText
             }
             newNotes.push(noteData);
-            console.log(noteData);
+            // console.log(noteData);
         });
 
         // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
@@ -261,6 +265,7 @@ $(document).ready(function() {
             folders: JSON.stringify(new_folders),
             notes: JSON.stringify(newNotes)
         }
+        console.log(postParam);
         $.post("/updateNotes", postParam, function(responseObject) {
             // window.location.replace('/notes');
         });
@@ -305,7 +310,9 @@ $(document).ready(function() {
     });
 
 /************************************
- * STYLE EDITING OVERLAY
+ ************************************
+ * STYLE EDITING OVERLAY STUFF ******
+ ************************************
  ************************************/
 
     /**
@@ -333,6 +340,8 @@ $(document).ready(function() {
             fList[i].folder_name + '<span class="circle collapseCustom"> + </span>' + 
             '<span class="circle arrow"><span class="arrow-down"></span></span>' + '<span>' + 
             '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
+                '<span class="new-style-header"> New Style <span class="circle arrow" id="style-circle"><span class="arrow-down"></span></span></span>' + 
+                '<div class="rule_div" id="rule_div_' + fList[i].folder_id + '">' +
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
                 should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
                 and have these styles: <br>' + 
@@ -348,6 +357,7 @@ $(document).ready(function() {
                 '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
                 '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
+                '</div>' + 
             '</div>'); 
             
             
@@ -361,9 +371,9 @@ $(document).ready(function() {
             addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
           
            
-            $(style_div).find('.arrow').bind('click', {id: fList[i].folder_id}, function(event) {
+            $(style_div).find('#style-circle').bind('click', {id: fList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
-                var divToCollapse = document.getElementById('inner_style_div_' + folderID);
+                var divToCollapse = document.getElementById('rule_div_' + folderID);
                 $(divToCollapse).slideToggle();
 //                 alert(this.innerText === '+');
                 if($(this.innerHTML)[0].className === 'arrow-down') {
@@ -374,7 +384,8 @@ $(document).ready(function() {
             });
 
             $(style_div).find('.collapseCustom').bind('click', {id: fList[i].folder_id}, function(event) {
-                $('#form_' + event.data.id).slideToggle();
+                
+                $('#inner_style_div_' + event.data.id).slideToggle();
             });
 
 
@@ -567,6 +578,8 @@ $(document).ready(function() {
 
 Rule:
 {
+  "associated_folder_id": event.data.id,
+  "associated_folder_name": event.data.name,
   "name": "string"
   "trigger":
   {
@@ -637,14 +650,13 @@ Rules can take the following forms based on what is defined:
 
     /**
      * Click handler for the save styles button
-     * Sends updated styles to the server as a JSON string
-     * in a POST request '/updateStyle'.
+     * #TODO: DO we need this ?
      */
     function saveStyleClick() {
-        var updated_styles = styleChangesToSave();
-        console.log("POST PARAMS: " + JSON.stringify(updated_styles));
+        // var updated_styles = styleChangesToSave();
+        // console.log("POST PARAMS: " + JSON.stringify(updated_styles));
         var postParam = {
-            styles_on_save: JSON.stringify(updated_styles)
+            // styles_on_save: JSON.stringify(updated_styles)
             
         };
 
@@ -661,64 +673,86 @@ Rules can take the following forms based on what is defined:
     }
 
 
-/**
- * new folders -> subject title and id of -1
- * new notes -> subject title, note title, id of -1
- */
+/* 
 
-
-/* Sending style editing changes by the user to the server:
-
+Rule:
 {
-    "associated_folder_id":folder_id,
-    "associated_folder_name":folder_name,
-    "style_classes": 
-    [{".note": 
+    "associated_folder_id": event.data.id,
+    "associated_folder_name": event.data.name,
+    "name": "string"
+    "trigger":
+      {
+        "word": "string",
+        "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
+        "style": 
         {
             "font-weight":"bold",
-            "font-style":"italic",
-            "text_decoration":"underline",
-            "font-family":"Helvetica"
-        }
-     },
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
 
-    {".q": 
+        }
+      }
+
+      "after":
+      {
+        "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
+        "style": 
         {
             "font-weight":"bold",
-            "font-style":"italic",
-            "font-family":"Arial"
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
         }
-    }],
+      }
+
+      "container":
+      {
+        "style": 
+        {
+            
+        }
+      }
 }
 
-*/
 
+    /**
+     * Trying to populate a custom style menu with existing style rules
+     * Input --> List of 'rule objects in the exact format I sent them back to the server'
+     *
+     */
+    function createExistingStyleRules(rules) {
+        for(var i = 0; i < rules.length; i++) {
+            var rule = rules[i];
+            var folder_id = rule.associated_folder_id;
+            var folder_name = rule.associated_folder_name;
 
-
-
+        }
+    }
 
 /***********************
 
 
-One style html:
-
-// pass in style_text --> 'note'
-// folder_id --> 1
-// style_type --> 'font-weight'
-// id for that style button is --> 'note' + folder_id + '_' + 'font-weight';
-
-<h3 class="note_styles">Style for "note:"</h3> \
-    <div class="style-toolbar">  \
-        <div class="boldButton" id="note_bold" value="off">B</div> \
-        <div class="italicButton" id="note_italic" value = "off">i</div> \
-        <div class="underlineButton" id="note_underline" value="off">U</div> \
-        <select class="font-family" id="note_font"> \
-            <option value="Arial">Arial</option> \
-            <option value="Helvetica">Helvetica</option> \
-            <option value="Sans Serif">Sans Serif</option> \
-            <option value="Times New Roman">Times New Roman</option> \
-        </select> \
-    </div><br> \
+'<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
+    'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
+    should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
+    and have these styles: <br>' + 
+    createStyleToolbar('start-style-bar', fList[i].folder_id) + 
+    'Extend these styles until<br>'   
+    + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String"></input>  OR \
+    <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+    'Style text after this rule until<br>'
+    + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
+    <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+    'with these styles <br>' 
+    + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
+    '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
+    '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
+    '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
+'</div>'
 
 
 

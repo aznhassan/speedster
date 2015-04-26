@@ -40,7 +40,7 @@
 }
 
 h3 {
-    margin-left: 6%;
+    margin-left: 0%;
     text-align: left;
 }
 
@@ -181,6 +181,33 @@ select {
 .submit-button:hover {
     background-color: black;
     color: white;
+}
+
+#style-circle {
+    height: 30px;
+    width: 30px;
+}
+
+#style-circle .arrow-up {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    
+    border-bottom: 10px solid black;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 3%;
+    margin-bottom: 50%;
+}
+
+#style-circle .arrow-down {
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    
+    border-top: 10px solid black;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 3%;
+    margin-bottom: 40%;
 }
 
 
