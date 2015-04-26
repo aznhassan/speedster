@@ -304,15 +304,15 @@ public final class ApiHandler {
   }
 
   /**
-   * Updates the stylesheet of the current subject with the given rules.
-   *
+   * Updates the stylesheet of the current subject with the given rules, 
+   * as well as the rules for the current subject.
    * @author hsufi
    */
-  public static class UpdateCSS implements Route {
+  public static class UpdateRules implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String cssJson = qm.value("styles_on_save");
+      String cssJson = qm.value("rule");
       boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);

@@ -40,7 +40,7 @@ public final class Web {
     // Setup Spark Routes
     Spark.get("/notes", new ApiHandler.NoteMetaHandler(), freeMarker);
     Spark.post("/words", new ApiHandler.SuggestionsHandler());
-    Spark.post("/updateCSS", new ApiHandler.UpdateCSS());
+    Spark.post("/updateCSS", new ApiHandler.UpdateRules());
     Spark.get("/getNote/:folder/:id", new ApiHandler.GetNote(), freeMarker);
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.get("/getNewSession/:subject", new ApiHandler.GetNewSession(),freeMarker);
