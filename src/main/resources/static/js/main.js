@@ -98,7 +98,7 @@ $(document).ready(function() {
             console.log("DATA: " + folderList[i]);
             $(folder_div).attr('data-folder',folderList[i]);
 
-            folder_div.innerHTML = folderList[i].folder_name;
+            folder_div.innerHTML = '<p class="title">' + folderList[i].folder_name + '</p>';
             var collapse = document.createElement('div');
             $(collapse).addClass('circle');
             collapse.innerHTML = '<span class="arrow-down id="main-page-arrow></span>';
@@ -183,6 +183,7 @@ $(document).ready(function() {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         $(new_note_div).attr('contenteditable','true');
+
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
         new_note_div.id = -1;
         console.log("NEW NOTE ID: " + new_note_div.id);
@@ -267,7 +268,7 @@ $(document).ready(function() {
         }
         console.log(postParam);
         $.post("/updateNotes", postParam, function(responseObject) {
-            // window.location.replace('/notes');
+            window.location.replace('/notes');
         });
 
 
