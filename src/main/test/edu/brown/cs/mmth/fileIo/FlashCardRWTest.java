@@ -22,6 +22,7 @@ public class FlashCardRWTest {
     card.setId(1);
     card.setSubjectName("History");
     card.set_rank(100);
+    card.setNoteId(33);
     card.setNumberTimesCorrect(10);
     card.setNumberTimesWrong(45);
 

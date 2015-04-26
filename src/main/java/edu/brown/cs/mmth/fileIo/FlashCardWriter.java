@@ -42,7 +42,7 @@ public final class FlashCardWriter {
   }
 
   /**
-   * Writes a collection of Flashcards to the given path.
+   * Writes a collection of Flashcards.
    * @param flashCards - The list of FlashCards to write to file
    * @return - Boolean indicating whether or not there was an error in the
    *         operation.
@@ -51,7 +51,8 @@ public final class FlashCardWriter {
     String basePath = Main.getBasePath();
     for (Flashcard card : flashCards) {
       File file =
-          new File(basePath + "/" + card.getSubject() + "/f" + card.getId());
+          new File(basePath + "/" + card.getSubject() 
+              + "/N" + card.getNoteId() + "/f" + card.getId());
       file.getParentFile().mkdirs();
       try (BufferedWriter writer =
           new BufferedWriter(new OutputStreamWriter(

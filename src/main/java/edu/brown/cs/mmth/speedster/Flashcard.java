@@ -55,6 +55,10 @@ public class Flashcard implements Readable, Writeable {
    */
   private String subjectName;
   /**
+   * The ID of the associated note.
+   */
+  private long noteId;
+  /**
    * The id of the Flashcard.
    */
   private long id;
@@ -121,6 +125,7 @@ public class Flashcard implements Readable, Writeable {
     List<String> toReturn = new ArrayList<>();
     toReturn.add("rank:" + new Long(rank).toString());
     toReturn.add("subjectName:" + subjectName);
+    toReturn.add("noteId:" + noteId);
     toReturn.add("ntc:" + new Integer(numberTimesCorrect).toString());
     toReturn.add("ntw:" + new Integer(numberTimesWrong).toString());
     toReturn.add("question:" + question);
@@ -138,6 +143,7 @@ public class Flashcard implements Readable, Writeable {
     JSONObject object = new JSONObject(json);
     rank = Integer.parseInt(object.getString("rank"));
     subjectName = object.getString("subjectName");
+    noteId = Long.parseLong(object.getString("noteId"));
     numberTimesCorrect = Integer.parseInt(object.getString("ntc"));
     numberTimesWrong = Integer.parseInt(object.getString("ntw"));
     question = object.getString("question");
@@ -326,6 +332,14 @@ public class Flashcard implements Readable, Writeable {
   @Override
   public String toString() {
     return this.getDataToStore().toString();
+  }
+  
+  public long getNoteId() {
+    return this.noteId;
+  }
+  
+  public void setNoteId(long id) {
+    this.noteId = id;
   }
 
 }
