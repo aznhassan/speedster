@@ -46,6 +46,7 @@ public final class Web {
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
     Spark.post("/updateNotes", new ApiHandler.UpdateNotes());
+    Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
   }
 
   /** Returns a freeMakerEngine.
