@@ -360,7 +360,7 @@ public final class ApiHandler {
             Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
             toAdd.setId(Main.getAndIncrementId());
             toAdd.setSubjectName(subject);
-            toAdd.setNoteId(Long.parseLong(noteID));
+            toAdd.setNoteId(note.getId());
             cardsToWrite.add(toAdd);
           }         
       }
