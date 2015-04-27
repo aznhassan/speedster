@@ -226,13 +226,13 @@ function stylize(correcting) {
 
     // Q/A
     res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
-        return '<div class="box">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
+        return '<div class="qabox">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
     });
     res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
-        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
+        return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>';
     });
     res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>' + c;
+        return '<span class="acolon">' + a + '</span>' + '<span class="aafter">' + b + '</span>' + c;
     });
 
 
@@ -430,8 +430,17 @@ function sendNotes() {
 }
 
 function gatherFlashcards() {
-    var qas = [];
-    return qas;
+    var flashcards = [];
+    $('.qabox').each(function(index) {
+        console.log($(this));
+        var q = $(this).find('.qafter').text();
+        var a = $(this).find('.aafter').text();
+        flashcards.push({
+          'q': q,
+          'a': a
+        });
+    });
+    return flashcards;
 }
 
 
@@ -446,7 +455,7 @@ $(document).ready(function() {
 		'backgroundColor': 4
 	};
 
-	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
+	document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
 
 	var rules = config[rules] || [];
 
