@@ -417,7 +417,7 @@ function sendNotes() {
 
     var params = {
       'data': noteData,
-      'flashcards': gatherFlashcards(),
+      'flashcards': JSON.stringify(gatherFlashcards()),
       'title': title,
       'noteid': urlparts[3],
       'subject': decodeURIComponent(urlparts[2])
@@ -455,7 +455,7 @@ $(document).ready(function() {
 		'backgroundColor': 4
 	};
 
-	document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
+	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
 
 	var rules = config[rules] || [];
 
