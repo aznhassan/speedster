@@ -129,8 +129,7 @@ select {
 
 .circle {
     text-align: center;
-    height: 40px;
-    width: 40px;
+    color:rgba(0,0,0,0.3);
 }
 
 

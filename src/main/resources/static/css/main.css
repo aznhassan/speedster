@@ -1,6 +1,6 @@
 body {
     background-color: #00E5DB;
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(0, 0, 0, 0.5);
     font-family: "Bitter", serif;
     font-weight: 400;
     font-size: 17px;
@@ -52,51 +52,56 @@ p {
 }
 
 .folder_name_div, .new_folder_name_div {
-	background-color: #000;
-	color: #FFF;
-	text-align:center;
+	color: rgba(0,0,0,0.8);
+	/* text-align:center; */
 	font-size:25px;
+	margin-left: 15%;
+	margin-right: 15%;
+	padding-left: 10%;
+	/* font-weight: bold; */
+	font-family: Bitter;
+	margin-bottom: 1%;
+}
 
+.main_note_div {
+	display: none;
 }
 
 .note_name_div, .new_note_name_div {
-	background-color: rgba(0,0,255,0.7);
-	color: #FFF;
+	color: rgba(0,0,0,0.7);
 	text-align:left;
 	font-size:20px;
-	padding-left:3%;
-	border: 1px dashed white;
+	padding-left: 4%;
 	cursor: pointer;
+	
+	margin-top: 0.7%;
+	margin-bottom: 0.7%;
+	margin-left: 4%;
 }
 
-.note_name_div:hover, .new_note_name_div:hover {
-	background-color: white;
-	color: rgba(0,0,255,1);
-	border: 1px dashed rgba(0,0,255,0.8);
-}
+
 
 .circle {
-	width: 40px;
-	height: 40px;
-	-webkit-border-radius: 25px;
-	-moz-border-radius: 25px;
+	width: 25px;
+	height: 25px;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
 	border-radius: 25px;
-	border: 1px solid #FFF;
-	font-size:30px;
-	margin-left:5%;
+	border: 1px solid rgba(0,0,0,0.3);
+	font-size:25px;
+	margin-left: 2%;
 	display:inline-block;
 	vertical-align:middle;
-	padding-bottom:0.7%;
 	cursor:pointer;
+	line-height: 25px;
+	color:(0,0,0,0.3);
+	margin-bottom: 0.5%;
 }
 
-.circle:hover {
-	background-color: white;
-	color: black;
-}
+
 
 #save-button, #add_section_button, #edit_style_button {
-	background-color:white;
+	background-color:rgba(255,255,255,0.5);
 	width:9%;
 	margin-left: 5%;
 	text-align:center;
@@ -105,11 +110,15 @@ p {
 	position: relative;
 	display: table-cell;
 	vertical-align: middle;
-	border: 1px solid black;
+	border-right: 1px solid rgba(0,0,0,0.6);
+}
+
+#save-button {
+	border-right: none;
 }
 
 #add_section_button:hover, #save-button:hover, #edit_style_button:hover {
-	background-color: black;
+	background-color: rgba(0,0,0,0.2);
 	color: white;
 }
 
@@ -122,13 +131,51 @@ p {
 }
 
 .button_div {
-	background-color: rgba(0,255,0,1);
+	background-color: rgba(255,255,255,0.5);
 	position: absolute;
 	height: auto;
 	width: 50%;
 	display: table;
 	margin-left: 25%;
+	margin-top: 2%;
 }
+
+
+.title {
+	cursor: pointer;
+}
+
+.folder_header_span {
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
+.folder_header_span:hover {
+	background-color: rgba(0,0,0,0.2);
+	border-radius: 5px;
+}
+
+.note_name_div:hover, .new_note_name_div:hover {
+	border-radius: 5px;
+	background-color: rgba(0,0,0,0.1);
+}
+
+.flashcard_icon {
+	/* border: 1px solid rgba(0,0,0,0.3); */
+	color:rgba(0,0,0,0.3);
+	text-align: center;
+	font-style: italic;
+	color: rgba(0,0,0,0.3);
+	font-size: 16px;
+	display: inline-block;
+	margin-left: 3%;
+	border-radius: 15%;
+	cursor: pointer;
+	font-weight: bold;
+	display: none;
+	/* margin-bottom: 5%; */
+}
+
 
 
 

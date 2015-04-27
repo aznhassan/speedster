@@ -97,15 +97,22 @@ $(document).ready(function() {
             folder_div.id = folderList[i].folder_id;
             console.log("DATA: " + folderList[i]);
             $(folder_div).attr('data-folder',folderList[i]);
+            var header_span = document.createElement('span');
+            header_span.className = 'folder_header_span';
+            header_span.innerHTML = '<span class="title">' + folderList[i].folder_name + '</span>';
 
-            folder_div.innerHTML = '<p class="title">' + folderList[i].folder_name + '</p>';
-            var collapse = document.createElement('div');
-            $(collapse).addClass('circle');
-            collapse.innerHTML = '<span class="arrow-down id="main-page-arrow></span>';
-            folder_div.appendChild(collapse);
-            createCircleDiv(folder_div);
-            createFlashcardDiv(folder_div, folderList[i].folder_name);
+            $(folder_div).html(header_span);
+            createCircleDiv(folder_div, header_span);
+            createFlashcardDiv(header_span, folderList[i].folder_name);
+
+            $(header_span).hover(function() {
+                $(this).find('.flashcard_icon')[0].style.display = 'inline';
+            }, function() {
+                $(this).find('.flashcard_icon')[0].style.display = 'none';
+            });
+
             var main_note_div = document.createElement('main_note_div');
+            main_note_div.className = 'main_note_div';
             folder_div.appendChild(main_note_div);
 
 
@@ -121,15 +128,15 @@ $(document).ready(function() {
                 });
             }
 
-            $(collapse).bind('click', {notes: main_note_div}, function(event) {
+            $(folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
                 console.log(event.data.notes);
-                if($(this.innerHTML)[0].className === 'arrow-down') {
-                    console.log("I'm at arrow down");
-                    $(this).html('<span class="arrow-up" id="main-page-arrow"></span>');
-                } else {
-                    $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
-                }
-                $(event.data.notes).slideToggle('medium', function() {
+                // if($(this.innerHTML)[0].className === 'arrow-down') {
+                //     console.log("I'm at arrow down");
+                //     $(this).html('<span class="arrow-up" id="main-page-arrow"></span>');
+                // } else {
+                //     $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
+                // }
+                $(event.data.notes).slideToggle(100, function() {
                 if ($(event.data.notes).is(':visible'))
                     $(event.data.notes).css('display','block');
                 });
@@ -143,11 +150,11 @@ $(document).ready(function() {
      /**
       * Helper function to create the 'add section + sign button'
       */
-     function createCircleDiv(folderDiv) {
+     function createCircleDiv(folderDiv, header_span) {
         var circle = document.createElement("div");
         circle.className = "circle";
-        circle.innerHTML = "+";
-        folderDiv.appendChild(circle);
+        circle.innerText = '+';
+        header_span.appendChild(circle);
         $(circle).attr('contenteditable','false');
         $(circle).click(function(event) {
             createNewNote(folderDiv);
@@ -161,17 +168,25 @@ $(document).ready(function() {
       * Helper function to create flashcard button
       */
     function createFlashcardDiv(folderDiv, folderName) {
-        var circle = document.createElement('div');
-        circle.className = 'circle';
-        circle.innerHTML = 'F';
-        folderDiv.appendChild(circle);
-        $(circle).attr('contenteditable', 'false');
-        $(circle).click(function(event) {
+        // var circle = document.createElement('div');
+        // circle.className = 'circle';
+        // circle.innerHTML = 'F';
+        // folderDiv.appendChild(circle);
+        // $(circle).attr('contenteditable', 'false');
+        // $(circle).click(function(event) {
             
           
-            $.get("/getNewSession/" + encodeURIComponent(folderName), function() {
+        //     $.get("/getNewSession/" + encodeURIComponent(folderName), function() {
 
-            });
+        //     });
+        // });
+        var flashcardIcon = document.createElement('div');
+        flashcardIcon.innerText = 'REVIEW';
+        flashcardIcon.className = 'flashcard_icon';
+        folderDiv.appendChild(flashcardIcon);
+        $(flashcardIcon).attr('contenteditable', 'false');
+        $(flashcardIcon).click(function(event) {
+            $.get('/getNewSession/' + encodeURIComponent(folderName), function() {});
         });
     }
 
@@ -179,11 +194,11 @@ $(document).ready(function() {
      /**
       * Add a new editable note title div when a user adds one,
       */
-     function createNewNote(folderDiv) {
+     function createNewNote(folderDiv, header_span) {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         $(new_note_div).attr('contenteditable','true');
-
+        console.log($(folderDiv).find('.folder_header_span'));
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
         new_note_div.id = -1;
         console.log("NEW NOTE ID: " + new_note_div.id);
@@ -285,15 +300,24 @@ $(document).ready(function() {
       */
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
+        var header_span = document.createElement('span');
+        header_span.className = 'folder_header_span';
+        $(header_span).attr('contenteditable', 'true');
+        $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
-        new_folder_div.innerHTML = '<p class="title">NEW FOLDER</p>';
+        header_span.innerHTML = '<span class="title">NEW FOLDER</span>';
         new_folder_div.id = folder_num_counter + 1;
 
         $(new_folder_div).find('p').attr('contenteditable', 'true');
-        createCircleDiv(new_folder_div);
-        createFlashcardDiv(new_folder_div);
+        createCircleDiv(new_folder_div, header_span);
+        createFlashcardDiv(header_span);
         $('#main-div').append(new_folder_div);
         folder_num_counter++;
+        $(header_span).hover(function() {
+            $(this).find('.flashcard_icon')[0].style.display = 'inline';
+        }, function() {
+            $(this).find('.flashcard_icon')[0].style.display = 'none';
+        });
 
     }
 
