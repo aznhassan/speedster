@@ -106,19 +106,24 @@ $(document).ready(function() {
           
             $(header_span).append('<div class="delete_icon" id="delete_icon_' + fList[i].folder_id + '"></div>');
             createFlashcardDiv(header_span, folderList[i].folder_name);
+            $(header_span).append('<br>');
 
             $(header_span).hover(function() {
-                $(this).find('.delete_icon')[0].style.display = 'inline-block';
-                $(this).find('.flashcard_icon')[0].style.display = 'inline';
+                $(this).find('.delete_icon')[0].style.visibility = 'visible';
+                $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
 
             }, function() {
-                $(this).find('.delete_icon')[0].style.display = 'none';
-                $(this).find('.flashcard_icon')[0].style.display = 'none';
+                $(this).find('.delete_icon')[0].style.visibility = 'hidden';
+                $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
             });
 
             var main_note_div = document.createElement('main_note_div');
             main_note_div.className = 'main_note_div';
             folder_div.appendChild(main_note_div);
+
+            
+         
+            
 
 
 
@@ -134,11 +139,13 @@ $(document).ready(function() {
                 });
 
                 $(notes_div).hover(function() {
-                    $(this).find('.delete_icon')[0].style.display='inline-block'; 
+                    $(this).find('.delete_icon').css({'visibility':'visible'}); 
                 },function() {
-                    $(this).find('.delete_icon')[0].style.display='none';
+                    $(this).find('.delete_icon').css({'visibility':'hidden'}); 
                 });
             }
+
+            $(main_note_div)[0].style.display='none';
 
             $(folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
                 console.log(event.data.notes);
@@ -148,14 +155,16 @@ $(document).ready(function() {
                 // } else {
                 //     $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
                 // }
-                $(event.data.notes).slideToggle(100, function() {
-                if ($(event.data.notes).is(':visible'))
-                    $(event.data.notes).css('display','block');
-                });
+                $(event.data.notes).slideToggle(175);
+                    
+              
                 
             });
 
+
+
             $('#main-div').append(folder_div);
+
         }
      }
 
@@ -326,9 +335,9 @@ $(document).ready(function() {
       */
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
-        var header_span = document.createElement('span');
+        var header_span = document.createElement('input');
         header_span.className = 'folder_header_span';
-        $(header_span).attr('contenteditable', 'true');
+        header_span.type = 'text';
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
@@ -405,7 +414,7 @@ $(document).ready(function() {
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
                 should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
                 and have these styles: <br>' + 
-                createStyleToolbar('start-style-bar', fList[i].folder_id, null) + 
+                createStyleToolbar('start-style-bar', fList[i].folder_id, "") + 
                 '<span class="extra_styles_title" id="extra_styles_title_' + fList[i].folder_id + '"><span class="circle additional-style-collapse arrow-right"><span class="arrow-down"></span></span>' +
                 '  Additional Styles</span><br>' +
                 '<div class="extra_styles_div" id="extra_styles_div_' + fList[i].folder_id + '"><span>Extend these styles until</span><br>'  
@@ -415,7 +424,7 @@ $(document).ready(function() {
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
                 <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
                 '<span style="margin-left:3%">with these styles</span> <br>' 
-                + createStyleToolbar('text-after-style-bar', fList[i].folder_id, null) +
+                + createStyleToolbar('text-after-style-bar', fList[i].folder_id, "") +
                 '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br></div><br>' +
                 '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SAVE</div>' + 
@@ -425,17 +434,17 @@ $(document).ready(function() {
          
             
             
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, 'text-decoration');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'font-weight');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'font-style');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, 'text-decoration');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-weight');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-style');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'text-decoration');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-weight');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-style');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'text-decoration');
 
             addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
             
             $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
-                $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle();
+                $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
                     $(this).removeClass('arrow-right');
                     $(this).addClass('arrow-down');
@@ -449,12 +458,12 @@ $(document).ready(function() {
             $(style_div).find('#style-circle').bind('click', {id: fList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
                 var divToCollapse = document.getElementById('rule_div_' + folderID);
-                $(divToCollapse).slideToggle();
+                $(divToCollapse).slideToggle(175);
                 
             });
 
             $(style_div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
-                $('#inner_style_div_' + event.data.id).slideToggle();
+                $('#inner_style_div_' + event.data.id).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
                     $(this).removeClass('arrow-right');
                     $(this).addClass('arrow-down');
@@ -465,18 +474,6 @@ $(document).ready(function() {
                 }
             });
 
-
-            // set up toggling values on click for the B, I, U styles
-            // $(style_div).find('h2').text(fList[i].folder_name);
-            // setTextStyleToggle('note', fList[i].folder_id, 'font-weight');
-            // setTextStyleToggle('note', fList[i].folder_id, 'font-style');
-            // setTextStyleToggle('note', fList[i].folder_id, 'text-decoration');
-            // setTextStyleToggle('q', fList[i].folder_id, 'font-weight');
-            // setTextStyleToggle('q', fList[i].folder_id, 'font-style');
-            // setTextStyleToggle('q', fList[i].folder_id, 'text-decoration');
-            // setTextStyleToggle('section', fList[i].folder_id, 'font-weight');
-            // setTextStyleToggle('section', fList[i].folder_id, 'font-style');
-            // setTextStyleToggle('section', fList[i].folder_id, 'text-decoration');
 
         }
 
@@ -501,8 +498,9 @@ $(document).ready(function() {
     // sets up the toggling of values for the B, I, U styles (or any others that can have only two states)
     // ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
     // toggle(text-after-style-bar, folder id, font-weight)
-    function setTextStyleToggle(style_text, folder_id, style_type) {
-        var button = $('.style-toolbar').find('#' + style_text + folder_id + '_' + style_type);
+    function setTextStyleToggle(style_text, folder_id, rulename, style_type) {
+        alert(rulename);
+        var button = $('.style-toolbar').find('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
 
@@ -536,7 +534,6 @@ $(document).ready(function() {
      id of bold button:   text-after-style-bar'folder_id'_font-weight
      */
     function createStyleToolbar(style, id, rulename) {
-        rulename ? rulename:"";
         return '<div class="style-toolbar" id="toolbar_' + style + id + rulename + '">  \
             <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
             <div class="italicButton" id="' +  style + id + rulename + '_font-style" value = "none" name="italic">i</div> \
@@ -803,7 +800,7 @@ Rules can take the following forms based on what is defined:
     var rule2 = {
         "associated_folder_id":22,
         "associated_folder_name": "CS 22: Discrete Structures and Probabilty",
-        "name": "one more quotes",
+        "name": "one more quotes though",
         "trigger":
         {
             "word": "quotes plz",
@@ -843,13 +840,13 @@ Rules can take the following forms based on what is defined:
     };
 
     var rule3 = {
-        "associated_folder_id":22,
-        "associated_folder_name": "CS 22: Discrete Structures and Probabilty",
-        "name": "one more quotes",
+        "associated_folder_id":24,
+        "associated_folder_name": "History",
+        "name": "is this quotes though",
         "trigger":
         {
-            "word": "quotes plz",
-            "endSeq": "stop plz",
+            "word": "Tushar is a viking",
+            "endSeq": "ehhhhh",
             "style":
             {
                 "font-weight":"bold",
@@ -862,14 +859,14 @@ Rules can take the following forms based on what is defined:
 
         "after":
         {
-            "endSeq": '<br>',
+            "endSeq": 'some random end sequence',
             "style":
             {
-                "font-weight":"none",
-                "font-style":"italic",
+                "font-weight":"bold",
+                "font-style":"none",
                 "text-decoration":"underline",
-                "font-family": "Helvetica",
-                "font-size":"Big"
+                "font-family": "Times New Roman",
+                "font-size":"Small"
             }
 
         },
@@ -885,8 +882,9 @@ Rules can take the following forms based on what is defined:
     };
 
     var rules = [];
-    rules.push(rule1);
     rules.push(rule2);
+    rules.push(rule1);
+    rules.push(rule3);
 
 /* 
 
@@ -945,11 +943,13 @@ Rule:
      *
      */
     function createExistingStyleRules(rules) {
-    
+        alert(rules.length);
         for(var i = 0; i < rules.length; i++) {
           
             var rule = rules[i];
+
             var rulename = rule.name;
+            alert(rule);
             var rulename_id = rulename.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '');
         
             var folder_id = rule.associated_folder_id;
@@ -964,6 +964,11 @@ Rule:
                 should start with <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename_id + '" placeholder="Character String"></input><br>  \
                 and have these styles: <br>' + 
                 createStyleToolbar('start-style-bar', folder_id, rulename_id) + 
+                '<span class="extra_styles_title" id="extra_styles_title_' + folder_id + rulename_id + '">' + 
+                '<span class="circle additional-style-collapse arrow-right" id="additional-style-collapse_' + folder_id + rulename_id + '">' +
+                '<span class="arrow-down"></span></span>' +
+                '  Additional Styles</span><br>' +
+                '<div class="extra_styles_div" id="extra_styles_div_' + folder_id + rulename_id + '"><span>' + 
                 'Extend these styles until<br>'   
                 + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + folder_id + rulename_id + '" placeholder = "Character String"></input>  OR \
                 <input type="checkbox" class="newline-trigger" id="' + folder_id + rulename_id + '"></input>  Newline<br><br>' + 
@@ -973,12 +978,23 @@ Rule:
                 '<span>with these styles </span><br>' 
                 + createStyleToolbar('text-after-style-bar', folder_id, rulename_id) +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + folder_id + rulename_id+ '"></input>  Box this rule<br>' +
-                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + folder_id + rulename_id + '"></input>   Center this rule<br><br>' +
+                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + folder_id + rulename_id + '"></input>   Center this rule<br><br></div>' +
                 '<div class="submit-button" id="submit_' + folder_id + rulename_id + '">SAVE</div>' + 
             '</div><br>');
+            
+             $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', {id: folder_id, name: rulename_id}, function(event) {
+                $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
+                if($(this).hasClass('arrow-right')) {
+                    $(this).removeClass('arrow-right');
+                    $(this).addClass('arrow-down');
+                } else {
+                    $(this).removeClass('arrow-down');
+                    $(this).addClass('arrow-right');
+                }
+            });
 
             $('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
-                $('#rule_div_' + event.data.id + event.data.name).slideToggle();
+                $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
                     $(this).removeClass('arrow-right');
                     $(this).addClass('arrow-down');
@@ -1066,6 +1082,14 @@ Rule:
                document.getElementById('center_' + folder_id + rulename_id).checked = true;
             }
 
+
+            setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
+            setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
+            setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'text-decoration');
+
+            setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'font-weight');
+            setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'font-style');
+            setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'text-decoration');
 
         }
     }
