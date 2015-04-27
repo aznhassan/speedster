@@ -13,6 +13,7 @@ import java.util.Map;
 
 import edu.brown.cs.mmth.speedster.Flashcard;
 import edu.brown.cs.mmth.speedster.Main;
+import edu.brown.cs.mmth.speedster.Note;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +55,17 @@ public final class FlashCardReader {
    */
   public static Collection<Flashcard> getUpdatedCards() {
     return cache.values();
+  }
+  
+  /**
+   * Returns all flashcards linked with given note.
+   * @param note note object whose associated cards we want.
+   * @return collection of flashcard objects.
+   */
+  public static Collection<Flashcard> getCardsLinkedWithNote(Note note) {
+    String path = Main.getBasePath()+"/"+note.getSubject()+"N"+note.getId();
+    File folder = new File(path);
+    return readCardsInFolder(folder);
   }
   
   /**
