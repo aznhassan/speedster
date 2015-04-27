@@ -225,11 +225,20 @@ function stylize(correcting) {
 
 
     // Q/A
-    res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
-        return '<div class="qabox">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
+    // res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
+    //     return '<div class="qabox">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
+    // });
+    // res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
+    //     return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>';
+    // });
+    // res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+    //     return '<span class="acolon">' + a + '</span>' + '<span class="aafter">' + b + '</span>' + c;
+    // });
+    res = res.replace(/\b(Q:)([^]*?)(<br>\u200b)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e, f) {
+        return '<div class="qabox">' + a + b + c + d + e + '</div>' + maybeUnNewline(f);
     });
-    res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
-        return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>';
+    res = res.replace(/\b(Q:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+        return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>' + c;
     });
     res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
         return '<span class="acolon">' + a + '</span>' + '<span class="aafter">' + b + '</span>' + c;
