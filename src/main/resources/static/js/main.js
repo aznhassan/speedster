@@ -95,7 +95,7 @@ $(document).ready(function() {
             var folder_div = document.createElement("div");
             folder_div.className = "folder_name_div";
             folder_div.id = folderList[i].folder_id;
-            console.log("DATA: " + folderList[i]);
+  
             $(folder_div).attr('data-folder',folderList[i]);
             var header_span = document.createElement('span');
             header_span.className = 'folder_header_span';
@@ -198,7 +198,8 @@ $(document).ready(function() {
         folderDiv.appendChild(flashcardIcon);
         $(flashcardIcon).attr('contenteditable', 'false');
         $(flashcardIcon).click(function(event) {
-            $.get('/getNewSession/' + encodeURIComponent(folderName), function() {});
+          window.location.href = '/getNewSession/' + encodeURIComponent(folderName);
+         //   $.get('/getNewSession/' + encodeURIComponent(folderName), function() {});
         });
     }
 
