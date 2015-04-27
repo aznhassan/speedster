@@ -350,25 +350,23 @@ public final class ApiHandler {
           // If card with same question exists, update answer.
           if(card.getQuestion().equals(currCard.getString("q"))) {
             card.setAnswer(currCard.getString("a"));
-            card.setSubjectName(subject);
-            card.setNoteId(Long.parseLong(noteID));
             cardsToWrite.add(card);
             cardExisted = true;
           }
         }
-        
-        // We need to make a new card.
-        if(!cardExisted) {
-          Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
-          toAdd.setSubjectName(subject);
-          toAdd.setNoteId(Long.parseLong(noteID));
-          cardsToWrite.add(toAdd);
-        }
-        
-        // Writing these cards to disk.
-        FlashCardWriter.writeCards(cardsToWrite);        
+          
+          // We need to make a new card.
+          if(!cardExisted) {
+            Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
+            toAdd.setId(Main.getAndIncrementId());
+            toAdd.setSubjectName(subject);
+            toAdd.setNoteId(Long.parseLong(noteID));
+            cardsToWrite.add(toAdd);
+          }         
       }
       
+      // Writing these cards to disk.
+      FlashCardWriter.writeCards(cardsToWrite);    
       return "";
     }
   }
