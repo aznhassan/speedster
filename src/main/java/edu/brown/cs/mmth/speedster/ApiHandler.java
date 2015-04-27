@@ -328,9 +328,13 @@ public final class ApiHandler {
       // Write flashcards to file if there are any
       // (rawJSONCards will be null if no flashcards are sent)
       String rawJSONCards = qm.value("flashcards");
+     
+      System.out.println(qm.value("flashcards"));
+      
       if (rawJSONCards == null) {
         return "";
       }
+      System.out.println("Got past Nick's code!");
       JSONArray jsonCards = new JSONArray(rawJSONCards);
 
       Collection<Flashcard> cardsToWrite = new ArrayList<>();
@@ -342,10 +346,13 @@ public final class ApiHandler {
         Collection<Flashcard> cards = FlashCardReader.getCardsLinkedWithNote(note);
         // Iterating through cards to see if we want to update an old one or create a new one.
         boolean cardExisted = false;
+
         for(Flashcard card: cards) {
           // If card with same question exists, update answer.
-          if(card.getQuestion().equals(currCard.getString("question"))) {
-            card.setAnswer(currCard.getString("answer"));
+          if(card.getQuestion().equals(currCard.getString("q"))) {
+            card.setAnswer(currCard.getString("a"));
+            card.setSubjectName(subject);
+            card.setNoteId(Long.parseLong(noteID));
             cardsToWrite.add(card);
             cardExisted = true;
           }
@@ -353,7 +360,9 @@ public final class ApiHandler {
         
         // We need to make a new card.
         if(!cardExisted) {
-          Flashcard toAdd = new Flashcard(currCard.getString("answer"),currCard.getString("question"));
+          Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
+          toAdd.setSubjectName(subject);
+          toAdd.setNoteId(Long.parseLong(noteID));
           cards.add(toAdd);
         }
         
