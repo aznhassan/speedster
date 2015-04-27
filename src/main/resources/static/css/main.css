@@ -66,6 +66,7 @@ p {
 
 .main_note_div {
 	display: none;
+	margin-left: 5%;
 }
 
 .note_name_div, .new_note_name_div {
@@ -74,10 +75,11 @@ p {
 	font-size:20px;
 	padding-left: 4%;
 	cursor: pointer;
-	
+	display: block;
 	margin-top: 0.7%;
 	margin-bottom: 0.7%;
 	margin-left: 4%;
+	width: 300%;
 }
 
 
@@ -148,12 +150,17 @@ p {
 
 .folder_header_span {
 	padding-left: 5%;
-	padding-right: 5%;
+	/*padding-right: 5%;*/
+	/* width:  300%; */
 }
 
 .folder_header_span:hover {
+	padding-left: 5%;
+	/*padding-right: 5%;*/
 	background-color: rgba(0,0,0,0.2);
 	border-radius: 5px;
+	/*padding-left: 5%;*/
+	/*padding-right: 5%;*/
 }
 
 .note_name_div:hover, .new_note_name_div:hover {
@@ -177,7 +184,8 @@ p {
 	border-radius: 15%;
 	cursor: pointer;
 	font-weight: bold;
-	display: none;
+	visibility: hidden;
+	margin-right: 5%;
 	/* margin-bottom: 5%; */
 }
 
@@ -190,7 +198,7 @@ p {
 	display: inline-block;
 	margin-left: 3%;
 	cursor: pointer;
-	display: none;
+	visibility: hidden;
 }
 
 

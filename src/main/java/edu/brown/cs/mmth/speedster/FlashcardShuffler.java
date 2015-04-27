@@ -35,7 +35,8 @@ public class FlashcardShuffler {
    *          the cards to display in given session.
    */
   public FlashcardShuffler(final Collection<Flashcard> lCards) {
-    cards = lCards;
+    cards = new ArrayList<>();
+    cards.addAll(lCards);
     techniqueCounter = 0;
     rankedCards = new ArrayList<>();
     rankedCards.addAll(cards);
