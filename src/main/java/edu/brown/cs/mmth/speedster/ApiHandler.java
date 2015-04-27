@@ -323,18 +323,17 @@ public final class ApiHandler {
       // Writing note to memory (overwriting old edition).
       Note note = new Note(noteData,subject,title);
       note.setId(Long.parseLong(noteID));
+      
       NoteWriter.writeNotes(Lists.newArrayList(note));
 
       // Write flashcards to file if there are any
       // (rawJSONCards will be null if no flashcards are sent)
       String rawJSONCards = qm.value("flashcards");
-     
-      System.out.println(qm.value("flashcards"));
       
       if (rawJSONCards == null) {
         return "";
       }
-      System.out.println("Got past Nick's code!");
+    
       JSONArray jsonCards = new JSONArray(rawJSONCards);
 
       Collection<Flashcard> cardsToWrite = new ArrayList<>();
@@ -363,7 +362,7 @@ public final class ApiHandler {
           Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
           toAdd.setSubjectName(subject);
           toAdd.setNoteId(Long.parseLong(noteID));
-          cards.add(toAdd);
+          cardsToWrite.add(toAdd);
         }
         
         // Writing these cards to disk.
