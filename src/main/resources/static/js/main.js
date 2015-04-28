@@ -150,6 +150,18 @@ $(document).ready(function() {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
+                $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id}, function(event) {
+                    var postParam = {
+                        note_id: event.data.id
+                    }
+
+                    // #TODO response is a boolean indicating successful deletion, 
+                    // handle it.
+                    $.post('/deleteNote', postParam, function(responseJSON) {
+                        window.location.href = '/notes';
+                    });
+                });
+
                 $(notes_div).hover(function() {
                     $(this).find('.delete_icon').css({'visibility':'visible'}); 
                 },function() {
@@ -231,15 +243,19 @@ $(document).ready(function() {
      function createNewNote(folderDiv, header_span) {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
-        $(new_note_div).attr('contenteditable','true');
+        // $(new_note_div).attr('contenteditable','true');
+        $(new_note_div).html('<span class="note_title">NEW NOTE</span>');
+        $(new_note_div).find('.note_title').attr('contenteditable','true');
         console.log($(folderDiv).find('.folder_header_span'));
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
         new_note_div.id = -1;
         console.log("NEW NOTE ID: " + new_note_div.id);
 
-        new_note_div.innerHTML = "NEW  NOTE";
+        // new_note_div.innerHTML = "NEW  NOTE";
         $(new_note_div).append('<div class="delete_icon" id="delete_icon_' + -1 + '"></div>');
         folderDiv.appendChild(new_note_div);
+        
+
     
         $(new_note_div).hover(function() {
             if($(this).find('.delete_icon') != null) {
@@ -317,10 +333,11 @@ $(document).ready(function() {
             var noteData = {
                 "note_id":-1,
                 "associated_folder_name": $(this).attr('folder'),
-                "title":this.innerText
+
+                "title":$(this).find('.note_title')[0].innerText
             }
             newNotes.push(noteData);
-            // console.log(noteData);
+            alert(noteData);
         });
 
         // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
