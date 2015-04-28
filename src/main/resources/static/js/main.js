@@ -371,12 +371,45 @@ $(document).ready(function() {
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
-        header_span.innerHTML = '<span class="title">NEW FOLDER</span>';
+        header_span.innerHTML = '<input class="title" maxlength="30" placeholder="NEW FOLDER"></input>';
+
 
         new_folder_div.id = folder_num_counter + 1;
 
-        $(new_folder_div).find('.title').attr('contenteditable', 'true');
-        createCircleDiv(new_folder_div, header_span);
+        // $(new_folder_div).find('.title').attr('contenteditable', 'true');
+
+        $(new_folder_div).find('.title').focusout(function() {
+            var folder_data = {
+                "folder_id": -1,
+                "title": this.value
+            };
+
+            $.get('/newFolder', folder_data, function(responseJSON) {
+                var responseObject = JSON.parse(responseJSON);
+                var folder_id = responseObject.id;
+                var folder_name = responseObject.title;
+                header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
+
+                $(new_folder_div).html(header_span);
+                createCircleDiv(new_folder_div, header_span);
+              
+                $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
+                createFlashcardDiv(header_span, folder_name);
+                $(header_span).append('<br>');
+
+                $(header_span).hover(function() {
+                    $(this).find('.delete_icon')[0].style.visibility = 'visible';
+                    $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
+
+                }, function() {
+                    $(this).find('.delete_icon')[0].style.visibility = 'hidden';
+                    $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
+                });
+
+            });
+
+        });
+        // createCircleDiv(new_folder_div, header_span);
         // $(header_span).append('<div class="delete_icon id="delete_icon_' + -1 + '"></div>');
         // createFlashcardDiv(header_span);
        
