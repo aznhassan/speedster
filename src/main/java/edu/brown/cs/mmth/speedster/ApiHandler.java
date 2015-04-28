@@ -23,6 +23,7 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -30,6 +31,7 @@ import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -307,6 +309,30 @@ public final class ApiHandler {
     }
   }
 
+  
+  /**
+   * Deletes the note with the given ID.
+   *
+   * @author tbhargav
+   */
+  public static class DeleteNote implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String noteID = qm.value("note_id");
+      String subject = qm.value("subject");
+      boolean success = false;
+      File noteFolder = new File(Main.getBasePath()+"/"+subject+"/N"+noteID);
+      
+      // Deleting the note folder.
+      try {
+        FileUtils.deleteDirectory(noteFolder);
+      } catch (IOException e) {
+        return success;
+      }
+      return success;
+    }
+  }
   
   /**
    * Updates the notes and flashcards with data from front-end.

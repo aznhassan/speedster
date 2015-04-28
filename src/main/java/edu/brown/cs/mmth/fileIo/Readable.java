@@ -1,6 +1,5 @@
 package edu.brown.cs.mmth.fileIo;
 
-import java.util.List;
 
 /**
  * Implementing this interface allows our readers to fill the objects of the

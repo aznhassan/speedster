@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.json.JSONObject;
-
 import edu.brown.cs.mmth.speedster.Flashcard;
 import edu.brown.cs.mmth.speedster.Main;
+
+import org.json.JSONObject;
 
 /**
  * Writes FlashCards to their appropriate place in the file system.

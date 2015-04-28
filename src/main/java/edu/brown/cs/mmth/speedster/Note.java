@@ -3,10 +3,10 @@ package edu.brown.cs.mmth.speedster;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONObject;
-
 import edu.brown.cs.mmth.fileIo.Readable;
 import edu.brown.cs.mmth.fileIo.Writeable;
+
+import org.json.JSONObject;
 
 
 /** Models a singular note with the ability to read
