@@ -49,7 +49,7 @@ public final class Web {
     Spark.post("/updateNotes", new ApiHandler.NotesCreator());
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
     Spark.get("/getRules", new ApiHandler.GetRules());
-    Spark.get("deleteFolder", new ApiHandler.DeleteSubject());
+    Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());
   }
 
   /** Returns a freeMakerEngine.

@@ -465,7 +465,7 @@ public final class ApiHandler {
    * @return -Whether or not the diretory deletion was successfull.
    */
   private static boolean deleteDirectory(File directory, boolean result) {
-    if (directory == null || !directory.isDirectory()) {
+    if (directory == null) {
       return false;
     }
     File[] files = directory.listFiles();
