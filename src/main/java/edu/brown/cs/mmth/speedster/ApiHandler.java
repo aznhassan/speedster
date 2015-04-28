@@ -539,32 +539,16 @@ public final class ApiHandler {
         return makeExceptionJSON("Folder doesn't exist");
       }
       
-      if (!deleteDirectory(file, true)) {
+      try {
+        FileUtils.deleteDirectory(file);
+      } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");
       }
+      
       return true; 
     }
   }
   
-  /** Deletes all the files in directory and then the file.
-   * @param directory - The dirctory to delete.
-   * @return -Whether or not the diretory deletion was successfull.
-   */
-  private static boolean deleteDirectory(File directory, boolean result) {
-    if (directory == null) {
-      return false;
-    }
-    File[] files = directory.listFiles();
-    if (files != null) {
-      for (File file: files) {
-        result = result & deleteDirectory(file, result);
-      }
-    }
-    result = result & directory.delete();
-    return result;
-  }
-
-
   /*
    * Updates the meta-data of the given flashcard in simpler terms tells us
    * whether the user got the flashcard wrong or right and for which session
