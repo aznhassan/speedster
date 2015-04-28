@@ -62,6 +62,7 @@ p {
 	/* font-weight: bold; */
 	font-family: Bitter;
 	margin-bottom: 1%;
+	width: 100%;
 }
 
 .main_note_div {
@@ -140,7 +141,7 @@ p {
 	width: 50%;
 	display: table;
 	margin-left: 25%;
-	margin-top: 2%;
+	margin-top: 4%;
 }
 
 
@@ -149,13 +150,14 @@ p {
 }
 
 .folder_header_span {
-	padding-left: 5%;
+	/* padding-left: 5%; */
 	/*padding-right: 5%;*/
 	/* width:  300%; */
+	width: 100%;
 }
 
 .folder_header_span:hover {
-	padding-left: 5%;
+	/* padding-left: 5%; */
 	/*padding-right: 5%;*/
 	background-color: rgba(0,0,0,0.2);
 	border-radius: 5px;

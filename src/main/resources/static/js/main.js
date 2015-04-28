@@ -335,10 +335,14 @@ $(document).ready(function() {
       */
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
-        var header_span = document.createElement('input');
-        header_span.className = 'folder_header_span';
-        header_span.type = 'text';
-        $(new_folder_div).html(header_span);
+        // var header_span = document.createElement('div');
+        // header_span.className = 'folder_header_span';
+
+        // header_span.type = 'text';
+        // <div onkeypress="return (this.innerText.length <= 256)" contenteditable="true">
+        $(new_folder_div).html('<div class="folder_header_span" onkeypress="return (this.innerText.length <= 256)" contenteditable="true">');
+        var header_span = $(new_folder_div).find('.folder_header_span')[0];
+        $(header_span).attr('contenteditable','true');
         new_folder_div.className = "new_folder_name_div";
         
         header_span.innerHTML = '<span class="title">NEW FOLDER</span>';
@@ -477,6 +481,14 @@ $(document).ready(function() {
 
         }
 
+
+        // get the existing style rules from the server here!!
+        var getParams = {};
+        $.get('/getRules', getParams, function(responseJSON) {
+             var responseObject = JSON.parse(responseJSON);
+             console.log(responseObject);
+        });
+
         createExistingStyleRules(rules);
 
         // add in button div
@@ -499,7 +511,7 @@ $(document).ready(function() {
     // ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
     // toggle(text-after-style-bar, folder id, font-weight)
     function setTextStyleToggle(style_text, folder_id, rulename, style_type) {
-        alert(rulename);
+        // alert(rulename);
         var button = $('.style-toolbar').find('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
@@ -943,13 +955,13 @@ Rule:
      *
      */
     function createExistingStyleRules(rules) {
-        alert(rules.length);
+        // alert(rules.length);
         for(var i = 0; i < rules.length; i++) {
           
             var rule = rules[i];
 
             var rulename = rule.name;
-            alert(rule);
+            // alert(rule);
             var rulename_id = rulename.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '');
         
             var folder_id = rule.associated_folder_id;
