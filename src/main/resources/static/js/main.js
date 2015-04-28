@@ -123,10 +123,12 @@ $(document).ready(function() {
             folder_div.appendChild(main_note_div);
 
             
-            $('#delete_icon_' + fList[i].folder_id).bind('click', {name: fList[i].folder_name}, function(event) {
+            $(folder_div).find('.delete_icon').bind('click', {name: fList[i].folder_name}, function(event) {
                 var postParam = {
                     folder: event.data.name
                 }
+                alert("FOLDER TO DELETE: " + postParam);
+                
                 $.post('/deleteFolder', postParam, function() {
                     window.location.href = '/notes';
                 });
@@ -349,7 +351,7 @@ $(document).ready(function() {
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
-        header_span.innerHTML = '<span class="title">NEW FOLDER</span>';
+        header_span.innerHTML = '<input class="title" placeholder="NEW FOLDER" maxlength="30"></input>';
 
         new_folder_div.id = folder_num_counter + 1;
 
