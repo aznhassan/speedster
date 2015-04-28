@@ -265,10 +265,18 @@ public final class ApiHandler {
       
       JSONArray array = new JSONArray();
       for (File subject : subjects) {
-        Collection<Note> noteList = NoteReader.readNotes(subject.getName());
-        if (noteList == null) {
+        Collection<Note> noteCollection = NoteReader.readNotes(subject.getName());
+        if (noteCollection == null) {
           return new ModelAndView(empty, "main.ftl");
         }
+        
+        List<Note> noteList = new ArrayList<>();
+        noteList.addAll(noteCollection);
+        Collections.sort(noteList, new Comparator<Note>() {
+          public int compare(Note n1, Note n2) {
+            return n1.getName().compareTo(n2.getName());
+          }
+        });
         JSONObject folder = new JSONObject();
         folder.put("folder_name", subject.getName());
         Long id = NoteReader.getNoteSubjectId(subject.getName());
