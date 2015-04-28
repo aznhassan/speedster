@@ -13,7 +13,6 @@ import edu.brown.cs.mmth.fileIo.UpdaterThread;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
 
 /**
  * This is the main class that co-ordinates GUI with the back-end.

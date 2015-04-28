@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 
 import edu.brown.cs.mmth.speedster.Flashcard;
+
+import org.junit.Test;
 
 public class FlashCardRWTest {
 

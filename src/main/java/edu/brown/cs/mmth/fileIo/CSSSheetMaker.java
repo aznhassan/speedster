@@ -7,13 +7,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-import org.json.JSONArray;
+import edu.brown.cs.mmth.speedster.Main;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.common.collect.Lists;
-
-import edu.brown.cs.mmth.speedster.Main;
 
 /**
  * Writes changes to custom user css to file given JSON of the changes.

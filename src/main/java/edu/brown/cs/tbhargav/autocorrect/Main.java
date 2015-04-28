@@ -11,8 +11,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
+import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
+import edu.brown.cs.tbhargav.tries.Trie;
+import edu.brown.cs.tbhargav.tries.Word;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -22,13 +30,6 @@ import spark.Spark;
 import spark.SparkBase;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-
-import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
-import edu.brown.cs.tbhargav.tries.Trie;
-import edu.brown.cs.tbhargav.tries.Word;
 
 /**
  * This the main class of the project. It handles the CLI and GUI command

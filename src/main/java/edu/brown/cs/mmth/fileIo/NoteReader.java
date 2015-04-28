@@ -11,13 +11,11 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.common.collect.Lists;
-
 import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Reads all the notes within a given directory into Note objects.
