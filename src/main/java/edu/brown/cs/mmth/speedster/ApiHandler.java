@@ -406,6 +406,7 @@ public final class ApiHandler {
     
       JSONArray jsonCards = new JSONArray(rawJSONCards);
 
+      // Cards that will be written to memory.
       Collection<Flashcard> cardsToWrite = new ArrayList<>();
       
       // Creating new flashcards (or merging pre-existing ones). 
