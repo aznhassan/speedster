@@ -129,7 +129,9 @@ $(document).ready(function() {
                 }
                 alert("FOLDER TO DELETE: " + postParam);
                 
-                $.post('/deleteFolder', postParam, function() {
+                $.post('/deleteFolder', postParam, function(responseJSON) {
+                    // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
+                    // appropriately.
                     window.location.href = '/notes';
                 });
             });
@@ -351,7 +353,7 @@ $(document).ready(function() {
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
-        header_span.innerHTML = '<input class="title" placeholder="NEW FOLDER" maxlength="30"></input>';
+        header_span.innerHTML = '<span class="title">NEW FOLDER</span>';
 
         new_folder_div.id = folder_num_counter + 1;
 
