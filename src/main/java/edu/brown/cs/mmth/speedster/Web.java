@@ -4,18 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
 
 import freemarker.template.Configuration;
 
 import spark.ExceptionHandler;
-import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
-import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 
 /**
@@ -50,6 +45,7 @@ public final class Web {
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
     Spark.get("/getRules", new ApiHandler.GetRules());
     Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());
+    Spark.post("/deleteNote", new ApiHandler.DeleteNote());
   }
 
   /** Returns a freeMakerEngine.

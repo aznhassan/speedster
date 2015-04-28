@@ -311,7 +311,8 @@ public final class ApiHandler {
 
   
   /**
-   * Deletes the note with the given ID.
+   * Deletes the note with the given ID. Returns boolean with 
+   * success status. (True if note was deleted, false if not.)
    *
    * @author tbhargav
    */
