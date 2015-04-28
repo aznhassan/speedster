@@ -1,8 +1,11 @@
 package edu.brown.cs.mmth.speedster;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -20,7 +23,6 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
-
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -381,6 +383,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
+      
       String cssJson = qm.value("rule");
       boolean success = false;
       try {
@@ -390,6 +393,45 @@ public final class ApiHandler {
       }
       String toReturn = "";
       return toReturn;
+    }
+  }
+  
+  /** Grabs all the rules from every class 
+   * @author hsufi
+   *
+   */
+  public static class GetRules implements Route {
+    @Override
+    public Object handle(Request req, Response res) {
+      File file = new File(Main.getBasePath());
+      File[] subjects = file.listFiles();
+      if (subjects == null || subjects.length == 0) {
+        return makeExceptionJSON("No subjects found");
+      }
+      StringBuilder bd = new StringBuilder("[");
+      for (File subject : subjects) {
+        File ruleDirectory = new File(subject, "/rules");
+        File[] rules = ruleDirectory.listFiles();
+        if (rules == null || rules.length == 0) {
+          continue;
+        }
+        for (File rule: rules) {
+          try (BufferedReader br =
+              new BufferedReader(new InputStreamReader(new FileInputStream(
+                  rule), "UTF-8"))) {
+            String line = "";
+            while ((line = br.readLine()) != null) {
+              bd.append(line);
+            }
+            bd.append(",");
+          } catch (IOException e) {
+            return makeExceptionJSON(e.getMessage());
+          }
+        }
+      }
+      bd.deleteCharAt(bd.length() - 1); //deleting the extra ,
+      bd.append("]");
+      return bd.toString();
     }
   }
 
@@ -496,5 +538,13 @@ public final class ApiHandler {
    * Private Constructor.
    */
   private ApiHandler() {
+  }
+  
+  /** Wraps an exception message into an error JSON object.
+   * @param exceptionMSG - The exception message to send
+   * @return exceptionMSG wrapped in a JSON object with an error field.
+   */
+  private static String makeExceptionJSON(String exceptionMSG) {
+    return "{\"error\":" + exceptionMSG + "}";
   }
 }
