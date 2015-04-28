@@ -90,6 +90,39 @@ public final class ApiHandler {
   }
 
   /**
+   * Creates a new folder, gives it a unique ID and returns the data to server.
+   *
+   * @author tbhargav
+   */
+  public static class CreateFolder implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String subjectName = qm.value("title");
+      
+      // Creating a new folder in memory, along with its ID file.
+      File folder = new File(Main.getBasePath()+"/"+subjectName);
+      folder.mkdirs();
+     
+      boolean success = true;
+      
+      long id = Main.getAndIncrementId();
+      File idFile = new File(Main.getBasePath()+"/"+subjectName+"/id");
+      FileWriter idWriter;
+      try {
+        idWriter = new FileWriter(idFile);
+        idWriter.write(Long.toString(id));
+        idWriter.close();
+      } catch (IOException e) {
+        success = false;
+      }
+     
+      Map<String, Object> variables = ImmutableMap.of("title",subjectName,"id",id,"error",success);
+      return gson.toJson(variables);
+    }
+  }
+  
+  /**
    * Grabs the next flashcard to display to the user based on the data from each
    * flashcard.
    *
@@ -309,6 +342,7 @@ public final class ApiHandler {
     }
   }
 
+  
   
   /**
    * Deletes the note with the given ID. Returns boolean with 

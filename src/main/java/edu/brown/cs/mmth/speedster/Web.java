@@ -46,6 +46,7 @@ public final class Web {
     Spark.get("/getRules", new ApiHandler.GetRules());
     Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());
     Spark.post("/deleteNote", new ApiHandler.DeleteNote());
+    Spark.get("/newFolder", new ApiHandler.CreateFolder());
   }
 
   /** Returns a freeMakerEngine.
