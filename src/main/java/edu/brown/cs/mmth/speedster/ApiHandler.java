@@ -9,7 +9,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +26,6 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
-
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -250,10 +252,17 @@ public final class ApiHandler {
       File[] subjects = baseDirectory.listFiles();
       String emptyJSON = "{}";
       Map<String, Object> empty =
-          ImmutableMap.of("title", "Welcome home", "folderJSON", emptyJSON);
+          ImmutableMap.of("title", "Welcome home", "data", emptyJSON);
       if (subjects == null || subjects.length == 0) {
         return new ModelAndView(empty, "main.ftl");
       }
+      List<File> subjectList = Arrays.asList(subjects);
+      Collections.sort(subjectList, new Comparator<File>() {
+        public int compare(File o1, File o2) {
+          return o1.getName().compareTo(o2.getName());
+        }
+      });
+      
       JSONArray array = new JSONArray();
       for (File subject : subjects) {
         Collection<Note> noteList = NoteReader.readNotes(subject.getName());
