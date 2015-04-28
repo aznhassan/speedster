@@ -106,7 +106,7 @@ Custom Classes
 	margin: auto;
 }
 
-.box {
+.box, .qabox {
 	background-color: rgba(255, 255, 255, 0.35);
 	padding: 4px;
 	padding-left: 7px;
@@ -126,7 +126,7 @@ Custom Classes
     color: rgba(0, 0, 0, 0.5);
 }
 
-.qacolon {
+.qcolon, .acolon {
 	font-family: "Bitter", serif;
     font-weight: 700;
     font-size: 18px;
@@ -135,7 +135,7 @@ Custom Classes
 	text-transform: uppercase;
 }
 
-.qaafter {
+.qafter, .aafter {
     color: rgba(0, 0, 0, 0.5);
 }
 

@@ -34,7 +34,7 @@
 
      <div class="example_overlay" id="overlay"></div>
      <div class="example_content">
-        <h1 id="rule-header">STYLE RULES</h1>
+        <span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>
 
      </div>
      <div id="main-div"></div><br>
@@ -43,7 +43,7 @@
         <div id="edit_style_button">EDIT STYLES</div>
         <div id="save-button">SAVE CHANGES</div>
 
-     </div>
+     </div><br><br><br><br><br><br><br><br><br>
      </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

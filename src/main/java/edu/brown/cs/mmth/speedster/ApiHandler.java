@@ -81,7 +81,6 @@ public final class ApiHandler {
       // Putting session with ID in cache.
       FlashcardShuffler.addSession(sessionID, currSession);
       sessionID++;
-      System.out.println("HEYYY");
       return new ModelAndView(variables, "flashcard.ftl");
     }
   }
@@ -320,15 +319,23 @@ public final class ApiHandler {
       String noteID = qm.value("noteid");
       String subject = qm.value("subject");
       String title = qm.value("title");
-      String rawJSONCards = qm.value("flashcards");
-      
-      JSONArray jsonCards = new JSONArray(rawJSONCards);
       
       // Writing note to memory (overwriting old edition).
       Note note = new Note(noteData,subject,title);
       note.setId(Long.parseLong(noteID));
-      NoteWriter.writeNotes(Lists.newArrayList(note));
       
+      NoteWriter.writeNotes(Lists.newArrayList(note));
+
+      // Write flashcards to file if there are any
+      // (rawJSONCards will be null if no flashcards are sent)
+      String rawJSONCards = qm.value("flashcards");
+      
+      if (rawJSONCards == null) {
+        return "";
+      }
+    
+      JSONArray jsonCards = new JSONArray(rawJSONCards);
+
       Collection<Flashcard> cardsToWrite = new ArrayList<>();
       
       // Creating new flashcards (or merging pre-existing ones). 
@@ -338,27 +345,29 @@ public final class ApiHandler {
         Collection<Flashcard> cards = FlashCardReader.getCardsLinkedWithNote(note);
         // Iterating through cards to see if we want to update an old one or create a new one.
         boolean cardExisted = false;
+
         for(Flashcard card: cards) {
           // If card with same question exists, update answer.
-          if(card.getQuestion().equals(currCard.getString("question"))) {
-            card.setAnswer(currCard.getString("answer"));
+          if(card.getQuestion().equals(currCard.getString("q"))) {
+            card.setAnswer(currCard.getString("a"));
             cardsToWrite.add(card);
             cardExisted = true;
           }
         }
-        
-        // We need to make a new card.
-        if(!cardExisted) {
-          Flashcard toAdd = new Flashcard(currCard.getString("answer"),currCard.getString("question"));
-          cards.add(toAdd);
-        }
-        
-        // Writing these cards to disk.
-        FlashCardWriter.writeCards(cardsToWrite);        
+          
+          // We need to make a new card.
+          if(!cardExisted) {
+            Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
+            toAdd.setId(Main.getAndIncrementId());
+            toAdd.setSubjectName(subject);
+            toAdd.setNoteId(note.getId());
+            cardsToWrite.add(toAdd);
+          }         
       }
       
-      String toReturn = "";
-      return toReturn;
+      // Writing these cards to disk.
+      FlashCardWriter.writeCards(cardsToWrite);    
+      return "";
     }
   }
 

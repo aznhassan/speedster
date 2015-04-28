@@ -225,14 +225,23 @@ function stylize(correcting) {
 
 
     // Q/A
-    res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
-        return '<div class="box">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
+    // res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
+    //     return '<div class="qabox">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
+    // });
+    // res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
+    //     return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>';
+    // });
+    // res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+    //     return '<span class="acolon">' + a + '</span>' + '<span class="aafter">' + b + '</span>' + c;
+    // });
+    res = res.replace(/\b(Q:)([^]*?)(<br>\u200b)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e, f) {
+        return '<div class="qabox">' + a + b + c + d + e + '</div>' + maybeUnNewline(f);
     });
-    res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
-        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>';
+    res = res.replace(/\b(Q:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+        return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>' + c;
     });
     res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-        return '<span class="qacolon">' + a + '</span>' + '<span class="qaafter">' + b + '</span>' + c;
+        return '<span class="acolon">' + a + '</span>' + '<span class="aafter">' + b + '</span>' + c;
     });
 
 
@@ -412,17 +421,35 @@ function compileUserRule(rule) {
 function sendNotes() {
     var urlparts = window.location.pathname.split('/');
 
+    var noteData = $('#noteArea')[0].innerHTML || '';
+    var title = $('.title')[0].innerText || '';
+
     var params = {
-      'data': $('#noteArea').innerHTML,
-      'flashcards': gatherFlashcards(),
-      'title': $('.title').innerText;
+      'data': noteData,
+      'flashcards': JSON.stringify(gatherFlashcards()),
+      'title': title,
       'noteid': urlparts[3],
-      'subject': urlparts[2]
+      'subject': decodeURIComponent(urlparts[2])
     }
+    console.log(params);
 
     $.post("/updateNote", params, function() {
         // merp...
     });
+}
+
+function gatherFlashcards() {
+    var flashcards = [];
+    $('.qabox').each(function(index) {
+        console.log($(this));
+        var q = $(this).find('.qafter').text();
+        var a = $(this).find('.aafter').text();
+        flashcards.push({
+          'q': q,
+          'a': a
+        });
+    });
+    return flashcards;
 }
 
 
@@ -437,7 +464,7 @@ $(document).ready(function() {
 		'backgroundColor': 4
 	};
 
-	document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
+	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
 
 	var rules = config[rules] || [];
 
@@ -533,35 +560,36 @@ $(document).ready(function() {
   var sendNotesCounter = 0;
 
 	$("#noteArea").keyup(function(event) {
-		var caller = $(event.target)[0];
-		var input = caller.value;
-		var vars = {"text": input};
+		  var caller = $(event.target)[0];
+		  var input = caller.value;
+		  var vars = {"text": input};
 
-		var code = event.keyCode || event.which;
-		if (code == 9) {
-   			  // Tab
-   			  //stylize();
-   		} else if (code == 32) {
-   			  // Space
-   			  stylize(true);
-          sendNotesCounter++;
-          if (sendNotesCounter % 5 == 0) {
-            sendNotes();
-            sendNotesCounter = 0;
-          }
-   		} else if (code == 13) {
+		  var code = event.keyCode || event.which;
+		  if (code == 9) {
+          // Tab
+          //stylize();
+      } else if (code == 32) {
+        	// Space
+          stylize(true);
+          // sendNotesCounter++;
+          // if (sendNotesCounter % 5 == 0) {
+          //     sendNotes();
+          //     sendNotesCounter = 0;
+          // }
+          sendNotes();
+   	  } else if (code == 13) {
         	// Line feed
-        	var parent = getSelectionParentElement(window.getSelection());
-        	var elt = document.createTextNode("\u200b");
-        	parent.parentNode.insertBefore(elt, parent);
+          var parent = getSelectionParentElement(window.getSelection());
+          var elt = document.createTextNode("\u200b");
+          parent.parentNode.insertBefore(elt, parent);
         	
-        	stylize(true);
+          stylize(true);
       } else {
-        stylize();
+          stylize(false);
       }
   });
 
-  $("#noteArea").focus();
+  //$("#noteArea").focus();
 });
 
 function getBackgroundColorOption(option) {
