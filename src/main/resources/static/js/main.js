@@ -150,9 +150,10 @@ $(document).ready(function() {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
-                $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id}, function(event) {
+                $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
                     var postParam = {
-                        note_id: event.data.id
+                        note_id: event.data.id,
+                        subject: event.data.folder
                     }
 
                     // #TODO response is a boolean indicating successful deletion, 
