@@ -383,7 +383,6 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      
       String cssJson = qm.value("rule");
       boolean success = false;
       try {
@@ -391,8 +390,7 @@ public final class ApiHandler {
       } catch (IOException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
       }
-      String toReturn = "";
-      return toReturn;
+      return success;
     }
   }
   
@@ -434,6 +432,49 @@ public final class ApiHandler {
       return bd.toString();
     }
   }
+  
+  /** Deletes the given folder and all the contents.
+   * @author hsufi
+   *
+   */
+  public static class DeleteSubject implements Route {
+    @Override
+    public Object handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String folder = qm.value("folder");
+      if (folder == null || folder.isEmpty()) {
+        return makeExceptionJSON("No folder given");
+      }
+      File file = new File(Main.getBasePath() + "/" + folder);
+      if (!file.isDirectory()) {
+        return makeExceptionJSON("Folder doesn't exist");
+      }
+      
+      if (!deleteDirectory(file, true)) {
+        return makeExceptionJSON("Folder couldn't be deleted");
+      }
+      return true; 
+    }
+  }
+  
+  /** Deletes all the files in directory and then the file.
+   * @param directory - The dirctory to delete.
+   * @return -Whether or not the diretory deletion was successfull.
+   */
+  private static boolean deleteDirectory(File directory, boolean result) {
+    if (directory == null || !directory.isDirectory()) {
+      return false;
+    }
+    File[] files = directory.listFiles();
+    if (files != null) {
+      for (File file: files) {
+        result = result & deleteDirectory(file, result);
+      }
+    }
+    result = result & directory.delete();
+    return result;
+  }
+
 
   /*
    * Updates the meta-data of the given flashcard in simpler terms tells us
