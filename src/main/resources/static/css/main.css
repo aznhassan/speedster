@@ -57,7 +57,7 @@ p {
 	/* text-align:center; */
 	font-size:25px;
 	/* margin-left: 15%; */
-	margin-right: 15%;
+	/* margin-right: 15%; */
 	padding-left: 10%;
 	padding-right: 10%;
 	/* font-weight: bold; */
@@ -68,7 +68,7 @@ p {
 
 .main_note_div {
 	display: none;
-	margin-left: 12%;
+	padding-left: 12%;
 }
 
 .note_name_div, .new_note_name_div {
@@ -152,7 +152,7 @@ p {
 
 .title {
 	cursor: pointer;
-	margin-left: 10%;
+	/* margin-left: 10%; */
 	padding-left: 10%;
 }
 
@@ -161,11 +161,13 @@ p {
 	/*padding-right: 5%;*/
 	/* width:  300%; */
 	width: 100%;
+	padding-left: -20%;
+	/* margin-left: -10%; */
 }
 
 .folder_header_span:hover {
 	/* padding-left: 5%; */
-	/*padding-right: 5%;*/
+	padding-right: 5%;
 	background-color: rgba(0,0,0,0.2);
 	border-radius: 5px;
 	/*padding-left: 5%;*/
@@ -177,8 +179,8 @@ p {
 	background-color: rgba(0,0,0,0.1);
 }
 
-.new_note_name_div:focus, .new_folder_name_div:focus {
-	outline: 0;
+.new_folder_name_div {
+/* 	text-align:center; */
 }
 
 .flashcard_icon {

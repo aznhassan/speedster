@@ -429,7 +429,10 @@ public final class ApiHandler {
           }
         }
       }
-      bd.deleteCharAt(bd.length() - 1); //deleting the extra ,
+      if (bd.length() > 1) {
+        bd.deleteCharAt(bd.length() - 1); //deleting the extra ","
+      }
+
       bd.append("]");
       return bd.toString();
     }

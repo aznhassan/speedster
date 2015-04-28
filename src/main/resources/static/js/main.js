@@ -12,6 +12,7 @@ $(document).ready(function() {
     // var editStyleButton = document.getElementById("");
     var folder_num_counter = 0;
     var prevEditingHTML = null;
+
     // window.glob 
 
     
@@ -122,7 +123,14 @@ $(document).ready(function() {
             folder_div.appendChild(main_note_div);
 
             
-         
+            $('#delete_icon_' + fList[i].folder_id).bind('click', {name: fList[i].folder_name}, function(event) {
+                var postParam = {
+                    folder: event.data.name
+                }
+                $.post('/deleteFolder', postParam, function() {
+                    window.location.href = '/notes';
+                });
+            });
             
 
 
@@ -337,7 +345,7 @@ $(document).ready(function() {
         var new_folder_div = document.createElement("div");
         var header_span = document.createElement('span');
         header_span.className = 'folder_header_span';
-        $(header_span).attr('contenteditable', 'true');
+        // $(header_span).attr('contenteditable', 'true');
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
@@ -345,22 +353,22 @@ $(document).ready(function() {
 
         new_folder_div.id = folder_num_counter + 1;
 
-        $(new_folder_div).find('p').attr('contenteditable', 'true');
+        $(new_folder_div).find('.title').attr('contenteditable', 'true');
         createCircleDiv(new_folder_div, header_span);
-         $(header_span).append('<div class="delete_icon id="delete_icon_' + -1 + '"></div>');
-        createFlashcardDiv(header_span);
+        // $(header_span).append('<div class="delete_icon id="delete_icon_' + -1 + '"></div>');
+        // createFlashcardDiv(header_span);
        
         $('#main-div').append(new_folder_div);
-        folder_num_counter++;
-        $(header_span).hover(function() {
+
+        // $(header_span).hover(function() {
 //             $(this).find('.flashcard_icon')[0].style.display = 'inline';
-            console.log($(this).find('.delete_icon'));
-            $(this).find('.flashcard_icon')[0].style.display = 'inline';
-            $(this).find('.delete_icon')[0].style.display = 'inline-block';
-        }, function() {
-            $(this).find('.flashcard_icon')[0].style.display = 'none';
-            $(this).find('.delete_icon')[0].style.display = 'none';
-        });
+            // console.log($(this).find('.delete_icon'));
+            // $(this).find('.flashcard_icon')[0].style.display = 'inline';
+            // $(this).find('.delete_icon')[0].style.display = 'inline-block';
+        // }, function() {
+            // $(this).find('.flashcard_icon')[0].style.display = 'none';
+            // $(this).find('.delete_icon')[0].style.display = 'none';
+        // });
 
     }
 
@@ -480,12 +488,15 @@ $(document).ready(function() {
 
         // get the existing style rules from the server here!!
         var getParams = {};
+        var rules = [];
         $.get('/getRules', getParams, function(responseJSON) {
-             var responseObject = JSON.parse(responseJSON);
-             console.log(responseObject);
+             // var responseObject = JSON.parse(responseJSON);
+             console.log("RULESSSSSSSSSS PLZ: " + responseJSON);
+             rules = JSON.parse(responseJSON);
+             createExistingStyleRules(rules);
         });
 
-        createExistingStyleRules(rules);
+        
 
         // add in button div
         var button_div = document.createElement('div');
@@ -610,7 +621,7 @@ $(document).ready(function() {
             }
 
             var postParam = {
-                rule: rule
+                rule: JSON.stringify(rule)
             }
             $.post('/updateCSS', postParam, function() {
 
@@ -889,10 +900,10 @@ Rules can take the following forms based on what is defined:
         }
     };
 
-    var rules = [];
-    rules.push(rule2);
-    rules.push(rule1);
-    rules.push(rule3);
+   
+    // rules.push(rule2);
+    // rules.push(rule1);
+    // rules.push(rule3);
 
 /* 
 
@@ -951,15 +962,15 @@ Rule:
      *
      */
     function createExistingStyleRules(rules) {
-        // alert(rules.length);
+        console.log("length:    " + rules.length);
         for(var i = 0; i < rules.length; i++) {
           
             var rule = rules[i];
 
             var rulename = rule.name;
             // alert(rule);
-            var rulename_id = rulename.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '');
-        
+            var rulename_id = rulename.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
+            console.log("RULENAME PARSED: " + rulename_id);
             var folder_id = rule.associated_folder_id;
             var folder_name = rule.associated_folder_name;
             var inner_div = document.getElementById('inner_style_div_' + folder_id);
@@ -1044,14 +1055,14 @@ Rule:
             document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule.trigger.style["font-size"];
 
             // extend these styles until ...
-            if(rule.trigger.endSeq != '<br>') {
+            if(rule.trigger.endSeq != '<br>\u200b') {
                 document.getElementById('trigger-end-sequence_' + folder_id + rulename_id).value  = rule.trigger.endSeq ? rule.trigger.endSeq : "";
             } else {
                 document.getElementById('newline-trigger_' + folder_id + rulename_id).checked = true;
             }
 
             // style text after this rule until
-            if(rule.after.endSeq != '<br>') {
+            if(rule.after.endSeq != '<br>\u200b') {
                 document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
             } else {
                 document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
