@@ -251,9 +251,7 @@ public final class ApiHandler {
 
   /**
    * Generates autocorrect suggestions for the given word.
-   *
    * @author tbhargav
-   *
    */
   public static class SuggestionsHandler implements Route {
     @Override
