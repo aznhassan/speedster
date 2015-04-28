@@ -402,8 +402,6 @@ public final class ApiHandler {
       Note note = new Note(noteData,subject,title);
       note.setId(Long.parseLong(noteID));
       
-      NoteWriter.writeNotes(Lists.newArrayList(note));
-
       // Write flashcards to file if there are any
       // (rawJSONCards will be null if no flashcards are sent)
       String rawJSONCards = qm.value("flashcards");
@@ -444,6 +442,17 @@ public final class ApiHandler {
           }         
       }
       
+      // Clearing the note directory as we now have everything we need to write!
+      File noteFolder = new File(Main.getBasePath()+"/"+subject+"/N"+note.getId());
+      try {
+        FileUtils.deleteDirectory(noteFolder);
+      } catch (IOException e) {
+        // TODO: Better error handling!
+        return "";
+      }
+      
+      // Writing note to disk.
+      NoteWriter.writeNotes(Lists.newArrayList(note));
       // Writing these cards to disk.
       FlashCardWriter.writeCards(cardsToWrite);    
       return "";
