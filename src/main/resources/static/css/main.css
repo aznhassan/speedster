@@ -56,9 +56,10 @@ p {
 	color: rgba(0,0,0,0.8);
 	/* text-align:center; */
 	font-size:25px;
-	margin-left: 15%;
+	/* margin-left: 15%; */
 	margin-right: 15%;
 	padding-left: 10%;
+	padding-right: 10%;
 	/* font-weight: bold; */
 	font-family: Bitter;
 	margin-bottom: 1%;
@@ -67,7 +68,7 @@ p {
 
 .main_note_div {
 	display: none;
-	margin-left: 5%;
+	margin-left: 12%;
 }
 
 .note_name_div, .new_note_name_div {
@@ -81,6 +82,10 @@ p {
 	margin-bottom: 0.7%;
 	margin-left: 4%;
 	width: 300%;
+}
+
+.new_note_name_div {
+	margin-left: 9.3%;
 }
 
 
@@ -147,6 +152,8 @@ p {
 
 .title {
 	cursor: pointer;
+	margin-left: 10%;
+	padding-left: 10%;
 }
 
 .folder_header_span {

@@ -97,7 +97,7 @@ $(document).ready(function() {
             folder_div.id = folderList[i].folder_id;
   
             $(folder_div).attr('data-folder',folderList[i]);
-            var header_span = document.createElement('span');
+            var header_span = document.createElement('div');
             header_span.className = 'folder_header_span';
             header_span.innerHTML = '<span class="title">' + folderList[i].folder_name + '</span>';
 
@@ -335,14 +335,10 @@ $(document).ready(function() {
       */
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
-        // var header_span = document.createElement('div');
-        // header_span.className = 'folder_header_span';
-
-        // header_span.type = 'text';
-        // <div onkeypress="return (this.innerText.length <= 256)" contenteditable="true">
-        $(new_folder_div).html('<div class="folder_header_span" onkeypress="return (this.innerText.length <= 256)" contenteditable="true">');
-        var header_span = $(new_folder_div).find('.folder_header_span')[0];
-        $(header_span).attr('contenteditable','true');
+        var header_span = document.createElement('span');
+        header_span.className = 'folder_header_span';
+        $(header_span).attr('contenteditable', 'true');
+        $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
         header_span.innerHTML = '<span class="title">NEW FOLDER</span>';
