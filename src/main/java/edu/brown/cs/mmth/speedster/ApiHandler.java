@@ -23,6 +23,7 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -30,6 +31,7 @@ import spark.Response;
 import spark.Route;
 import spark.TemplateViewRoute;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -87,6 +89,39 @@ public final class ApiHandler {
     }
   }
 
+  /**
+   * Creates a new folder, gives it a unique ID and returns the data to server.
+   *
+   * @author tbhargav
+   */
+  public static class CreateFolder implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String subjectName = qm.value("title");
+      
+      // Creating a new folder in memory, along with its ID file.
+      File folder = new File(Main.getBasePath()+"/"+subjectName);
+      folder.mkdirs();
+     
+      boolean success = true;
+      
+      long id = Main.getAndIncrementId();
+      File idFile = new File(Main.getBasePath()+"/"+subjectName+"/id");
+      FileWriter idWriter;
+      try {
+        idWriter = new FileWriter(idFile);
+        idWriter.write(Long.toString(id));
+        idWriter.close();
+      } catch (IOException e) {
+        success = false;
+      }
+     
+      Map<String, Object> variables = ImmutableMap.of("title",subjectName,"id",id,"error",success);
+      return gson.toJson(variables);
+    }
+  }
+  
   /**
    * Grabs the next flashcard to display to the user based on the data from each
    * flashcard.
@@ -305,6 +340,32 @@ public final class ApiHandler {
     }
   }
 
+  
+  
+  /**
+   * Deletes the note with the given ID. Returns boolean with 
+   * success status. (True if note was deleted, false if not.)
+   *
+   * @author tbhargav
+   */
+  public static class DeleteNote implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String noteID = qm.value("note_id");
+      String subject = qm.value("subject");
+      boolean success = false;
+      File noteFolder = new File(Main.getBasePath()+"/"+subject+"/N"+noteID);
+      
+      // Deleting the note folder.
+      try {
+        FileUtils.deleteDirectory(noteFolder);
+      } catch (IOException e) {
+        return success;
+      }
+      return success;
+    }
+  }
   
   /**
    * Updates the notes and flashcards with data from front-end.
