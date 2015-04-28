@@ -372,6 +372,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
+      
       String cssJson = qm.value("rule");
       boolean success = false;
       try {

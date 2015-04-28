@@ -56,17 +56,20 @@ public class CSSSheetMaker {
       System.err.println("ERROR: Not in JSON object format");
       return false;
     }
-
+    
+    boolean worked = false;
     String folder = obj.getString("associated_folder_name");
-    writeRule(obj, folder);
+    worked = writeRule(obj, folder);
+    String name = obj.getString("name");
     JSONObject trigger = obj.getJSONObject("trigger");
     JSONObject after = obj.getJSONObject("after");
     JSONObject container = obj.getJSONObject("container");
-    List<String> cssList =
+    /*List<String> cssList =
         Lists.newArrayList(getCssFromObject(trigger, folder),
             getCssFromObject(after, folder),
-            getCssFromObject(container, folder));
-    return writeCss(cssList, folder);
+            getCssFromObject(container, folder));*/
+    return worked; 
+        //writeCss(cssList, folder, name);
   }
 
   /**
@@ -81,11 +84,13 @@ public class CSSSheetMaker {
   private static boolean writeRule(JSONObject rule, String folder) {
     boolean toReturn = false;
     String name = rule.getString("name");
-    String path = Main.getBasePath() + "/.data/" + folder + "/rules/" + name;
+    String path = Main.getBasePath() + "/" + folder + "/rules/" + name;
+    File file = new File(path);
+    file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                new File(path)), "UTF-8"))) {
+            new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
       writer.write(rule.toString());
     } catch (IOException e) {
       return false;
@@ -102,20 +107,15 @@ public class CSSSheetMaker {
    *          - The name of the folder for the custom css.
    * @return - The css to write to disk.
    */
-  private static String getCssFromObject(JSONObject obj, String folder) {
-    JSONArray styleArray = obj.getJSONArray("style");
-    int styleLength = styleArray.length();
+/*  private static String getCssFromObject(JSONObject obj, String folder) {
+    JSONObject styleObject = obj.getJSONObject("style");
+    String[] styleNames = JSONObject.getNames(styleObject);
+    int styleLength = styleNames.length;
     StringBuilder css = new StringBuilder();
     for (int j = 0; j < styleLength; j++) {
-      JSONObject style = styleArray.getJSONObject(j);
-      String[] noteName = JSONObject.getNames(style);
-      String name = noteName[0];
-      JSONObject styleValues = style.getJSONObject(name);
-      String[] styleNames = JSONObject.getNames(styleValues);
-      int nameLength = styleNames.length;
-      if (nameLength > 0) {
-        css.append(".").append(name).append("{");
-      }
+      String name = styleNames[j];
+      String style = styleObject.getString(name);
+      css.append(".").append(name).append("{");
       for (int k = 0; k < nameLength; k++) {
         String cssValue = styleNames[k];
         css.append(cssValue).append(":");
@@ -134,7 +134,7 @@ public class CSSSheetMaker {
     return css.toString();
     // toReturn = toReturn && writeCss(css.toString(), folder);
     // return toReturn;
-  }
+  }*/
 
   /**
    * Given the subject will write the css for said subject onto disk.
@@ -143,18 +143,20 @@ public class CSSSheetMaker {
    *          - The list of css strings to write to disk.
    * @param subject
    *          - The subject of the custom css.
+   * @param name - The name of the rule
    * @return - Boolean indicating a successfull operation.
    */
-  private static boolean writeCss(List<String> cssList, String subject) {
-    for (String css: cssList) {
+  private static boolean writeCss(List<String> cssList, String subject,
+      String name) {
+    for (String css : cssList) {
       Long id = NoteReader.getNoteSubjectId(subject);
       String path = CSSPATH + "/" + id + ".css";
       File file = new File(path);
       file.getParentFile().mkdirs();
       try (
           BufferedWriter writer =
-              new BufferedWriter(new OutputStreamWriter(
-                  new FileOutputStream(file), "UTF-8"))) {
+              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                  file), "UTF-8"))) {
         writer.write(css);
       } catch (IOException e) {
         return false;
