@@ -9,7 +9,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +26,6 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
-
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -250,16 +252,31 @@ public final class ApiHandler {
       File[] subjects = baseDirectory.listFiles();
       String emptyJSON = "{}";
       Map<String, Object> empty =
-          ImmutableMap.of("title", "Welcome home", "folderJSON", emptyJSON);
+          ImmutableMap.of("title", "Welcome home", "data", emptyJSON);
       if (subjects == null || subjects.length == 0) {
         return new ModelAndView(empty, "main.ftl");
       }
+      List<File> subjectList = Arrays.asList(subjects);
+      Collections.sort(subjectList, new Comparator<File>() {
+        public int compare(File o1, File o2) {
+          return o1.getName().compareTo(o2.getName());
+        }
+      });
+      
       JSONArray array = new JSONArray();
       for (File subject : subjects) {
-        Collection<Note> noteList = NoteReader.readNotes(subject.getName());
-        if (noteList == null) {
+        Collection<Note> noteCollection = NoteReader.readNotes(subject.getName());
+        if (noteCollection == null) {
           return new ModelAndView(empty, "main.ftl");
         }
+        
+        List<Note> noteList = new ArrayList<>();
+        noteList.addAll(noteCollection);
+        Collections.sort(noteList, new Comparator<Note>() {
+          public int compare(Note n1, Note n2) {
+            return n1.getName().compareTo(n2.getName());
+          }
+        });
         JSONObject folder = new JSONObject();
         folder.put("folder_name", subject.getName());
         Long id = NoteReader.getNoteSubjectId(subject.getName());
@@ -286,9 +303,7 @@ public final class ApiHandler {
 
   /**
    * Generates autocorrect suggestions for the given word.
-   *
    * @author tbhargav
-   *
    */
   public static class SuggestionsHandler implements Route {
     @Override
@@ -387,8 +402,6 @@ public final class ApiHandler {
       Note note = new Note(noteData,subject,title);
       note.setId(Long.parseLong(noteID));
       
-      NoteWriter.writeNotes(Lists.newArrayList(note));
-
       // Write flashcards to file if there are any
       // (rawJSONCards will be null if no flashcards are sent)
       String rawJSONCards = qm.value("flashcards");
@@ -428,6 +441,17 @@ public final class ApiHandler {
           }         
       }
       
+      // Clearing the note directory as we now have everything we need to write!
+      File noteFolder = new File(Main.getBasePath()+"/"+subject+"/N"+note.getId());
+      try {
+        FileUtils.deleteDirectory(noteFolder);
+      } catch (IOException e) {
+        // TODO: Better error handling!
+        return "";
+      }
+      
+      // Writing note to disk.
+      NoteWriter.writeNotes(Lists.newArrayList(note));
       // Writing these cards to disk.
       FlashCardWriter.writeCards(cardsToWrite);    
       return "";
@@ -514,32 +538,16 @@ public final class ApiHandler {
         return makeExceptionJSON("Folder doesn't exist");
       }
       
-      if (!deleteDirectory(file, true)) {
+      try {
+        FileUtils.deleteDirectory(file);
+      } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");
       }
+      
       return true; 
     }
   }
   
-  /** Deletes all the files in directory and then the file.
-   * @param directory - The dirctory to delete.
-   * @return -Whether or not the diretory deletion was successfull.
-   */
-  private static boolean deleteDirectory(File directory, boolean result) {
-    if (directory == null) {
-      return false;
-    }
-    File[] files = directory.listFiles();
-    if (files != null) {
-      for (File file: files) {
-        result = result & deleteDirectory(file, result);
-      }
-    }
-    result = result & directory.delete();
-    return result;
-  }
-
-
   /*
    * Updates the meta-data of the given flashcard in simpler terms tells us
    * whether the user got the flashcard wrong or right and for which session

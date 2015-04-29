@@ -130,7 +130,7 @@ $(document).ready(function() {
                 var postParam = {
                     folder: event.data.name
                 }
-                alert("FOLDER TO DELETE: " + postParam);
+                
                 
                 $.post('/deleteFolder', postParam, function(responseJSON) {
                     // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user

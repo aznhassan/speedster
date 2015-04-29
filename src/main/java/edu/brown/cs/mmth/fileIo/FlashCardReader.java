@@ -114,7 +114,7 @@ public final class FlashCardReader {
         }
         
         card.setId(id);
-        card.setNoteId(Long.parseLong(file.getName().substring(1)));
+        card.setNoteId(Long.parseLong(folder.getName().substring(1)));
         
         // Updating flashcard cache.
         cache.put(id, card);
