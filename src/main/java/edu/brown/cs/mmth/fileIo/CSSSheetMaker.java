@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
-import edu.brown.cs.mmth.speedster.Main;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.common.collect.Lists;
+
+import edu.brown.cs.mmth.speedster.Main;
 
 /**
  * Writes changes to custom user css to file given JSON of the changes.
@@ -53,20 +55,37 @@ public class CSSSheetMaker {
       System.err.println("ERROR: Not in JSON object format");
       return false;
     }
-    
+
     boolean worked = false;
     String folder = obj.getString("associated_folder_name");
     worked = writeRule(obj, folder);
     String name = obj.getString("name");
+    // Adding the class value to internal JSON objects
     JSONObject trigger = obj.getJSONObject("trigger");
+    addClassToJsonObject(name, "trigger", trigger);
     JSONObject after = obj.getJSONObject("after");
+    addClassToJsonObject(name, "after", after);
     JSONObject container = obj.getJSONObject("container");
-    /*List<String> cssList =
-        Lists.newArrayList(getCssFromObject(trigger, folder),
-            getCssFromObject(after, folder),
-            getCssFromObject(container, folder));*/
-    return worked; 
-        //writeCss(cssList, folder, name);
+    addClassToJsonObject(name, "container", container);
+
+    // Reading internal JSON objects.
+    obj.remove("trigger");
+    obj.put("trigger", trigger);
+    obj.remove("after");
+    obj.put("after", after);
+    obj.remove("container");
+    obj.put("container", container);
+
+    List<String> cssList =
+        Lists.newArrayList(getCssFromObject(trigger, name, folder),
+            getCssFromObject(after, name, folder),
+            getCssFromObject(container, name, folder));
+    return worked && writeCss(cssList, folder, name);
+  }
+
+  private static void addClassToJsonObject(String parentName, String name,
+      JSONObject json) {
+    json.put("class", name + "-" + name);
   }
 
   /**
@@ -100,38 +119,45 @@ public class CSSSheetMaker {
    * 
    * @param obj
    *          - The JSON object containing the css rules.
+   * @param parentName
+   *          - The name of the parent object, used for making the css class
+   *          name.
    * @param folder
    *          - The name of the folder for the custom css.
    * @return - The css to write to disk.
    */
-/*  private static String getCssFromObject(JSONObject obj, String folder) {
+
+  private static String getCssFromObject(JSONObject obj, String parentName,
+      String folder) {
+    /*
+     * "style": { "font-weight":"bold", "font-style": "italic",
+     * "text-decoration":"underline", "font-family": "Times New Roman",
+     * "font-size": "small/medium/big" }
+     */
+
+    String objectName = obj.getString("name");
     JSONObject styleObject = obj.getJSONObject("style");
     String[] styleNames = JSONObject.getNames(styleObject);
     int styleLength = styleNames.length;
+
     StringBuilder css = new StringBuilder();
+    css.append(".").append(parentName + "-" + objectName).append("{");
     for (int j = 0; j < styleLength; j++) {
       String name = styleNames[j];
       String style = styleObject.getString(name);
-      css.append(".").append(name).append("{");
-      for (int k = 0; k < nameLength; k++) {
-        String cssValue = styleNames[k];
-        css.append(cssValue).append(":");
-        if (cssValue.equals("font-family")) {
-          css.append("\"").append(styleValues.get(cssValue)).append("\"")
-              .append(";");
-        } else {
-          css.append(styleValues.get(cssValue)).append(";");
-        }
-      }
-      css.deleteCharAt(css.length() - 1); // deleting the extra ";"
-      if (nameLength > 0) {
-        css.append("}");
+      css.append(name).append(":");
+      if (name.equals("font-family")) {
+        css.append("\"").append(style).append("\"").append(";");
+      } else {
+        css.append(name).append(";");
       }
     }
+    if (styleLength > 0) {
+      css.deleteCharAt(css.length() - 1); // deleting the extra ";"
+      css.append("}");
+    }
     return css.toString();
-    // toReturn = toReturn && writeCss(css.toString(), folder);
-    // return toReturn;
-  }*/
+  }
 
   /**
    * Given the subject will write the css for said subject onto disk.
@@ -140,7 +166,8 @@ public class CSSSheetMaker {
    *          - The list of css strings to write to disk.
    * @param subject
    *          - The subject of the custom css.
-   * @param name - The name of the rule
+   * @param name
+   *          - The name of the rule
    * @return - Boolean indicating a successfull operation.
    */
   private static boolean writeCss(List<String> cssList, String subject,
