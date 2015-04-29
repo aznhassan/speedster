@@ -109,7 +109,7 @@ p {
 
 
 
-#save-button, #add_section_button, #edit_style_button {
+#add_section_button, #edit_style_button {
 	background-color:rgba(255,255,255,0.5);
 	width:9%;
 	margin-left: 5%;
@@ -122,11 +122,9 @@ p {
 	border-right: 1px solid rgba(0,0,0,0.6);
 }
 
-#save-button {
-	border-right: none;
-}
 
-#add_section_button:hover, #save-button:hover, #edit_style_button:hover {
+
+#add_section_button:hover, #edit_style_button:hover {
 	background-color: rgba(0,0,0,0.2);
 	color: white;
 }
@@ -137,6 +135,7 @@ p {
 
 #edit_style_button {
 	margin-left: 85%;
+	border-right: none;
 }
 
 .button_div {
@@ -210,7 +209,7 @@ p {
 	margin-left: 3%;
 	cursor: pointer;
 	visibility: hidden;
-	float: right;
+	/*float: right;*/
 }
 
 .title_note, .note_title_input, textarea {
@@ -223,6 +222,25 @@ p {
 ::-webkit-input-placeholder {
    color: rgba(0,0,0,0.4);
 }
+
+.circle_image {
+	background-image: url('dev.svg');
+	background-position: center;
+	background-repeat: 25px;
+	background-repeat: no-repeat;
+	width:  25px;
+	height: 25px;
+
+	border-radius: 25px;
+	
+	margin-left: 2%;
+	display:inline-block;
+
+	cursor:pointer;
+
+	margin-bottom: 0.5%;
+}
+
 
 
 
