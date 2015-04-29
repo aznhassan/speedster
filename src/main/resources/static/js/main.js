@@ -338,7 +338,6 @@ $(document).ready(function() {
                 "title":$(this).find('.note_title')[0].innerText
             }
             newNotes.push(noteData);
-            alert(noteData);
         });
 
         // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
