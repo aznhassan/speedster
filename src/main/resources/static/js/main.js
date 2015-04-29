@@ -260,16 +260,13 @@ $(document).ready(function() {
                 // #TODO: response also contains boolean indicating successful addition, deal with it
                 $.post('/newNote', postParam, function(responseJSON) {
                     // parse response for note data to display
-		    var responseObject = JSON.parse(responseJSON);
+		            var responseObject = JSON.parse(responseJSON);
 
-                /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
                     $(new_note_div).removeClass('new_note_name_div');
-                    $(new_note_div).html('<span class="note_title note_title_input">' + postParam.note_name + '</span>');
-                    new_note_div.className = "note_name_div";
+                    $(new_note_div).html('<span class="note_name">' + postParam.note_name + '</span>');
+                    $(new_note_div).addClass('note_name_div');
                     new_note_div.id = responseObject.note_id;
-		    //TODO: Does this need to happen?
-                    // note_div.innerHTML = postParam.note_name;// responseObject.note_name
-                    $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
+		            $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
                     
                     $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
                         window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
@@ -278,6 +275,8 @@ $(document).ready(function() {
                     // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
 
                     $(new_note_div).find('.delete_icon').bind('click', {folder_div: folderDiv, div: new_note_div, folder: postParam.folder_name}, function(event) {
+                        event.stopPropagation();
+                        event.preventDefault();
                         var postParam = {
                             note_id: this.id,
                             subject: event.data.folder
