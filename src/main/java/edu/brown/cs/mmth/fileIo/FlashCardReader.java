@@ -71,7 +71,7 @@ public final class FlashCardReader {
   /**
    * Reads flashcards (if any) from within folder. 
    * @param folder to look into.
-   * @param subject the subject to look into
+   * @param subjectID the subject to look into
    * @return collection of flashcards read from given folder.
    */
   private static Collection<Flashcard> readCardsInFolder(File folder) {
@@ -104,7 +104,7 @@ public final class FlashCardReader {
             continue; //File isn't a proper JSON object.
           }
         }
-        Flashcard card = new Flashcard("", "");
+        Flashcard card = new Flashcard("", "",Long.parseLong(folder.getName().substring(1)),-1L);
         card.updateFields(object.toString());
         Long id;
         try {
@@ -114,7 +114,6 @@ public final class FlashCardReader {
         }
         
         card.setId(id);
-        card.setNoteId(Long.parseLong(folder.getName().substring(1)));
         
         // Updating flashcard cache.
         cache.put(id, card);
