@@ -55,8 +55,14 @@ public class CSSSheetMaker {
     }
     
     boolean worked = false;
-    String folder = obj.getString("associated_folder_name");
-    worked = writeRule(obj, folder);
+    long id;
+    try {
+      id = Long.parseLong(obj.getString("associated_folder_id"));
+    } catch (NumberFormatException e) {
+      System.err.println("ERROR: Non number ID given");
+      return false;
+    }
+    worked = writeRule(obj, id);
     String name = obj.getString("name");
     JSONObject trigger = obj.getJSONObject("trigger");
     JSONObject after = obj.getJSONObject("after");
@@ -74,14 +80,14 @@ public class CSSSheetMaker {
    * 
    * @param rule
    *          - The JSON object representing the rule.
-   * @param folder
-   *          - The folder of the rule.
+   * @param id
+   *          - The folder id of the rule.
    * @return - A boolean indicating if the operation worked.
    */
-  private static boolean writeRule(JSONObject rule, String folder) {
+  private static boolean writeRule(JSONObject rule, long id) {
     boolean toReturn = false;
     String name = rule.getString("name");
-    String path = Main.getBasePath() + "/" + folder + "/rules/" + name;
+    String path = Main.getBasePath() + "/" + id + "/rules/" + name;
     File file = new File(path);
     file.getParentFile().mkdirs();
     try (
@@ -138,15 +144,15 @@ public class CSSSheetMaker {
    * 
    * @param css
    *          - The list of css strings to write to disk.
-   * @param subject
-   *          - The subject of the custom css.
+   * @param id
+   *          - The subject id of the subject who's css is being written.
    * @param name - The name of the rule
    * @return - Boolean indicating a successfull operation.
    */
-  private static boolean writeCss(List<String> cssList, String subject,
+  private static boolean writeCss(List<String> cssList, long id,
       String name) {
     for (String css : cssList) {
-      Long id = NoteReader.getNoteSubjectId(subject);
+      //Long id = NoteReader.getNoteSubjectId(subject);
       String path = CSSPATH + "/" + id + ".css";
       File file = new File(path);
       file.getParentFile().mkdirs();

@@ -58,9 +58,6 @@ public class Note implements Readable, Writeable{
   public long getSubjectId() {
     return subjectId; 
   }
-//  public String getSubject() {
-//    return subject;
-//  }
   
   /**
    * Gets text data in single string. Use instead of
