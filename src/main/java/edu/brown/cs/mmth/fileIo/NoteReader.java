@@ -27,15 +27,13 @@ public class NoteReader {
 
   /**
    * Reads note files in a given path into our 'Note' object.
-   *
-   * @param subject
-   *          whose notes you want.
+   * @param id - The id of the subject whose notes you want.
    * @return collection of note. In case of error return null.
    */
-  public static Collection<Note> readNotes(final String subject) {
+  public static Collection<Note> readNotes(final long subjectId) {
     // Creating a file with the given path.
     String basePath = Main.getBasePath();
-    File folder = new File(basePath + "/" + subject);
+    File folder = new File(basePath + "/" + subjectId);
 
     // Reading all notes in path.
     Collection<Note> notes = new ArrayList<Note>();
