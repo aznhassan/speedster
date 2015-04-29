@@ -210,12 +210,19 @@ function stylize(correcting) {
     res = escapeHTML(res);
 
     // \u200b -> <br>\u200b
-    res = res.replace(/\u200b/g, '<br>\u200b');
+    res = res.replace(/\u200b/g, NEWLINE);
+
+    var idx = res.indexOf(NEWLINE);
+    //console.log(idx);
+    var title = idx == -1 ? res : res.substring(0, idx);
+    res = idx == -1 ? '' : res.substring(idx);
+
 
     // TITLE
-    res = res.replace(/^(.*?)(<br>\u200b|$)/, function(x, a, b) {
-        return '<div class="title">' + a + '</div>' + b;
-    });
+    // res = res.replace(/^(.*?)(<br>\u200b|$)/, function(x, a, b) {
+    //     return '<div class="title">' + a + '</div>' + b;
+    // });
+    title = '<div class="title">' + title + '</div>';
 
     // NOTE:
     res = res.replace(/(note:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
@@ -253,6 +260,8 @@ function stylize(correcting) {
     // res = res.replace(/(<br>\u200b<br>\u200b)([^<\u200b]+?)(<br>\u200b|$)/gi, function(x, a, b, c) {
     //     return a + '<span class="section">' + b + '</span>' + c;
     // });
+
+    res = title + res;
 
     // Decode HTML special chars
     res = unescapeHTML(res);
@@ -351,7 +360,7 @@ function compileUserRule(rule) {
 	var afterEndSeq = (rule.after && rule.after.endSeq ? '(.*?)' + '(' + regEsc(rule.after.endSeq) + '|$)' : '');
 	var afterStyle = (rule.after ? rule.after.style || '' : '');
 	var containerStyle = (rule.container ? rule.container.style : '');
-	var newline1 = rule.trigger.endSeq && rule.trigger.endSeq == '<br>\u200b' && !rule.after;
+	var newline1 = containerStyle && rule.trigger.endSeq && rule.trigger.endSeq == '<br>\u200b' && !rule.after;
   var newline2 = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
 
 
@@ -418,7 +427,7 @@ function compileUserRule(rule) {
 }
 
 
-function sendNotes() {
+function save() {
     var urlparts = window.location.pathname.split('/');
 
     var noteData = $('#noteArea')[0].innerHTML || '';
@@ -431,7 +440,7 @@ function sendNotes() {
       'noteid': urlparts[3],
       'subject': decodeURIComponent(urlparts[2])
     }
-    console.log(params);
+    //console.log(params);
 
     $.post("/updateNote", params, function() {
         // merp...
@@ -534,14 +543,6 @@ $(document).ready(function() {
     }
   });
 
-  rules.push({
-    'name': 'important!',
-    'trigger': {
-      'word': 'important',
-      'style': 'important'
-    }
-  });
-
 	////////////////////////
 
   // clean each rule by escaping bad characters
@@ -571,12 +572,6 @@ $(document).ready(function() {
       } else if (code == 32) {
         	// Space
           stylize(true);
-          // sendNotesCounter++;
-          // if (sendNotesCounter % 5 == 0) {
-          //     sendNotes();
-          //     sendNotesCounter = 0;
-          // }
-          sendNotes();
    	  } else if (code == 13) {
         	// Line feed
           var parent = getSelectionParentElement(window.getSelection());
@@ -586,6 +581,9 @@ $(document).ready(function() {
           stylize(true);
       } else {
           stylize(false);
+      }
+      if (/\W/.test(String.fromCharCode(code)) && [37, 38, 39, 40].indexOf(code) === -1) {
+        save();
       }
   });
 

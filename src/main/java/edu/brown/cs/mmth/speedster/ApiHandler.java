@@ -101,15 +101,15 @@ public final class ApiHandler {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       String subjectName = qm.value("title");
-      
+
       // Creating a new folder in memory, along with its ID file.
-      File folder = new File(Main.getBasePath()+"/"+subjectName);
+      File folder = new File(Main.getBasePath() + "/" + subjectName);
       folder.mkdirs();
-     
+
       boolean success = true;
-      
+
       long id = Main.getAndIncrementId();
-      File idFile = new File(Main.getBasePath()+"/"+subjectName+"/id");
+      File idFile = new File(Main.getBasePath() + "/" + subjectName + "/id");
       FileWriter idWriter;
       try {
         idWriter = new FileWriter(idFile);
@@ -118,12 +118,13 @@ public final class ApiHandler {
       } catch (IOException e) {
         success = false;
       }
-     
-      Map<String, Object> variables = ImmutableMap.of("title",subjectName,"id",id,"error",success);
+
+      Map<String, Object> variables =
+          ImmutableMap.of("title", subjectName, "id", id, "error", success);
       return gson.toJson(variables);
     }
   }
-  
+
   /**
    * Grabs the next flashcard to display to the user based on the data from each
    * flashcard.
@@ -162,11 +163,11 @@ public final class ApiHandler {
       if (next == null) {
         variables =
             ImmutableMap
-            .of("q",
-                "You are done reviewing!",
-                "a",
-                "Yes, you heard it right the first time! Close tab to end session.",
-                "session_number", sessionID, "card_id", "-1");
+                .of("q",
+                    "You are done reviewing!",
+                    "a",
+                    "Yes, you heard it right the first time! Close tab to end session.",
+                    "session_number", sessionID, "card_id", "-1");
       } else {
         variables =
             ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
@@ -191,7 +192,7 @@ public final class ApiHandler {
       } catch (NumberFormatException e) {
         Map<String, Object> problem =
             ImmutableMap
-            .of("title", "Speedster", "content", "Improper note id");
+                .of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
       String subject = req.params(":folder");
@@ -262,14 +263,15 @@ public final class ApiHandler {
           return o1.getName().compareTo(o2.getName());
         }
       });
-      
+
       JSONArray array = new JSONArray();
       for (File subject : subjects) {
-        Collection<Note> noteCollection = NoteReader.readNotes(subject.getName());
+        Collection<Note> noteCollection =
+            NoteReader.readNotes(subject.getName());
         if (noteCollection == null) {
           return new ModelAndView(empty, "main.ftl");
         }
-        
+
         List<Note> noteList = new ArrayList<>();
         noteList.addAll(noteCollection);
         Collections.sort(noteList, new Comparator<Note>() {
@@ -303,6 +305,7 @@ public final class ApiHandler {
 
   /**
    * Generates autocorrect suggestions for the given word.
+   * 
    * @author tbhargav
    */
   public static class SuggestionsHandler implements Route {
@@ -357,11 +360,9 @@ public final class ApiHandler {
     }
   }
 
-  
-  
   /**
-   * Deletes the note with the given ID. Returns boolean with 
-   * success status. (True if note was deleted, false if not.)
+   * Deletes the note with the given ID. Returns boolean with success status.
+   * (True if note was deleted, false if not.)
    *
    * @author tbhargav
    */
@@ -372,8 +373,9 @@ public final class ApiHandler {
       String noteID = qm.value("note_id");
       String subject = qm.value("subject");
       boolean success = false;
-      File noteFolder = new File(Main.getBasePath()+"/"+subject+"/N"+noteID);
-      
+      File noteFolder =
+          new File(Main.getBasePath() + "/" + subject + "/N" + noteID);
+
       // Deleting the note folder.
       try {
         FileUtils.deleteDirectory(noteFolder);
@@ -383,7 +385,7 @@ public final class ApiHandler {
       return success;
     }
   }
-  
+
   /**
    * Updates the notes and flashcards with data from front-end.
    *
@@ -397,71 +399,77 @@ public final class ApiHandler {
       String noteID = qm.value("noteid");
       String subject = qm.value("subject");
       String title = qm.value("title");
-      
+
       // Writing note to memory (overwriting old edition).
-      Note note = new Note(noteData,subject,title);
+      Note note = new Note(noteData, subject, title);
       note.setId(Long.parseLong(noteID));
-      
+
       // Write flashcards to file if there are any
       // (rawJSONCards will be null if no flashcards are sent)
       String rawJSONCards = qm.value("flashcards");
-      
+
       if (rawJSONCards == null) {
         return "";
       }
-    
+
       JSONArray jsonCards = new JSONArray(rawJSONCards);
 
       Collection<Flashcard> cardsToWrite = new ArrayList<>();
-      
-      // Creating new flashcards (or merging pre-existing ones). 
-      for(int i=0;i<jsonCards.length();i++) {
+
+      // Creating new flashcards (or merging pre-existing ones).
+      for (int i = 0; i < jsonCards.length(); i++) {
         JSONObject currCard = jsonCards.getJSONObject(i);
-        // Reading all flashcards from associated note. 
-        Collection<Flashcard> cards = FlashCardReader.getCardsLinkedWithNote(note);
-        // Iterating through cards to see if we want to update an old one or create a new one.
+        // Reading all flashcards from associated note.
+        Collection<Flashcard> cards =
+            FlashCardReader.getCardsLinkedWithNote(note);
+        // Iterating through cards to see if we want to update an old one or
+        // create a new one.
         boolean cardExisted = false;
 
-        for(Flashcard card: cards) {
+        // TODO: Duplicate being created here maybe.
+        
+        for (Flashcard card : cards) {
           // If card with same question exists, update answer.
-          if(card.getQuestion().equals(currCard.getString("q"))) {
+          if (card.getQuestion().equals(currCard.getString("q"))) {
             card.setAnswer(currCard.getString("a"));
             cardsToWrite.add(card);
             cardExisted = true;
           }
         }
-          
-          // We need to make a new card.
-          if(!cardExisted) {
-            Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
-            toAdd.setId(Main.getAndIncrementId());
-            toAdd.setSubjectName(subject);
-            toAdd.setNoteId(note.getId());
-            cardsToWrite.add(toAdd);
-          }         
+
+        // We need to make a new card.
+        if (!cardExisted) {
+          Flashcard toAdd =
+              new Flashcard(currCard.getString("a"), currCard.getString("q"));
+          toAdd.setId(Main.getAndIncrementId());
+          toAdd.setSubjectName(subject);
+          toAdd.setNoteId(note.getId());
+          cardsToWrite.add(toAdd);
+        }
       }
-      
+
       // Clearing the note directory as we now have everything we need to write!
-      File noteFolder = new File(Main.getBasePath()+"/"+subject+"/N"+note.getId());
+      File noteFolder =
+          new File(Main.getBasePath() + "/" + subject + "/N" + note.getId());
       try {
         FileUtils.deleteDirectory(noteFolder);
       } catch (IOException e) {
         // TODO: Better error handling!
         return "";
       }
-      
+
       // Writing note to disk.
       NoteWriter.writeNotes(Lists.newArrayList(note));
       // Writing these cards to disk.
-      FlashCardWriter.writeCards(cardsToWrite);    
+      FlashCardWriter.writeCards(cardsToWrite);
       return "";
     }
   }
 
-  
   /**
-   * Updates the stylesheet of the current subject with the given rules, 
-   * as well as the rules for the current subject.
+   * Updates the stylesheet of the current subject with the given rules, as well
+   * as the rules for the current subject.
+   * 
    * @author hsufi
    */
   public static class UpdateRules implements Route {
@@ -478,8 +486,10 @@ public final class ApiHandler {
       return success;
     }
   }
-  
-  /** Grabs all the rules from every class 
+
+  /**
+   * Grabs all the rules from every class
+   * 
    * @author hsufi
    *
    */
@@ -498,10 +508,11 @@ public final class ApiHandler {
         if (rules == null || rules.length == 0) {
           continue;
         }
-        for (File rule: rules) {
-          try (BufferedReader br =
-              new BufferedReader(new InputStreamReader(new FileInputStream(
-                  rule), "UTF-8"))) {
+        for (File rule : rules) {
+          try (
+              BufferedReader br =
+                  new BufferedReader(new InputStreamReader(new FileInputStream(
+                      rule), "UTF-8"))) {
             String line = "";
             while ((line = br.readLine()) != null) {
               bd.append(line);
@@ -513,15 +524,17 @@ public final class ApiHandler {
         }
       }
       if (bd.length() > 1) {
-        bd.deleteCharAt(bd.length() - 1); //deleting the extra ","
+        bd.deleteCharAt(bd.length() - 1); // deleting the extra ","
       }
 
       bd.append("]");
       return bd.toString();
     }
   }
-  
-  /** Deletes the given folder and all the contents.
+
+  /**
+   * Deletes the given folder and all the contents.
+   * 
    * @author hsufi
    *
    */
@@ -537,22 +550,22 @@ public final class ApiHandler {
       if (!file.isDirectory()) {
         return makeExceptionJSON("Folder doesn't exist");
       }
-      
+
       try {
         FileUtils.deleteDirectory(file);
       } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");
       }
-      
-      return true; 
+
+      return true;
     }
   }
-  
+
   /*
    * Updates the meta-data of the given flashcard in simpler terms tells us
    * whether the user got the flashcard wrong or right and for which session
    * (and which flashcard).
-   *
+   * 
    * @author tbhargav
    */
   public static class UpdateFlashCard implements Route {
@@ -601,40 +614,16 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String foldersJson = qm.value("folders");
-      String notesJson = qm.value("notes");
-      JSONArray folders = new JSONArray(foldersJson);
-      JSONArray notes = new JSONArray(notesJson);
-      
-      int nLength=notes.length();
-      int fLength=folders.length();
-      
-      // Turning notes into 'Note' objects.
-      for(int i=0;i<nLength;i++) {
-        JSONObject noteJSON = notes.getJSONObject(i);
-        Note note = new Note("",noteJSON.getString("associated_folder_name"),noteJSON.getString("title"));
-        // Giving the note a unique ID.
-        note.setId(Main.getAndIncrementId());
-        // Writing note to file.
-        NoteWriter.writeNotes(Lists.newArrayList(note));
-      }
-      
-      for(int j=0;j<fLength;j++) {
-        File folder = new File(Main.getBasePath()+"/"+folders.getJSONObject(j).getString("title"));
-        // Making directories for blank folders.
-        folder.mkdirs();
-        File idFile = new File(Main.getBasePath()+"/"+folders.getJSONObject(j).getString("title")+"/"+"id");
-        try {
-          FileWriter fw = new FileWriter(idFile);
-          fw.write(Long.toString(Main.getAndIncrementId()));
-          fw.close();
-        } catch (IOException e) {
-          // TODO: better error handling.
-          continue;
-        }
-        
-      }
-      
+     // String folder_id = qm.value("folder_id");
+      String folder_name = qm.value("folder_name");
+      //String note_id = qm.value("note_id");
+      String note_name = qm.value("note_name");
+
+      Note note = new Note("", folder_name, note_name);
+      note.setId(Main.getAndIncrementId());
+     
+      // Writing note to file.
+      NoteWriter.writeNotes(Lists.newArrayList(note));
       Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
       return new ModelAndView(variables, "main.ftl");
     }
@@ -652,9 +641,12 @@ public final class ApiHandler {
    */
   private ApiHandler() {
   }
-  
-  /** Wraps an exception message into an error JSON object.
-   * @param exceptionMSG - The exception message to send
+
+  /**
+   * Wraps an exception message into an error JSON object.
+   * 
+   * @param exceptionMSG
+   *          - The exception message to send
    * @return exceptionMSG wrapped in a JSON object with an error field.
    */
   private static String makeExceptionJSON(String exceptionMSG) {
