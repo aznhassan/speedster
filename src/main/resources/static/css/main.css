@@ -210,11 +210,18 @@ p {
 	margin-left: 3%;
 	cursor: pointer;
 	visibility: hidden;
+	float: right;
 }
 
-.title_note, .note_title_input {
+.title_note, .note_title_input, textarea {
 	border:none;
 	background: inherit;
+	outline: none;
+	color:rgba(0,0,0,0.8);
+}
+
+::-webkit-input-placeholder {
+   color: rgba(0,0,0,0.4);
 }
 
 
