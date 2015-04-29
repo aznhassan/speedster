@@ -126,7 +126,7 @@ $(document).ready(function() {
             
 
             
-            $(folder_div).find('.delete_icon').bind('click', {name: fList[i].folder_name}, function(event) {
+            $(folder_div).find('.delete_icon').bind('click', {div: folder_div, name: fList[i].folder_name}, function(event) {
                 var postParam = {
                     folder: event.data.name
                 }
@@ -135,7 +135,8 @@ $(document).ready(function() {
                 $.post('/deleteFolder', postParam, function(responseJSON) {
                     // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
                     // appropriately.
-                    window.location.href = '/notes';
+                    // window.location.href = '/notes';
+                    $(event.data.div).remove();
                 });
             });
             
@@ -153,7 +154,7 @@ $(document).ready(function() {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
-                $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                $(notes_div).find('.delete_icon').bind('click', {div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
                     var postParam = {
                         note_id: event.data.id,
                         subject: event.data.folder
@@ -162,7 +163,8 @@ $(document).ready(function() {
                     // #TODO response is a boolean indicating successful deletion, 
                     // handle it.
                     $.post('/deleteNote', postParam, function(responseJSON) {
-                        window.location.href = '/notes';
+                        // window.location.href = '/notes';
+                        $(event.data.div).remove();
                     });
                 });
 
@@ -329,7 +331,7 @@ $(document).ready(function() {
                 window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
             });
 
-            $(new_note_div).find('.delete_icon').bind('click', {folder: postParam.folder_name}, function(event) {
+            $(new_note_div).find('.delete_icon').bind('click', {div: new_note_div, folder: postParam.folder_name}, function(event) {
                 var postParam = {
                     note_id: this.id,
                     subject: event.data.folder
@@ -338,7 +340,9 @@ $(document).ready(function() {
                 // #TODO response is a boolean indicating successful deletion, 
                 // handle it.
                 $.post('/deleteNote', postParam, function(responseJSON) {
-                    window.location.href = '/notes';
+                    // window.location.href = '/notes';
+                    $(event.data.div).remove();
+
                 });
             });
 
