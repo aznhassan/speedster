@@ -194,17 +194,17 @@ public final class ApiHandler {
             .of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
-      String subject = req.params(":folder");
+      long subjectId;
       try {
-        subject = URLDecoder.decode(subject, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
+        subjectId = Long.parseLong(req.params(":folder"));
+      } catch (NumberFormatException e) {
         Map<String, Object> problem =
             ImmutableMap.of("title", "Speedster", "content",
                 "Decoding exception");
         return new ModelAndView(problem, "error.ftl");
       }
-      Collection<Note> notes = NoteReader.readNotes(subject);
-      Long subjectId = NoteReader.getNoteSubjectId(subject);
+      Collection<Note> notes = NoteReader.readNotes(subjectId);
+      //Long subjectId = NoteReader.getNoteSubjectId(subject);
       if (notes == null) {
         Map<String, Object> problem =
             ImmutableMap.of("title", "Speedster", "content",
@@ -264,8 +264,17 @@ public final class ApiHandler {
       });
       
       JSONArray array = new JSONArray();
-      for (File subjectId : subjects) {
-        Collection<Note> noteCollection = NoteReader.readNotes(subjectId.getName());
+      for (File subject : subjects) {
+        long subjectId;
+        try {
+          subjectId = Long.parseLong(subject.getName());
+        } catch (NumberFormatException e ) {
+          Map<String, Object> variables =
+              ImmutableMap.of("title", "Welcome home", "data", 
+                  makeExceptionJSON("ID given is not a number"));
+          return new ModelAndView(variables, "main.ftl");
+        }
+        Collection<Note> noteCollection = NoteReader.readNotes(subjectId);
         if (noteCollection == null) {
           return new ModelAndView(empty, "main.ftl");
         }
@@ -278,10 +287,10 @@ public final class ApiHandler {
           }
         });
         JSONObject folder = new JSONObject();
-        folder.put("folder_id", subjectId.getName());
+        folder.put("folder_id", subject.getName());
         long id = -1;
         try {
-          id = Long.parseLong(subjectId.getName());
+          id = Long.parseLong(subject.getName());
         } catch (NumberFormatException e) {
           Map<String, Object> variables =
               ImmutableMap.of("title", "Welcome home", "data", 
@@ -403,9 +412,15 @@ public final class ApiHandler {
       String noteID = qm.value("noteid");
       String subject = qm.value("subject");
       String title = qm.value("title");
+      long subjectId;
+      try {
+        subjectId = Long.parseLong(subject);
+      } catch (NumberFormatException e) {
+        return makeExceptionJSON("Improper note ID");
+      }
       
       // Writing note to memory (overwriting old edition).
-      Note note = new Note(noteData,subject,title);
+      Note note = new Note(noteData,subjectId,title);
       note.setId(Long.parseLong(noteID));
       
       // Write flashcards to file if there are any
@@ -440,9 +455,10 @@ public final class ApiHandler {
           
           // We need to make a new card.
           if(!cardExisted) {
-            Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"));
+            Flashcard toAdd = new Flashcard(currCard.getString("a"),currCard.getString("q"),
+                note.getId(), note.getSubjectId());
             toAdd.setId(Main.getAndIncrementId());
-            toAdd.setSubjectName(subject);
+            //toAdd.setSubjectName(subject);
             toAdd.setNoteId(note.getId());
             cardsToWrite.add(toAdd);
           }         
@@ -619,7 +635,13 @@ public final class ApiHandler {
       // Turning notes into 'Note' objects.
       for(int i=0;i<nLength;i++) {
         JSONObject noteJSON = notes.getJSONObject(i);
-        Note note = new Note("",noteJSON.getString("associated_folder_name"),noteJSON.getString("title"));
+        long subjectId;
+        try {
+          subjectId = Long.parseLong(noteJSON.getString("associated_folder_id"));
+        } catch (NumberFormatException e) {
+          continue;
+        }
+        Note note = new Note("",subjectId,noteJSON.getString("title"));
         // Giving the note a unique ID.
         note.setId(Main.getAndIncrementId());
         // Writing note to file.
