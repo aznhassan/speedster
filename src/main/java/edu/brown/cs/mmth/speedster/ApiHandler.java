@@ -102,19 +102,20 @@ public final class ApiHandler {
       QueryParamsMap qm = req.queryMap();
       String subjectName = qm.value("title");
       
+      long id = Main.getAndIncrementId();
+      
       // Creating a new folder in memory, along with its ID file.
-      File folder = new File(Main.getBasePath()+"/"+subjectName);
+      File folder = new File(Main.getBasePath()+"/"+id);
       folder.mkdirs();
      
       boolean success = true;
       
-      long id = Main.getAndIncrementId();
-      File idFile = new File(Main.getBasePath()+"/"+subjectName+"/id");
-      FileWriter idWriter;
+      File idFile = new File(Main.getBasePath()+"/"+id+"/title");
+      FileWriter titleWriter;
       try {
-        idWriter = new FileWriter(idFile);
-        idWriter.write(Long.toString(id));
-        idWriter.close();
+        titleWriter = new FileWriter(idFile);
+        titleWriter.write(subjectName);
+        titleWriter.close();
       } catch (IOException e) {
         success = false;
       }
