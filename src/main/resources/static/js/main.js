@@ -34,25 +34,7 @@ $(document).ready(function() {
 
 
 */
-    /**************************************
-     * TESTING JSON STRINGS FOR MAIN PAGE
-     *************************************/
-
-     var folderOne = {
-        "folder_id":1,
-        "folder_name": "CS 22: Discrete Structures and Probabilty",
-        "notes": [{"note_id":1, "note_name": "Bayes Law"}, 
-                  {"note_id":2, "note_name": "Graph Colouring"}]
-     };
-
-     var folderTwo = {
-        "folder_id":2,
-        "folder_name": "POBS 990: Mapping Cross Cultural Boundaries",
-        "notes": [{"note_id":3, "note_name": "Interpreter of Maladies"},
-                  {"note_id":4, "note_name": "In the time of Butterflies"}]
-     };
-
-     var fList = [folderOne, folderTwo];
+     var fList = [];
 
      folder_num_counter = fList.length;
 
@@ -126,7 +108,7 @@ $(document).ready(function() {
             
 
             
-            $(folder_div).find('.delete_icon').bind('click', {div: folder_div, name: fList[i].folder_name}, function(event) {
+            $(folder_div).find('.delete_icon').bind('click', {div: folder_div, name: fList[i].folder_name, id: fList[i].folder_id}, function(event) {
                 var postParam = {
                     folder: event.data.name
                 }
@@ -136,7 +118,17 @@ $(document).ready(function() {
                     // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
                     // appropriately.
                     // window.location.href = '/notes';
+                    console.log("DELETE THIS PLZ :'(    " + $('.example_content').find('#' + event.data.id));
                     $(event.data.div).remove();
+
+                    // #TODO: remove folder from edit style menu as well!
+                    // edit: request for the updated folder list from server and update the global varible 'fList'
+                    $.get('/updatedFolders', postParam, function(responseJSON) {
+                        var json = $(".data");
+                        var jsonArray = JSON.parse(json.text());
+                        fList = jsonArray;
+                    });
+
                 });
             });
             
@@ -189,12 +181,6 @@ $(document).ready(function() {
 
             $(folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
                 console.log(event.data.notes);
-                // if($(this.innerHTML)[0].className === 'arrow-down') {
-                //     console.log("I'm at arrow down");
-                //     $(this).html('<span class="arrow-up" id="main-page-arrow"></span>');
-                // } else {
-                //     $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
-                // }
 
                 if(event.data.notes.innerHTML !== "") {
                     $(event.data.notes).slideToggle(175);
@@ -229,18 +215,6 @@ $(document).ready(function() {
       * Helper function to create flashcard button
       */
     function createFlashcardDiv(folderDiv, folderName) {
-        // var circle = document.createElement('div');
-        // circle.className = 'circle';
-        // circle.innerHTML = 'F';
-        // folderDiv.appendChild(circle);
-        // $(circle).attr('contenteditable', 'false');
-        // $(circle).click(function(event) {
-            
-          
-        //     $.get("/getNewSession/" + encodeURIComponent(folderName), function() {
-
-        //     });
-        // });
         var flashcardIcon = document.createElement('div');
         flashcardIcon.innerText = 'REVIEW';
         flashcardIcon.className = 'flashcard_icon';
@@ -253,33 +227,6 @@ $(document).ready(function() {
     }
 
 
-    // notes_div.className = "note_name_div";
-    // notes_div.id = folderList[i].notes[j].note_id;
-    // notes_div.innerHTML = folderList[i].notes[j].note_name;
-    // $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
-    // main_note_div.appendChild(notes_div);
-    // $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
-    //     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
-    // });
-
-    // $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
-    //     var postParam = {
-    //         note_id: event.data.id,
-    //         subject: event.data.folder
-    //     }
-
-    //     // #TODO response is a boolean indicating successful deletion, 
-    //     // handle it.
-    //     $.post('/deleteNote', postParam, function(responseJSON) {
-    //         window.location.href = '/notes';
-    //     });
-    // });
-
-    // $(notes_div).hover(function() {
-    //     $(this).find('.delete_icon').css({'visibility':'visible'}); 
-    // },function() {
-    //     $(this).find('.delete_icon').css({'visibility':'hidden'}); 
-    // });
 
      /**
       * Add a new editable note title div when a user adds one,
@@ -299,18 +246,6 @@ $(document).ready(function() {
         $(new_note_div).append('<div class="delete_icon" id="delete_icon_' + -1 + '"></div>');
         folderDiv.appendChild(new_note_div);
         
-
-    
-        // $(new_note_div).hover(function() {
-        //     if($(this).find('.delete_icon') != null) {
-        //         $(this).find('.delete_icon')[0].style.display='inline-block';
-        //     }
-            
-        // }, function() {
-        //    if($(this).find('.delete_icon') != null) {
-        //         $(this).find('.delete_icon')[0].style.display='none';
-        //     }
-        // });
 
         $(new_note_div).find('.note_title').focusout(function() {
             if(this.value !== "") {
@@ -470,27 +405,24 @@ $(document).ready(function() {
                     main_note_div.className = 'main_note_div';
                     new_folder_div.appendChild(main_note_div);
 
+                     $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
+                        
+                        if(event.data.notes.innerHTML !== "") {
+                            $(event.data.notes).slideToggle(175);
+                        }
+                    });
+
+                    // #TODO: Add a corresonding folder thing to the style overlay,
+                    // edit: request for an updated folder list from the server and reassign the variable 'fList'
+
                 });
             }
 
             
 
         });
-        // createCircleDiv(new_folder_div, header_span);
-        // $(header_span).append('<div class="delete_icon id="delete_icon_' + -1 + '"></div>');
-        // createFlashcardDiv(header_span);
        
         $('#main-div').append(new_folder_div);
-
-        // $(header_span).hover(function() {
-//             $(this).find('.flashcard_icon')[0].style.display = 'inline';
-            // console.log($(this).find('.delete_icon'));
-            // $(this).find('.flashcard_icon')[0].style.display = 'inline';
-            // $(this).find('.delete_icon')[0].style.display = 'inline-block';
-        // }, function() {
-            // $(this).find('.flashcard_icon')[0].style.display = 'none';
-            // $(this).find('.delete_icon')[0].style.display = 'none';
-        // });
 
     }
 
@@ -519,6 +451,7 @@ $(document).ready(function() {
      */
     function createEditStyleDivs() {
         // for each existing folder
+
         for(var i = 0; i < fList.length; i++) {
             // create a style div
             var style_div = document.createElement('div');

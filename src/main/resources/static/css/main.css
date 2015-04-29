@@ -84,8 +84,9 @@ p {
 	width: 300%;
 }
 
-.new_note_name_div {
-	margin-left: 9.3%;
+
+input[type=text] .note_title_input {
+	margin-left: 7.3%;
 }
 
 
@@ -153,6 +154,7 @@ p {
 	cursor: pointer;
 	/* margin-left: 10%; */
 	padding-left: 10%;
+	/* display: table-cell; */
 }
 
 .folder_header_span, .folder_header_span_new {
@@ -162,6 +164,8 @@ p {
 	width: 100%;
 	padding-left: -20%;
 	/* margin-left: -10%; */
+	/* display: table; */
+	/* vertical-align: middle; */
 }
 
 .folder_header_span:hover {
@@ -173,7 +177,7 @@ p {
 	/*padding-right: 5%;*/
 }
 
-.note_name_div:hover, .new_note_name_div:hover {
+.note_name_div:hover, {
 	border-radius: 5px;
 	background-color: rgba(0,0,0,0.1);
 }
@@ -196,7 +200,9 @@ p {
 	font-weight: bold;
 	visibility: hidden;
 	margin-right: 5%;
-	/* margin-bottom: 5%; */
+	/* display: table-cell; */
+	margin-bottom: 0.4%;
+	/* margin-top: -5%; */
 }
 
 .delete_icon {
@@ -210,13 +216,18 @@ p {
 	cursor: pointer;
 	visibility: hidden;
 	/*float: right;*/
+	/* display: table-cell; */
+	margin-bottom: -0.15%;
 }
+
+
 
 .title_note, .note_title_input, textarea {
 	border:none;
 	background: inherit;
 	outline: none;
 	color:rgba(0,0,0,0.8);
+	margin-left: 1.5%;
 }
 
 ::-webkit-input-placeholder {
@@ -238,7 +249,9 @@ p {
 
 	cursor:pointer;
 
-	margin-bottom: 0.5%;
+	margin-bottom: -0.2%;
+	/* margin-top: 0.5%; */
+	/* display: table-column; */
 }
 
 
