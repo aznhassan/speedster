@@ -72,13 +72,13 @@ public class NoteReader {
               // The file is invalid so we skip it.
               continue;
             }
-            Note note = new Note("", subject, "");
+            Note note = new Note("", -1L, "");
             String jsonData = json.toString();
             if (jsonData.isEmpty()) {
               continue; //File has no data
             } else {
               try {
-                JSONObject testObj = new JSONObject(jsonData);
+                new JSONObject(jsonData);
               } catch (JSONException e) {
                 continue; //File isn't a proper JSON object.
               }

@@ -51,7 +51,7 @@ public final class FlashCardWriter {
     String basePath = Main.getBasePath();
     for (Flashcard card : flashCards) {
       File file =
-          new File(basePath + "/" + card.getSubject() 
+          new File(basePath + "/" + card.getSubjectIDStr() 
               + "/N" + card.getNoteId() + "/f" + card.getId());
       file.getParentFile().mkdirs();
       try (BufferedWriter writer =
