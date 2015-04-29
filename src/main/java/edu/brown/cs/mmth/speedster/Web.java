@@ -44,6 +44,7 @@ public final class Web {
     Spark.post("/updateNotes", new ApiHandler.NotesCreator());
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
     Spark.get("/getRules", new ApiHandler.GetRules());
+    // TODO: Fix delete folder.
     Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());
     Spark.post("/deleteNote", new ApiHandler.DeleteNote());
     Spark.get("/newFolder", new ApiHandler.CreateFolder());
