@@ -623,18 +623,16 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-     // String folder_id = qm.value("folder_id");
       String folder_name = qm.value("folder_name");
-      //String note_id = qm.value("note_id");
       String note_name = qm.value("note_name");
 
       Note note = new Note("", folder_name, note_name);
       note.setId(Main.getAndIncrementId());
-     
       // Writing note to file.
       NoteWriter.writeNotes(Lists.newArrayList(note));
-      Map<String, Object> variables = ImmutableMap.of("title", "Welcome home");
-      return new ModelAndView(variables, "main.ftl");
+      JSONObject noteJson = new JSONObject();
+      noteJson.put("note_id", note.getId());
+      return noteJson.toString();
     }
   }
 
