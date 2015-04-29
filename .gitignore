@@ -13,6 +13,7 @@
 
 # ProjectSpecific
 .id
+.data
 
 # Maven
 log/
