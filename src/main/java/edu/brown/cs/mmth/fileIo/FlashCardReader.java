@@ -128,11 +128,11 @@ public final class FlashCardReader {
   
   /**
    * Reads in a list of Flashcards from memory and creates a list of Flashcards.
-   * @param pathToCards
-   *          - The subject of the flashCard.
+   * @param subject
+   *          - The subject ID of the flashCard.
    * @return A list of Flashcard objects.
    */
-  public static Collection<Flashcard> readCards(String subject) {
+  public static Collection<Flashcard> readCards(long subject) {
     String pathToCards = Main.getBasePath() + "/" + subject;
     File directory = new File(pathToCards);
     File[] files = directory.listFiles();
