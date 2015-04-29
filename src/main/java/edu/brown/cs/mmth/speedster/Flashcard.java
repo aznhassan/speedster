@@ -176,6 +176,13 @@ public class Flashcard implements Readable, Writeable {
   }
 
   /**
+   * Updates last use to the current date.
+   */
+  public void updateLastUse() {
+    lastUse = new Date(Instant.now().toEpochMilli());
+  }
+  
+  /**
    * Accessor for numberTimesCorrect.
    *
    * @return the numberTimesCorrect
