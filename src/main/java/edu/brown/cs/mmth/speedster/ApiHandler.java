@@ -260,7 +260,9 @@ public final class ApiHandler {
       List<File> subjectList = Arrays.asList(subjects);
       Collections.sort(subjectList, new Comparator<File>() {
         public int compare(File o1, File o2) {
-          return o1.getName().compareTo(o2.getName());
+          String title = NoteReader.getNoteSubjectName(Long.parseLong(o1.getName()));
+          String title1 = NoteReader.getNoteSubjectName(Long.parseLong(o2.getName()));
+          return title.compareTo(title1);
         }
       });
       
@@ -280,6 +282,7 @@ public final class ApiHandler {
           return new ModelAndView(empty, "main.ftl");
         }
         
+        String title = NoteReader.getNoteSubjectName(subjectId);
         List<Note> noteList = new ArrayList<>();
         noteList.addAll(noteCollection);
         Collections.sort(noteList, new Comparator<Note>() {
@@ -289,7 +292,7 @@ public final class ApiHandler {
         });
         JSONObject folder = new JSONObject();
         folder.put("folder_id", subject.getName());
-        long id = -1;
+        /*long id = -1;
         try {
           id = Long.parseLong(subject.getName());
         } catch (NumberFormatException e) {
@@ -297,9 +300,9 @@ public final class ApiHandler {
               ImmutableMap.of("title", "Welcome home", "data", 
                   makeExceptionJSON("ID given is not a number"));
           return new ModelAndView(variables, "main.ftl");
-        }
+        }*/
         //String name = NoteReader.getNoteSubjectName(id);
-        folder.put("folder_name", id);
+        folder.put("folder_name", title);
         JSONArray noteArray = new JSONArray();
         for (Note note : noteList) {
           JSONObject obj = new JSONObject();
