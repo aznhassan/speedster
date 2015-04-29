@@ -95,33 +95,23 @@ public class NoteReader {
   }
   
   /** Grabs the ID associated with the Subject.
-   * @param subject - The subject of the note.
+   * @param subject - The subject nameof the note.
    * @return - The ID of the subject, returns -1 on error.
    */
-  public static long getNoteSubjectId(final String subject) {
-    if (subject == null || subject.isEmpty()) {
-      return -1l;
-    }
-    File file = new File(Main.getBasePath() + "/" + subject + "/id");
+  public static String getNoteSubjectName(long idL) {
+    File file = new File(Main.getBasePath() + "/" + idL + "/title");
     if (!file.isFile()) {
-      return -1l;
+      return "";
     }
     try (
         BufferedReader br =
         new BufferedReader(new InputStreamReader(new FileInputStream(
             file), "UTF-8"))) {
-      String id = br.readLine();
-      Long toReturn = -1l;
-      try {
-        toReturn = Long.parseLong(id);
-        return toReturn;
-      } catch (NumberFormatException e) {
-        System.err.println("ERROR: Id improperly formated");
-        return -1l;
-      }
+      String name = br.readLine();
+      return name;
     } catch (IOException e) {
       System.err.println("ERROR in getNoteSubject:" + e.getMessage());
-      return -1l;
+      return "";
     }
   }
 

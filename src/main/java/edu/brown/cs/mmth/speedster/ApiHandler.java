@@ -279,10 +279,16 @@ public final class ApiHandler {
         });
         JSONObject folder = new JSONObject();
         folder.put("folder_id", subjectId.getName());
-        Long id = NoteReader.getNoteSubjectName(subjectId.getName());
-        if (id == -1) {
-          continue; // Improper ID file.
+        long id = -1;
+        try {
+          id = Long.parseLong(subjectId.getName());
+        } catch (NumberFormatException e) {
+          Map<String, Object> variables =
+              ImmutableMap.of("title", "Welcome home", "data", 
+                  makeExceptionJSON("ID given is not a number"));
+          return new ModelAndView(variables, "main.ftl");
         }
+        String name = NoteReader.getNoteSubjectName(id);
         folder.put("folder_name", id);
         JSONArray noteArray = new JSONArray();
         for (Note note : noteList) {
