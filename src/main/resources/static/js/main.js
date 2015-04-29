@@ -281,7 +281,7 @@ $(document).ready(function() {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         // $(new_note_div).attr('contenteditable','true');
-        $(new_note_div).html('<input type="text" class="note_title" placeholder="NOTE NAME"></input>');
+        $(new_note_div).html('<input type="text" class="note_title note_title_input" placeholder="NOTE NAME"></input>');
         $(new_note_div).find('.note_title').attr('contenteditable','true');
         console.log($(folderDiv).find('.folder_header_span'));
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
@@ -294,16 +294,16 @@ $(document).ready(function() {
         
 
     
-        $(new_note_div).hover(function() {
-            if($(this).find('.delete_icon') != null) {
-                $(this).find('.delete_icon')[0].style.display='inline-block';
-            }
+        // $(new_note_div).hover(function() {
+        //     if($(this).find('.delete_icon') != null) {
+        //         $(this).find('.delete_icon')[0].style.display='inline-block';
+        //     }
             
-        }, function() {
-           if($(this).find('.delete_icon') != null) {
-                $(this).find('.delete_icon')[0].style.display='none';
-            }
-        });
+        // }, function() {
+        //    if($(this).find('.delete_icon') != null) {
+        //         $(this).find('.delete_icon')[0].style.display='none';
+        //     }
+        // });
 
         $(new_note_div).find('.note_title').focusout(function() {
             if(this.value != "") {
@@ -322,7 +322,7 @@ $(document).ready(function() {
 
                 /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
                 $(new_note_div).removeClass('new_note_name_div');
-                $(new_note_div).html('<span class="note_title">' + postParam.note_name + '</span>');
+                $(new_note_div).html('<span class="note_title note_title_input">' + postParam.note_name + '</span>');
                 new_note_div.className = "note_name_div";
                 new_note_div.id = postParam.note_id // responseObject.note_id
                 // note_div.innerHTML = postParam.note_name;// responseObject.note_name
@@ -354,11 +354,11 @@ $(document).ready(function() {
                 });
 
                 $(folderDiv).find('.main_note_div').append(new_note_div);
+            }
 
-            }); 
-        }
+        }); 
         
-     }
+    }
 
 
 
@@ -455,12 +455,12 @@ $(document).ready(function() {
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
         var header_span = document.createElement('span');
-        header_span.className = 'folder_header_span';
+        header_span.className = 'folder_header_span_new';
         // $(header_span).attr('contenteditable', 'true');
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
-        header_span.innerHTML = '<input class="title" maxlength="30" placeholder="NEW FOLDER"></input>';
+        header_span.innerHTML = '<input class="title title_note" maxlength="30" placeholder="NEW FOLDER"></input>';
 
 
         new_folder_div.id = folder_num_counter + 1;
@@ -479,7 +479,8 @@ $(document).ready(function() {
                     var folder_id = responseObject.id;
                     var folder_name = responseObject.title;
                     header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
-
+                    $(header_span).removeClass('folder_header_span_new');
+                    header_span.className = 'folder_header_span';
                     $(new_folder_div).html(header_span);
                     createCircleDiv(new_folder_div, header_span);
                   
