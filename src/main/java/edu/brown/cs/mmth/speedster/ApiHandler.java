@@ -100,7 +100,13 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String subjectName = qm.value("title");
+      String subjectName="";
+      try {
+        subjectName = URLDecoder.decode(qm.value("title"),"UTF-8");
+      } catch (UnsupportedEncodingException e1) {
+        // TODO: better error handling.
+        e1.printStackTrace();
+      }
 
       // Creating a new folder in memory, along with its ID file.
       File folder = new File(Main.getBasePath() + "/" + subjectName);
@@ -585,6 +591,9 @@ public final class ApiHandler {
         // as cards are loaded for flashcard shuffling).
         Flashcard currCard = FlashCardReader.getFlashcardFromCache(cardID);
 
+        // Updating the date of the card to today (its last review).
+        currCard.updateLastUse();
+        
         // Finding session and removing card if it was correct.
         // Updating card stats as well.
         if (isAnsCorrect) {
