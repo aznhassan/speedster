@@ -408,13 +408,13 @@ public final class ApiHandler {
    *
    * @author tbhargav
    */
-  public static class UpdateNotes implements Route {
+  public static class NewNote implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       String noteData = qm.value("data");
       String noteID = qm.value("noteid");
-      String subject = qm.value("subject");
+      String subject = qm.value("folder_id");
       String title = qm.value("title");
       long subjectId;
       try {

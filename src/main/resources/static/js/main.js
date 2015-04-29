@@ -308,17 +308,17 @@ $(document).ready(function() {
         $(new_note_div).find('.note_title').focusout(function() {
             if(this.value != "") {
                 var postParam = {
-                    folder_id :folderDiv.id,
-                    folder_name : $(folderDiv).find('.title')[0].innerText,
-                    note_id : -1,
-                    note_name : this.value
-                };
+                            note_id: this.id,
+                            subject: event.data.folder
+                        }
 
-                // post request to save note
-                // #TODO: response also contains boolean indicating successful addition, deal with it
-                //$.post('/newNote', postParam, function(responseJSON) {
-                    // parse response for note data to display
-                //});
+                        // #TODO response is a boolean indicating successful deletion, 
+                        // handle it.
+                        $.post('/deleteNote', postParam, function(responseJSON) {
+                            // window.location.href = '/notes';
+                            $(event.data.div).remove();
+
+                        });
 
                 /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
                 $(new_note_div).removeClass('new_note_name_div');
