@@ -154,9 +154,12 @@ $(document).ready(function() {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
-                $(notes_div).find('.delete_icon')[0].style.float = 'right';
+                // $(notes_div).find('.delete_icon')[0].style.float = 'right';
 
-                $(notes_div).find('.delete_icon').bind('click', {div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                $(notes_div).find('.delete_icon').bind('click', {main_div: main_note_div, div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                    event.stopPropagation();
+                    event.cancelBubble = true;
+                    event.stopImmediatePropagation();
                     var postParam = {
                         note_id: event.data.id,
                         subject: event.data.folder
@@ -167,6 +170,9 @@ $(document).ready(function() {
                     $.post('/deleteNote', postParam, function(responseJSON) {
                         // window.location.href = '/notes';
                         $(event.data.div).remove();
+                        if(event.data.main_div.innerHTML = "") {
+                            $(event.data.main_div).slideUp('fast');
+                        }
                     });
                 });
 
@@ -333,9 +339,9 @@ $(document).ready(function() {
                         window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                     });
 
-                    $(new_note_div).find('.delete_icon')[0].style.float = 'right';
+                    // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
 
-                    $(new_note_div).find('.delete_icon').bind('click', {div: new_note_div, folder: postParam.folder_name}, function(event) {
+                    $(new_note_div).find('.delete_icon').bind('click', {folder_div: folderDiv, div: new_note_div, folder: postParam.folder_name}, function(event) {
                         var postParam = {
                             note_id: this.id,
                             subject: event.data.folder
@@ -346,6 +352,9 @@ $(document).ready(function() {
                         $.post('/deleteNote', postParam, function(responseJSON) {
                             // window.location.href = '/notes';
                             $(event.data.div).remove();
+                            if($(event.data.folder_div).find('.main_note_div')[0].innerHTML === "") {
+                                $(event.data.folder_div).find('.main_note_div').slideUp('fast');
+                            }
 
                         });
                     });

@@ -210,7 +210,7 @@ p {
 	margin-left: 3%;
 	cursor: pointer;
 	visibility: hidden;
-	float: right;
+	/*float: right;*/
 }
 
 .title_note, .note_title_input, textarea {
@@ -223,6 +223,22 @@ p {
 ::-webkit-input-placeholder {
    color: rgba(0,0,0,0.4);
 }
+
+.circle_image {
+	background-image: url('plusoutline.png');
+	width: 25px;
+	height: 25px;
+
+	border-radius: 25px;
+	
+	margin-left: 2%;
+	display:inline-block;
+
+	cursor:pointer;
+
+	margin-bottom: 0.5%;
+}
+
 
 
 

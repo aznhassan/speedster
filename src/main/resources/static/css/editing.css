@@ -257,6 +257,9 @@ select {
     font-size: medium;
     font-family: sans-serif;
     line-height:medium;
+    float: right;
+    margin-right: 3%;
+    margin-top: -3%;
 }
 
 input[type=checkbox] {
