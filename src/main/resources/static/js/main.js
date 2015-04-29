@@ -154,9 +154,11 @@ $(document).ready(function() {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
-                $(notes_div).find('.delete_icon')[0].style.float = 'right';
+                // $(notes_div).find('.delete_icon')[0].style.float = 'right';
 
-                $(notes_div).find('.delete_icon').bind('click', {div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                $(notes_div).find('.delete_icon').bind('click', {main_div: main_note_div, div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
                     var postParam = {
                         note_id: event.data.id,
                         subject: event.data.folder
@@ -167,6 +169,9 @@ $(document).ready(function() {
                     $.post('/deleteNote', postParam, function(responseJSON) {
                         // window.location.href = '/notes';
                         $(event.data.div).remove();
+                        if(event.data.main_div.innerHTML === "") {
+                            $(event.data.main_div).slideUp('fast');
+                        }
                     });
                 });
 
@@ -191,7 +196,7 @@ $(document).ready(function() {
                 //     $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
                 // }
 
-                if(event.data.notes.innerHTML != "") {
+                if(event.data.notes.innerHTML !== "") {
                     $(event.data.notes).slideToggle(175);
                 }
             });
@@ -208,10 +213,10 @@ $(document).ready(function() {
       */
      function createCircleDiv(folderDiv, header_span) {
         var circle = document.createElement("div");
-        circle.className = "circle";
-        circle.innerText = '+';
+        circle.className = "circle_image";
+        // circle.innerText = '+';
         header_span.appendChild(circle);
-        $(circle).attr('contenteditable','false');
+        // $(circle).attr('contenteditable','false');
         $(circle).click(function(event) {
             createNewNote(folderDiv);
             
@@ -308,7 +313,7 @@ $(document).ready(function() {
         // });
 
         $(new_note_div).find('.note_title').focusout(function() {
-            if(this.value != "") {
+            if(this.value !== "") {
                 var postParam = {
                     folder_id :folderDiv.id,
                     folder_name : $(folderDiv).find('.title')[0].innerText,
@@ -333,9 +338,9 @@ $(document).ready(function() {
                         window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                     });
 
-                    $(new_note_div).find('.delete_icon')[0].style.float = 'right';
+                    // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
 
-                    $(new_note_div).find('.delete_icon').bind('click', {div: new_note_div, folder: postParam.folder_name}, function(event) {
+                    $(new_note_div).find('.delete_icon').bind('click', {folder_div: folderDiv, div: new_note_div, folder: postParam.folder_name}, function(event) {
                         var postParam = {
                             note_id: this.id,
                             subject: event.data.folder
@@ -344,8 +349,13 @@ $(document).ready(function() {
                         // #TODO response is a boolean indicating successful deletion, 
                         // handle it.
                         $.post('/deleteNote', postParam, function(responseJSON) {
+                            event.preventDefault();
+                            event.stopPropagation();
                             // window.location.href = '/notes';
                             $(event.data.div).remove();
+                            if($(event.data.folder_div).find('.main_note_div')[0].innerHTML === "") {
+                                $(event.data.folder_div).find('.main_note_div').slideUp('fast');
+                            }
 
                         });
                     });
@@ -401,58 +411,7 @@ $(document).ready(function() {
     the folder id if needed.
 
 */
-    /**
-     * click handler for the save changes button on the main page
-     * sends information in the above format about new folders
-     * and notes to the server.
-     */
-     function saveClick() {
-        /* Find all new folders added */
-        console.log($(document).find('.new_folder_name_div'));
-        var new_folders = [];
-        $('.new_folder_name_div').each(function(j) {
-            this.id = -1;
-            var folder_data = {
-                "folder_id": this.id,
-                "title": $(this).find('.title')[0].innerText
-            }
-            new_folders.push(folder_data);
-            // console.log(folder_data);
-        });
-
-
-        /* Find all new notes */
-        console.log($(document).find('.new_note_name_div'));
-        var newNotes = [];
-        $('.new_note_name_div').each(function(i) {
-            var noteData = {
-                "note_id":-1,
-                "associated_folder_name": $(this).attr('folder'),
-
-                "title":$(this).find('.note_title')[0].innerText
-            }
-            newNotes.push(noteData);
-            alert(noteData);
-        });
-
-        // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
-        var postParam = {
-            folders: JSON.stringify(new_folders),
-            notes: JSON.stringify(newNotes)
-        }
-        console.log(postParam);
-        $.post("/updateNotes", postParam, function(responseObject) {
-            window.location.href = '/notes';
-        });
-
-
-     }
-
-     // attach the click handler to the button
-     $('#save-button').click(function(event) {
-        saveClick();
-     });
-
+    
 
      /**
       * click handler for the add new section button
@@ -473,7 +432,7 @@ $(document).ready(function() {
         // $(new_folder_div).find('.title').attr('contenteditable', 'true');
 
         $(new_folder_div).find('.title').focusout(function() {
-            if(this.value != "") {
+            if(this.value !== "") {
                 var folder_data = {
                     "folder_id": -1,
                     "title": this.value
@@ -1216,14 +1175,14 @@ Rule:
             document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule.trigger.style["font-size"];
 
             // extend these styles until ...
-            if(rule.trigger.endSeq != '<br>\u200b') {
+            if(rule.trigger.endSeq !== '<br>\u200b') {
                 document.getElementById('trigger-end-sequence_' + folder_id + rulename_id).value  = rule.trigger.endSeq ? rule.trigger.endSeq : "";
             } else {
                 document.getElementById('newline-trigger_' + folder_id + rulename_id).checked = true;
             }
 
             // style text after this rule until
-            if(rule.after.endSeq != '<br>\u200b') {
+            if(rule.after.endSeq !== '<br>\u200b') {
                 document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
             } else {
                 document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
@@ -1253,7 +1212,7 @@ Rule:
 
             // box this rule... 
             console.log("CONTAINER: " + rule.container.style);
-            if(rule.container.style["background-color"] != 'inherit') {
+            if(rule.container.style["background-color"] !== 'inherit') {
                 document.getElementById('box_' + folder_id + rulename_id).checked = true;
             }
 
