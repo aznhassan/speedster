@@ -9,7 +9,7 @@ hr {
 }
 
 body {
-	background-color: pink;
+	background-color: #00E5DB;
     color: black;
     font-family: "Bitter", serif;
     font-weight: 400;
@@ -18,15 +18,15 @@ body {
 }
 
 .flashcard-container {
-	background-color: black;
+	/*background-color: black;*/
 	color: black;
 	height: 80%;
 	width: 80%;
-	position: absolute;
-	margin-left: 10%;
-	margin-right: auto;
-	margin-top: 10%;
-	margin-bottom: 10%;
+	/*position: absolute;*/
+	/*margin-left: 10%;*/
+	/*margin-right: auto;*/
+	/*margin-top: 10%;*/
+	/*margin-bottom: 10%;*/
 }
 
 .flashcard_div_front, .flashcard_div_back {

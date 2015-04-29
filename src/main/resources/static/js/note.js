@@ -212,8 +212,8 @@ function stylize(correcting) {
     // \u200b -> <br>\u200b
     res = res.replace(/\u200b/g, NEWLINE);
 
+    // separate the title from the rest of the note to prevent interpretation of rules
     var idx = res.indexOf(NEWLINE);
-    //console.log(idx);
     var title = idx == -1 ? res : res.substring(0, idx);
     res = idx == -1 ? '' : res.substring(idx);
 

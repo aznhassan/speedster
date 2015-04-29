@@ -578,7 +578,7 @@ public final class ApiHandler {
         boolean isAnsCorrect = Boolean.parseBoolean(ansCorrect);
         String sessionNo = qm.value("session_no");
         int sNo = Integer.parseInt(sessionNo);
-        String cardIDStr = qm.value("cardID");
+        String cardIDStr = qm.value("card_id");
         long cardID = Long.parseLong(cardIDStr);
 
         // Getting card with given ID (we know it is in memory

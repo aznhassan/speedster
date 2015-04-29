@@ -18,29 +18,25 @@
   </head>
   <body>
 
+     <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="/js/jquery-2.1.1.js"></script>
-     <script src="/js/jquery.flip.js"></script>
      <script src="/js/flashcard.js"></script>
      <!-- // <script src="/js/editing.js"></script> -->
      <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-    <div id="session_div">${session_id}</div>
-
-    <div id="flashcard_holder">
-    </div>
-
-    <!-- doing this in js now :p
-    <div class="flashcard-container">
+     <div class="flashcard-container">
          <div class="flashcard_div_front"></div>
          <div class="flashcard_div_back"></div>
-    </div><br>
+     </div><br>
+
+    <div id="session_div">${session_id}</div>
 
     <div id="button-div">
         <div id="correct-button">CORRECT ANSWER</div>
         <div id="wrong-button">WRONG ANSWER</div>
     </div>
-    -->
+    
   </body>
   <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

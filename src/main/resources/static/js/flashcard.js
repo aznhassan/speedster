@@ -1,63 +1,6 @@
-/**
- * Handles flashcard pages
- * associated with flashcard.ftl file 
- */
 
-$(document).ready(function() {
-
-    // TODO: Surbhi, the next button is slated for destruction.
-    var nextButton = document.getElementById("next-button");
-    var correctButton = document.getElementById("correct-button");
-    var wrongButton = document.getElementById("wrong-button");
-
-    // TODO: Surbhi, I am adding a new object as a placeholder for current card :)
-    var currCard = { 
-      'q': "Demo",
-      'a': "Demo",
-      'id': 1  
-    }; 
-
-
-    // Session ID retrieved from variables map ftl was initiated with.
-    var sessionIDCounter = $('#session_div')[0].innerHTML;
-    
-     // Showing the first card!
-    getNextFlashcard();
-    
-      // TODO: Use different trigger to avoid back and forth. 
-      $('.flashcard_div_front').hover(function(){
-          $(this).addClass('flip-front');
-          $('.flashcard_div_back').addClass('flip-back');
-      },function(){
-          $(this).removeClass('flip-front');
-          //$('.flashcard_div_back').removeClass('flip-back');
-      });
-
-     
-
-
-    /**
-     * click handler for 'wrong' flashcard button.
-     * When you get a card wrong the session remains unaffected, 
-     * but the global card stats change.
-     */
-    $(wrongButton).click(function() {
-        sendFlashcardUpdates(false);
-        $('.flashcard_div_front').removeClass('flip-front');
-        $('.flashcard_div_back').removeClass('flip-back');
-    });
-
-    /**
-     * click handler for answered button
-     */
-    $(correctButton).click(function() {
-        sendFlashcardUpdates(true);
-        $('.flashcard_div_front').removeClass('flip-front');
-        $('.flashcard_div_back').removeClass('flip-back');
-    }) 
-
-  
-/*Format to recieve the next flashcard 
+/*
+Format to recieve the next flashcard 
 
 {
     "associated_folder":folder_name
@@ -67,66 +10,14 @@ $(document).ready(function() {
     "a": some answer
 }
 
+Format for sending back the current flashcard
 
-
-
+{
+  ansCorrect: bool,
+  session_no: num,
+  card_id: num
+}
 */
-    /**
-     * request the next flascard from the server
-     */
-    function getNextFlashcard() {
-        // TODO: Change from 'getParams' to postParams.
-        var getParams = {
-            session_number: sessionIDCounter
-        }
-        $.post("/getNextFlashcard", getParams, function(responseJSON) {
-            // Tushar to Surbhi: This works too now :P [ TODO, please remove this comment after reading.]
-            var responseObject = JSON.parse(responseJSON);
-            currCard.q = responseObject.q;
-            currCard.a = responseObject.a;
-            currCard.id = responseObject.card_id;
-            displayFlashcard(currCard);
-        });
-    }
-
-    /* 
-    * Gets the next flashcard and displays it. Also updates back-end with user's performance
-    * on the card. 
-    * @param ansCorrect true if the user got the answer right, false otherwise. 
-    */ 
-    function sendFlashcardUpdates(ansStatus) {
-        /**
-         * Update server on flashcard status.
-         */
-         var postParams = { 
-            session_no: sessionIDCounter,
-            cardID: currCard.id,
-            ansCorrect: ansStatus
-        }; 
-
-        // Avoiding updating the 'dummy' card that marks end of session.
-        if(currCard.id!=="-1") {
-            $.post("/finishedCard", postParams, function(responseJSON) {
-            // We don't need to do anything, as the primarily role 
-            // of is function was to update the back-end.
-        }); 
-
-        }
-        
-        /* 
-        * Display next flashcard.
-        */ 
-        getNextFlashcard();
-        
-    }
-    
-
-    /**
-     * get card info as JSON
-     */
-    function getCurrCard() {
-        return currCard;
-    }
 
 /* Flashcard format 
 {
@@ -135,26 +26,100 @@ $(document).ready(function() {
     "q": question
     "a": answer
 }
-
 */
 
-/**************************************
- * SAMPLE FLASHCARD
- **************************************/
- var cardOne = {
-    "associated_folder": "CS 22: Discrete Structures And Probability",
-    "card_id": 1,
-    "q": "What is life , why do I even CS ?",
-    "a": "I don't know why I even CS :("
- }
+var session_no = -1;
+var current_card_id = -1;
 
-    /**
-     * Displaying a flashcard
-     */
-     function displayFlashcard(card) {
-        $('.flashcard_div_front').html('<p><b>Q: </b>' + card.q + '</p>');
-        $('.flashcard_div_back').html('<p><b>Q: </b>' + card.q +'<hr>'+'</p><p><b>A: </b>' + card.a + '</p>');
-     }
+
+$(document).ready(function() {
+    // Session ID retrieved from variables map ftl was initiated with.
+    session_no = $('#session_div')[0].innerHTML;
+    
+     // Show the first card
+    getNextFlashcard();
 });
+
+function finishFlashcard(ansCorrect) {
+    var postParams = {
+        session_no: session_no,
+        card_id: current_card_id,
+        ansCorrect: ansCorrect
+    };
+
+    // Avoid sending an update for the 'dummy' card that marks end of session.
+    if(current_card_id != -1) {
+        $.post("/finishedCard", postParams, function(responseJSON) {
+            swapCards();
+        });
+    }
+}
+
+function swapCards() {
+    $('#flashcard').fadeOut('fast', 'swing', function() {
+        $(this).remove();
+        getNextFlashcard;
+    });
+}
+
+function getNextFlashcard() {
+    var params = {session_number: session_no};
+    $.post("/getNextFlashcard", params, function(responseJSON) {
+        var responseObject = JSON.parse(responseJSON);
+        current_card_id.card_id;
+        displayFlashcard(responseObject);
+    });
+}
+
+function displayFlashcard(card) {
+    // create and insert insert new flashcard
+    var newcard = makeCard(card);
+    $('#flashcard_holder').append(newcard);
+
+    // set up callbacks
+    $('#flashcard').flip({
+        axis: 'x',
+        trigger: 'hover',
+        speed: 300
+    });
+
+    $('#correct').click(function() {
+        disableButtons();
+        finishFlashcard(true);
+    });
+    $('#incorrect').click(function() {
+        disableButtons();
+        finishFlashcard(false);
+    });
+}
+
+function disableButtons() {
+    $('#correct')[0].disabled = true;
+    $('#incorrect')[0].disabled = true;
+}
+
+function makeCard(card) {
+  return '<div id="flashcard">' +
+            '<div class="front">' +
+              '<div class="box">' +
+                '<p>Q: ' + card.q + '</p>' +
+              '</div>' +
+            '</div>' +
+            '<div class="back">' +
+              '<div class="box">' +
+                '<p>Q: ' + card.q + '</p><br>' +
+                '<p>A: ' + card.a + '</p>' +
+                '<div class="finish_buttons">' +
+                  '<input type="button" id="correct" value="Got it!"/>' +
+                  '<input type="button" id="incorrect" value="Maybe next time"/>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+}
+
+
+
+
 
 
