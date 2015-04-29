@@ -118,12 +118,15 @@ $(document).ready(function() {
                 $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
             });
 
-            var main_note_div = document.createElement('main_note_div');
+            
+           main_note_div = document.createElement('main_note_div');
             main_note_div.className = 'main_note_div';
             folder_div.appendChild(main_note_div);
+        
+            
 
             
-            $(folder_div).find('.delete_icon').bind('click', {name: fList[i].folder_name}, function(event) {
+            $(folder_div).find('.delete_icon').bind('click', {div: folder_div, name: fList[i].folder_name}, function(event) {
                 var postParam = {
                     folder: event.data.name
                 }
@@ -132,7 +135,8 @@ $(document).ready(function() {
                 $.post('/deleteFolder', postParam, function(responseJSON) {
                     // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
                     // appropriately.
-                    window.location.href = '/notes';
+                    // window.location.href = '/notes';
+                    $(event.data.div).remove();
                 });
             });
             
@@ -143,14 +147,16 @@ $(document).ready(function() {
                 var notes_div = document.createElement("div");
                 notes_div.className = "note_name_div";
                 notes_div.id = folderList[i].notes[j].note_id;
-                notes_div.innerHTML = folderList[i].notes[j].note_name;
+                notes_div.innerHTML = '<span class="note_name">' + folderList[i].notes[j].note_name + '</span>';
                 $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
                 main_note_div.appendChild(notes_div);
                 $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
-                $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                $(notes_div).find('.delete_icon')[0].style.float = 'right';
+
+                $(notes_div).find('.delete_icon').bind('click', {div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
                     var postParam = {
                         note_id: event.data.id,
                         subject: event.data.folder
@@ -159,7 +165,8 @@ $(document).ready(function() {
                     // #TODO response is a boolean indicating successful deletion, 
                     // handle it.
                     $.post('/deleteNote', postParam, function(responseJSON) {
-                        window.location.href = '/notes';
+                        // window.location.href = '/notes';
+                        $(event.data.div).remove();
                     });
                 });
 
@@ -170,7 +177,10 @@ $(document).ready(function() {
                 });
             }
 
-            $(main_note_div)[0].style.display='none';
+            if(main_note_div) {
+                $(main_note_div)[0].style.display='none';
+            }
+            
 
             $(folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
                 console.log(event.data.notes);
@@ -180,10 +190,10 @@ $(document).ready(function() {
                 // } else {
                 //     $(this).html('<span class="arrow-down" id="main-page-arrow"></span>');
                 // }
-                $(event.data.notes).slideToggle(175);
-                    
-              
-                
+
+                if(event.data.notes.innerHTML != "") {
+                    $(event.data.notes).slideToggle(175);
+                }
             });
 
 
@@ -238,6 +248,34 @@ $(document).ready(function() {
     }
 
 
+    // notes_div.className = "note_name_div";
+    // notes_div.id = folderList[i].notes[j].note_id;
+    // notes_div.innerHTML = folderList[i].notes[j].note_name;
+    // $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
+    // main_note_div.appendChild(notes_div);
+    // $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
+    //     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
+    // });
+
+    // $(notes_div).find('.delete_icon').bind('click', {id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+    //     var postParam = {
+    //         note_id: event.data.id,
+    //         subject: event.data.folder
+    //     }
+
+    //     // #TODO response is a boolean indicating successful deletion, 
+    //     // handle it.
+    //     $.post('/deleteNote', postParam, function(responseJSON) {
+    //         window.location.href = '/notes';
+    //     });
+    // });
+
+    // $(notes_div).hover(function() {
+    //     $(this).find('.delete_icon').css({'visibility':'visible'}); 
+    // },function() {
+    //     $(this).find('.delete_icon').css({'visibility':'hidden'}); 
+    // });
+
      /**
       * Add a new editable note title div when a user adds one,
       */
@@ -245,7 +283,7 @@ $(document).ready(function() {
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
         // $(new_note_div).attr('contenteditable','true');
-        $(new_note_div).html('<span class="note_title">NEW NOTE</span>');
+        $(new_note_div).html('<input type="text" class="note_title note_title_input" placeholder="NOTE NAME"></input>');
         $(new_note_div).find('.note_title').attr('contenteditable','true');
         console.log($(folderDiv).find('.folder_header_span'));
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
@@ -258,18 +296,74 @@ $(document).ready(function() {
         
 
     
-        $(new_note_div).hover(function() {
-            if($(this).find('.delete_icon') != null) {
-                $(this).find('.delete_icon')[0].style.display='inline-block';
-            }
+        // $(new_note_div).hover(function() {
+        //     if($(this).find('.delete_icon') != null) {
+        //         $(this).find('.delete_icon')[0].style.display='inline-block';
+        //     }
             
-        }, function() {
-           if($(this).find('.delete_icon') != null) {
-                $(this).find('.delete_icon')[0].style.display='none';
+        // }, function() {
+        //    if($(this).find('.delete_icon') != null) {
+        //         $(this).find('.delete_icon')[0].style.display='none';
+        //     }
+        // });
+
+        $(new_note_div).find('.note_title').focusout(function() {
+            if(this.value != "") {
+                var postParam = {
+                    folde_id :folderDiv.id,
+                    folder_name : $(folderDiv).find('.title')[0].innerText,
+                    note_id : -1,
+                    note_name : this.value
+                };
+
+                // post request to save note
+                // #TODO: response also contains boolean indicating successful addition, deal with it
+                $.post('/newNote', postParam, function(responseJSON) {
+                    // parse response for note data to display
+
+                /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
+                    $(new_note_div).removeClass('new_note_name_div');
+                    $(new_note_div).html('<span class="note_title note_title_input">' + postParam.note_name + '</span>');
+                    new_note_div.className = "note_name_div";
+                    new_note_div.id = postParam.note_id // responseObject.note_id
+                    // note_div.innerHTML = postParam.note_name;// responseObject.note_name
+                    $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
+                    
+                    $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
+                        window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
+                    });
+
+                    $(new_note_div).find('.delete_icon')[0].style.float = 'right';
+
+                    $(new_note_div).find('.delete_icon').bind('click', {div: new_note_div, folder: postParam.folder_name}, function(event) {
+                        var postParam = {
+                            note_id: this.id,
+                            subject: event.data.folder
+                        }
+
+                        // #TODO response is a boolean indicating successful deletion, 
+                        // handle it.
+                        $.post('/deleteNote', postParam, function(responseJSON) {
+                            // window.location.href = '/notes';
+                            $(event.data.div).remove();
+
+                        });
+                    });
+
+                    $(new_note_div).hover(function() {
+                        $(this).find('.delete_icon').css({'visibility':'visible'}); 
+                    },function() {
+                        $(this).find('.delete_icon').css({'visibility':'hidden'}); 
+                    });
+
+                    $(folderDiv).find('.main_note_div').append(new_note_div);
+                });
+                
             }
-        });
+
+        }); 
         
-     }
+    }
 
 
 
@@ -366,12 +460,12 @@ $(document).ready(function() {
     function addSectionClick() {
         var new_folder_div = document.createElement("div");
         var header_span = document.createElement('span');
-        header_span.className = 'folder_header_span';
+        header_span.className = 'folder_header_span_new';
         // $(header_span).attr('contenteditable', 'true');
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
         
-        header_span.innerHTML = '<input class="title" maxlength="30" placeholder="NEW FOLDER"></input>';
+        header_span.innerHTML = '<input class="title title_note" maxlength="30" placeholder="NEW FOLDER"></input>';
 
 
         new_folder_div.id = folder_num_counter + 1;
@@ -379,34 +473,46 @@ $(document).ready(function() {
         // $(new_folder_div).find('.title').attr('contenteditable', 'true');
 
         $(new_folder_div).find('.title').focusout(function() {
-            var folder_data = {
-                "folder_id": -1,
-                "title": this.value
-            };
+            if(this.value != "") {
+                var folder_data = {
+                    "folder_id": -1,
+                    "title": this.value
+                };
 
-            $.get('/newFolder', folder_data, function(responseJSON) {
-                var responseObject = JSON.parse(responseJSON);
-                var folder_id = responseObject.id;
-                var folder_name = responseObject.title;
-                header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
+                $.get('/newFolder', folder_data, function(responseJSON) {
+                    var responseObject = JSON.parse(responseJSON);
+                    var folder_id = responseObject.id;
+                    var folder_name = responseObject.title;
+                    header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
+                    $(header_span).removeClass('folder_header_span_new');
+                    header_span.className = 'folder_header_span';
+                    $(new_folder_div).html(header_span);
+                    createCircleDiv(new_folder_div, header_span);
+                  
+                    $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
+                    createFlashcardDiv(header_span, folder_name);
+                    $(header_span).append('<br>');
 
-                $(new_folder_div).html(header_span);
-                createCircleDiv(new_folder_div, header_span);
-              
-                $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
-                createFlashcardDiv(header_span, folder_name);
-                $(header_span).append('<br>');
+                    $(header_span).hover(function() {
+                        $(this).find('.delete_icon')[0].style.visibility = 'visible';
+                        $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
 
-                $(header_span).hover(function() {
-                    $(this).find('.delete_icon')[0].style.visibility = 'visible';
-                    $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
+                    }, function() {
+                        $(this).find('.delete_icon')[0].style.visibility = 'hidden';
+                        $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
+                    });
 
-                }, function() {
-                    $(this).find('.delete_icon')[0].style.visibility = 'hidden';
-                    $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
+                    $(new_folder_div).removeClass('new_folder_name_div');
+                    $(new_folder_div).addClass('folder_name_div');
+
+                    var main_note_div = document.createElement('div');
+                    main_note_div.className = 'main_note_div';
+                    new_folder_div.appendChild(main_note_div);
+
                 });
+            }
 
-            });
+            
 
         });
         // createCircleDiv(new_folder_div, header_span);
