@@ -20,7 +20,7 @@ public class Note implements Readable, Writeable{
    * The String that holds the written note information
    */
   private String textData;
-  private String subject;
+  //private String subject;
   private long id;
   private String name;
 
@@ -32,7 +32,7 @@ public class Note implements Readable, Writeable{
    */
   public Note(String d, String s, String n){
     textData=d;
-    subject=s;
+    //subject=s;
     name = n;
   }
 
@@ -47,9 +47,9 @@ public class Note implements Readable, Writeable{
    * Gets the subject to which the note belongs.
    * @return the subject in string form.
    */
-  public String getSubject() {
-    return subject;
-  }
+//  public String getSubject() {
+//    return subject;
+//  }
   
   /**
    * Gets text data in single string. Use instead of
