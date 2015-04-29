@@ -41,7 +41,7 @@ public final class Web {
     Spark.get("/getNewSession/:subject", new ApiHandler.GetNewSession(),freeMarker);
     Spark.post("/updateNote", new ApiHandler.UpdateNotes());
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
-    Spark.post("/updateNotes", new ApiHandler.NotesCreator());
+    Spark.post("/newNote", new ApiHandler.NotesCreator());
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
     Spark.get("/getRules", new ApiHandler.GetRules());
     Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());

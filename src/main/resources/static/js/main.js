@@ -310,7 +310,7 @@ $(document).ready(function() {
         $(new_note_div).find('.note_title').focusout(function() {
             if(this.value != "") {
                 var postParam = {
-                    folde_id :folderDiv.id,
+                    folder_id :folderDiv.id,
                     folder_name : $(folderDiv).find('.title')[0].innerText,
                     note_id : -1,
                     note_name : this.value
