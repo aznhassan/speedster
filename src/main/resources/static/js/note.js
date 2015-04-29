@@ -418,7 +418,7 @@ function compileUserRule(rule) {
 }
 
 
-function sendNotes() {
+function save() {
     var urlparts = window.location.pathname.split('/');
 
     var noteData = $('#noteArea')[0].innerHTML || '';
@@ -534,14 +534,6 @@ $(document).ready(function() {
     }
   });
 
-  rules.push({
-    'name': 'important!',
-    'trigger': {
-      'word': 'important',
-      'style': 'important'
-    }
-  });
-
 	////////////////////////
 
   // clean each rule by escaping bad characters
@@ -571,12 +563,6 @@ $(document).ready(function() {
       } else if (code == 32) {
         	// Space
           stylize(true);
-          // sendNotesCounter++;
-          // if (sendNotesCounter % 5 == 0) {
-          //     sendNotes();
-          //     sendNotesCounter = 0;
-          // }
-          sendNotes();
    	  } else if (code == 13) {
         	// Line feed
           var parent = getSelectionParentElement(window.getSelection());
@@ -586,6 +572,9 @@ $(document).ready(function() {
           stylize(true);
       } else {
           stylize(false);
+      }
+      if (/\W/.test(String.fromCharCode(code)) && [37, 38, 39, 40].indexOf(code) === -1) {
+        save();
       }
   });
 
