@@ -147,12 +147,14 @@ $(document).ready(function() {
                 var notes_div = document.createElement("div");
                 notes_div.className = "note_name_div";
                 notes_div.id = folderList[i].notes[j].note_id;
-                notes_div.innerHTML = folderList[i].notes[j].note_name;
+                notes_div.innerHTML = '<span class="note_name">' + folderList[i].notes[j].note_name + '</span>';
                 $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
                 main_note_div.appendChild(notes_div);
                 $(notes_div).bind('click', {name: folderList[i].folder_id}, function(event) {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
+
+                $(notes_div).find('.delete_icon')[0].style.float = 'right';
 
                 $(notes_div).find('.delete_icon').bind('click', {div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
                     var postParam = {
@@ -308,6 +310,33 @@ $(document).ready(function() {
         $(new_note_div).find('.note_title').focusout(function() {
             if(this.value != "") {
                 var postParam = {
+                    folde_id :folderDiv.id,
+                    folder_name : $(folderDiv).find('.title')[0].innerText,
+                    note_id : -1,
+                    note_name : this.value
+                };
+
+                // post request to save note
+                // #TODO: response also contains boolean indicating successful addition, deal with it
+                $.post('/newNote', postParam, function(responseJSON) {
+                    // parse response for note data to display
+
+                /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
+                    $(new_note_div).removeClass('new_note_name_div');
+                    $(new_note_div).html('<span class="note_title note_title_input">' + postParam.note_name + '</span>');
+                    new_note_div.className = "note_name_div";
+                    new_note_div.id = postParam.note_id // responseObject.note_id
+                    // note_div.innerHTML = postParam.note_name;// responseObject.note_name
+                    $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
+                    
+                    $(new_note_div).bind('click', {name: postParam.folder_id}, function(event) {
+                        window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
+                    });
+
+                    $(new_note_div).find('.delete_icon')[0].style.float = 'right';
+
+                    $(new_note_div).find('.delete_icon').bind('click', {div: new_note_div, folder: postParam.folder_name}, function(event) {
+                        var postParam = {
                             note_id: this.id,
                             subject: event.data.folder
                         }
@@ -319,41 +348,17 @@ $(document).ready(function() {
                             $(event.data.div).remove();
 
                         });
-
-                /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
-                $(new_note_div).removeClass('new_note_name_div');
-                $(new_note_div).html('<span class="note_title note_title_input">' + postParam.note_name + '</span>');
-                new_note_div.className = "note_name_div";
-                new_note_div.id = postParam.note_id // responseObject.note_id
-                // note_div.innerHTML = postParam.note_name;// responseObject.note_name
-                $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
-                
-                $(new_note_div).bind('click', {name: postParam.folder_id}, function(event) {
-                    window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
-                });
-
-                $(new_note_div).find('.delete_icon').bind('click', {div: new_note_div, folder: postParam.folder_name}, function(event) {
-                    var postParam = {
-                        note_id: this.id,
-                        subject: event.data.folder
-                    }
-
-                    // #TODO response is a boolean indicating successful deletion, 
-                    // handle it.
-                    $.post('/deleteNote', postParam, function(responseJSON) {
-                        // window.location.href = '/notes';
-                        $(event.data.div).remove();
-
                     });
-                });
 
-                $(new_note_div).hover(function() {
-                    $(this).find('.delete_icon').css({'visibility':'visible'}); 
-                },function() {
-                    $(this).find('.delete_icon').css({'visibility':'hidden'}); 
-                });
+                    $(new_note_div).hover(function() {
+                        $(this).find('.delete_icon').css({'visibility':'visible'}); 
+                    },function() {
+                        $(this).find('.delete_icon').css({'visibility':'hidden'}); 
+                    });
 
-                $(folderDiv).find('.main_note_div').append(new_note_div);
+                    $(folderDiv).find('.main_note_div').append(new_note_div);
+                });
+                
             }
 
         }); 
