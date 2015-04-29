@@ -147,7 +147,7 @@ $(document).ready(function() {
                 notes_div.innerHTML = folderList[i].notes[j].note_name;
                 $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
                 main_note_div.appendChild(notes_div);
-                $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
+                $(notes_div).bind('click', {name: folderList[i].folder_id}, function(event) {
                     window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
                 });
 
