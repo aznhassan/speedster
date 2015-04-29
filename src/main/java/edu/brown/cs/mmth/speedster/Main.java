@@ -116,8 +116,8 @@ public final class Main {
     File data = new File(basePath);
 
     File[] directories = data.listFiles();
-    if (directories.length == 0) {
-      return 0; // .data file exists with no data.
+    if (directories == null || directories.length == 0) {
+      return 0; // .data directory exists with no data.
     }
     for (File directory : directories) { // Subject Folders
       File[] files = directory.listFiles();

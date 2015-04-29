@@ -11,6 +11,10 @@
 # Mac
 .DS_Store
 
+# ProjectSpecific
+.id
+.data
+
 # Maven
 log/
 target/
