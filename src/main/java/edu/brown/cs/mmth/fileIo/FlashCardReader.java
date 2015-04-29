@@ -63,7 +63,7 @@ public final class FlashCardReader {
    * @return collection of flashcard objects.
    */
   public static Collection<Flashcard> getCardsLinkedWithNote(Note note) {
-    String path = Main.getBasePath()+"/"+note.getSubject()+"/N"+note.getId();
+    String path = Main.getBasePath()+"/"+note+"/N"+note.getId();
     File folder = new File(path);
     return readCardsInFolder(folder, note.getSubject());
   }

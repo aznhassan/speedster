@@ -23,16 +23,17 @@ public class Note implements Readable, Writeable{
   //private String subject;
   private long id;
   private String name;
+  private long subjectId;
 
   /**
    * Constructs a new note object with a unique ID.
    * @param d -- data to store
-   * @param s -- subject to which note belongs
+   * @param s -- subject Id to which note belongs
    * @param n -- name of the note.
    */
-  public Note(String d, String s, String n){
+  public Note(String d, Long s, String n){
     textData=d;
-    //subject=s;
+    subjectId = s;
     name = n;
   }
 
@@ -44,9 +45,19 @@ public class Note implements Readable, Writeable{
   }
   
   /**
-   * Gets the subject to which the note belongs.
+   * Gets subject Id as a String.
    * @return the subject in string form.
    */
+  public String getSubjectIdStr() {
+      return "" + subjectId;       
+  }
+  
+  /** Grabs the subject Id.
+   * @return
+   */
+  public long getSubjectId() {
+    return subjectId; 
+  }
 //  public String getSubject() {
 //    return subject;
 //  }
