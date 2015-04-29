@@ -41,7 +41,6 @@
      <div class="button_div">
         <div id="add_section_button">NEW SECTION</div>
         <div id="edit_style_button">EDIT STYLES</div>
-        <div id="save-button">SAVE CHANGES</div>
 
      </div><br><br><br><br><br><br><br><br><br>
      </body>

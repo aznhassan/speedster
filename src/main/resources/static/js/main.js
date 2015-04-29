@@ -213,10 +213,10 @@ $(document).ready(function() {
       */
      function createCircleDiv(folderDiv, header_span) {
         var circle = document.createElement("div");
-        circle.className = "circle";
-        circle.innerText = '+';
+        circle.className = "circle_image";
+        // circle.innerText = '+';
         header_span.appendChild(circle);
-        $(circle).attr('contenteditable','false');
+        // $(circle).attr('contenteditable','false');
         $(circle).click(function(event) {
             createNewNote(folderDiv);
             
@@ -411,58 +411,7 @@ $(document).ready(function() {
     the folder id if needed.
 
 */
-    /**
-     * click handler for the save changes button on the main page
-     * sends information in the above format about new folders
-     * and notes to the server.
-     */
-     function saveClick() {
-        /* Find all new folders added */
-        console.log($(document).find('.new_folder_name_div'));
-        var new_folders = [];
-        $('.new_folder_name_div').each(function(j) {
-            this.id = -1;
-            var folder_data = {
-                "folder_id": this.id,
-                "title": $(this).find('.title')[0].innerText
-            }
-            new_folders.push(folder_data);
-            // console.log(folder_data);
-        });
-
-
-        /* Find all new notes */
-        console.log($(document).find('.new_note_name_div'));
-        var newNotes = [];
-        $('.new_note_name_div').each(function(i) {
-            var noteData = {
-                "note_id":-1,
-                "associated_folder_name": $(this).attr('folder'),
-
-                "title":$(this).find('.note_title')[0].innerText
-            }
-            newNotes.push(noteData);
-            alert(noteData);
-        });
-
-        // POST REQUEST TO SERVER INFORMING OF NEW NOTE(S)
-        var postParam = {
-            folders: JSON.stringify(new_folders),
-            notes: JSON.stringify(newNotes)
-        }
-        console.log(postParam);
-        $.post("/updateNotes", postParam, function(responseObject) {
-            window.location.href = '/notes';
-        });
-
-
-     }
-
-     // attach the click handler to the button
-     $('#save-button').click(function(event) {
-        saveClick();
-     });
-
+    
 
      /**
       * click handler for the add new section button

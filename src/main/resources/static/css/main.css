@@ -109,7 +109,7 @@ p {
 
 
 
-#save-button, #add_section_button, #edit_style_button {
+#add_section_button, #edit_style_button {
 	background-color:rgba(255,255,255,0.5);
 	width:9%;
 	margin-left: 5%;
@@ -122,11 +122,9 @@ p {
 	border-right: 1px solid rgba(0,0,0,0.6);
 }
 
-#save-button {
-	border-right: none;
-}
 
-#add_section_button:hover, #save-button:hover, #edit_style_button:hover {
+
+#add_section_button:hover, #edit_style_button:hover {
 	background-color: rgba(0,0,0,0.2);
 	color: white;
 }
@@ -137,6 +135,7 @@ p {
 
 #edit_style_button {
 	margin-left: 85%;
+	border-right: none;
 }
 
 .button_div {
@@ -225,8 +224,11 @@ p {
 }
 
 .circle_image {
-	background-image: url('plusoutline.png');
-	width: 25px;
+	background-image: url('dev.svg');
+	background-position: center;
+	background-repeat: 25px;
+	background-repeat: no-repeat;
+	width:  25px;
 	height: 25px;
 
 	border-radius: 25px;
