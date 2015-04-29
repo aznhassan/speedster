@@ -297,7 +297,7 @@ public final class ApiHandler {
                   makeExceptionJSON("ID given is not a number"));
           return new ModelAndView(variables, "main.ftl");
         }
-        String name = NoteReader.getNoteSubjectName(id);
+        //String name = NoteReader.getNoteSubjectName(id);
         folder.put("folder_name", id);
         JSONArray noteArray = new JSONArray();
         for (Note note : noteList) {
