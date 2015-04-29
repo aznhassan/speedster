@@ -53,7 +53,7 @@ public class Flashcard implements Readable, Writeable {
   /**
    * The subject that Flashcard belongs to.
    */
-  private String subjectName;
+  //private String subjectName;
   /**
    * The ID of the associated note.
    */
@@ -124,7 +124,7 @@ public class Flashcard implements Readable, Writeable {
   public List<String> getDataToStore() {
     List<String> toReturn = new ArrayList<>();
     toReturn.add("rank:" + new Long(rank).toString());
-    toReturn.add("subjectName:" + subjectName);
+    //toReturn.add("subjectName:" + subjectName);
     toReturn.add("noteId:" + noteId);
     toReturn.add("ntc:" + new Integer(numberTimesCorrect).toString());
     toReturn.add("ntw:" + new Integer(numberTimesWrong).toString());
@@ -142,7 +142,7 @@ public class Flashcard implements Readable, Writeable {
   public void updateFields(final String json) {
     JSONObject object = new JSONObject(json);
     rank = Integer.parseInt(object.getString("rank"));
-    subjectName = object.getString("subjectName");
+    //subjectName = object.getString("subjectName");
     noteId = Long.parseLong(object.getString("noteId"));
     numberTimesCorrect = Integer.parseInt(object.getString("ntc"));
     numberTimesWrong = Integer.parseInt(object.getString("ntw"));
@@ -217,19 +217,19 @@ public class Flashcard implements Readable, Writeable {
   /**
    * Grabs the subject of the Flashcard.
    */
-  public String getSubject() {
+ /* public String getSubject() {
     return subjectName;
-  }
+  }*/
 
   /**
    * Accessor for subjectName.
    *
    * @return the subjectName
    */
-  public String getSubjectName() {
+  /*public String getSubjectName() {
     return subjectName;
   }
-
+*/
   @Override
   public int hashCode() {
     return new Long(id).hashCode();
@@ -321,13 +321,12 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for subjectName.
-   *
    * @param subjectName
    *          the subjectName to set
    */
-  public void setSubjectName(final String subjectName) {
+  /*public void setSubjectName(final String subjectName) {
     this.subjectName = subjectName;
-  }
+  }*/
 
   @Override
   public String toString() {
