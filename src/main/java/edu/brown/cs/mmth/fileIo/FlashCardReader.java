@@ -65,7 +65,7 @@ public final class FlashCardReader {
   public static Collection<Flashcard> getCardsLinkedWithNote(Note note) {
     String path = Main.getBasePath()+"/"+note+"/N"+note.getId();
     File folder = new File(path);
-    return readCardsInFolder(folder, note.getSubject());
+    return readCardsInFolder(folder);
   }
   
   /**
@@ -74,7 +74,7 @@ public final class FlashCardReader {
    * @param subject the subject to look into
    * @return collection of flashcards read from given folder.
    */
-  private static Collection<Flashcard> readCardsInFolder(File folder, String subject) {
+  private static Collection<Flashcard> readCardsInFolder(File folder) {
     List<Flashcard> flashCards = new ArrayList<>();
     // Looking into the files in the given folder.
     for(File file: folder.listFiles()) {
@@ -144,7 +144,7 @@ public final class FlashCardReader {
     for (File file : files) {
       // All flashcards are one level deep in folders!
       if (!file.isFile()) {
-        flashCards.addAll(readCardsInFolder(file, subject));
+        flashCards.addAll(readCardsInFolder(file));
       }
     }
     return flashCards;

@@ -53,7 +53,7 @@ public class Flashcard implements Readable, Writeable {
   /**
    * The subject that Flashcard belongs to.
    */
-  //private String subjectName;
+   private long subjectID;
   /**
    * The ID of the associated note.
    */
@@ -92,12 +92,18 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Constructs a new flash card
+   * @param answer string self-explanatory
+   * @param question string self-explanatory
+   * @param noteID long self-explanatory
+   * @param subjectID long self-explanatory 
    */
-  public Flashcard(final String answer, final String question) {
+  public Flashcard(final String answer, final String question, long noteIDL, long subjectIDL) {
     numberTimesCorrect = 0;
     numberTimesWrong = 0;
     this.answer = answer;
     this.question = question;
+    subjectID = subjectIDL;
+    noteId = noteIDL;
     lastUse = new Date(Instant.now().toEpochMilli());
   }
 
@@ -111,6 +117,22 @@ public class Flashcard implements Readable, Writeable {
     return id == otherCard.id;
   }
 
+  /**
+   * Accessor method for subjectID.
+   * @return subjectID.
+   */
+  public long getSubjectID() {
+    return subjectID;
+  }
+  
+  /**
+   * Returns subjectID to string.
+   * @return subjectID in the form of string.
+   */
+  public String getSubjectIDStr() {
+    return Long.toString(subjectID);
+  }
+  
   /**
    * Accessor for answer.
    *
