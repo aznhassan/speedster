@@ -264,8 +264,8 @@ public final class ApiHandler {
       });
       
       JSONArray array = new JSONArray();
-      for (File subject : subjects) {
-        Collection<Note> noteCollection = NoteReader.readNotes(subject.getName());
+      for (File subjectId : subjects) {
+        Collection<Note> noteCollection = NoteReader.readNotes(subjectId.getName());
         if (noteCollection == null) {
           return new ModelAndView(empty, "main.ftl");
         }
@@ -278,12 +278,12 @@ public final class ApiHandler {
           }
         });
         JSONObject folder = new JSONObject();
-        folder.put("folder_name", subject.getName());
-        Long id = NoteReader.getNoteSubjectId(subject.getName());
+        folder.put("folder_id", subjectId.getName());
+        Long id = NoteReader.getNoteSubjectName(subjectId.getName());
         if (id == -1) {
           continue; // Improper ID file.
         }
-        folder.put("folder_id", id);
+        folder.put("folder_name", id);
         JSONArray noteArray = new JSONArray();
         for (Note note : noteList) {
           JSONObject obj = new JSONObject();

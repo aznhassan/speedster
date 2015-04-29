@@ -78,6 +78,7 @@ public class Note implements Readable, Writeable{
     List<String> listString=new ArrayList<String>();
     listString.add("data:" + textData);
     listString.add("name:" + name);
+    listString.add("subjectId:" + subjectId);
     return listString;
   }
 
@@ -96,6 +97,7 @@ public class Note implements Readable, Writeable{
     JSONObject object = new JSONObject(jsonFields);
     this.textData = object.getString("data");
     this.name = object.getString("name");
+    this.subjectId = Long.parseLong(object.getString("subjectId"));
   }
 
 }
