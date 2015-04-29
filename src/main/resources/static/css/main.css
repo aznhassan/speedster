@@ -156,7 +156,7 @@ p {
 	padding-left: 10%;
 }
 
-.folder_header_span {
+.folder_header_span, .folder_header_span_new {
 	/* padding-left: 5%; */
 	/*padding-right: 5%;*/
 	/* width:  300%; */
@@ -211,6 +211,13 @@ p {
 	cursor: pointer;
 	visibility: hidden;
 }
+
+.title_note, .note_title_input {
+	border:none;
+	background: inherit;
+}
+
+
 
 
 
