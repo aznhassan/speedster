@@ -99,6 +99,7 @@ $(document).ready(function() {
   
             $(folder_div).attr('data-folder',folderList[i]);
             var header_span = document.createElement('div');
+            header_span.id = folderList[i].folder_id;
             header_span.className = 'folder_header_span';
             header_span.innerHTML = '<span class="title">' + folderList[i].folder_name + '</span>';
 
@@ -232,7 +233,7 @@ $(document).ready(function() {
         folderDiv.appendChild(flashcardIcon);
         $(flashcardIcon).attr('contenteditable', 'false');
         $(flashcardIcon).click(function(event) {
-          window.location.href = '/getNewSession/' + encodeURIComponent(folderName);
+          window.location.href = '/getNewSession/' + folderDiv.id;
          //   $.get('/getNewSession/' + encodeURIComponent(folderName), function() {});
         });
     }
@@ -388,7 +389,7 @@ $(document).ready(function() {
                 var folder_id = responseObject.id;
                 var folder_name = responseObject.title;
                 header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
-
+                header_span.id = folder_id;
                 $(new_folder_div).html(header_span);
                 createCircleDiv(new_folder_div, header_span);
               

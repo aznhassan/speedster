@@ -72,11 +72,11 @@ public final class ApiHandler {
   public static class GetNewSession implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      String subjectE = req.params("subject");
-      String subject = "";
+      String subjectIDStr = req.params("subject");
+      long subject = -1L;
       try {
-        subject = URLDecoder.decode(subjectE, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
+        subject = Long.parseLong(subjectIDStr);
+      } catch (NumberFormatException e) {
         e.printStackTrace();
       }
       Map<String, Object> variables =
