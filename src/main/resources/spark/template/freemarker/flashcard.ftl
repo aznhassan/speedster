@@ -32,7 +32,7 @@
 
     <div id="session_div">${session_id}</div>
 
-    <div id="button-div">
+    <div id="button-div" align="center">
         <div id="correct-button">CORRECT ANSWER</div>
         <div id="wrong-button">WRONG ANSWER</div>
     </div>

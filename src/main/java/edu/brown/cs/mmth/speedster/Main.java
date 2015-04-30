@@ -133,9 +133,11 @@ public final class Main {
                   idFile), "UTF-8"))) {
         String line = reader.readLine();
         try {
-          long folderId = Long.parseLong(line);
-          if (folderId > toReturn) {
-            toReturn = folderId;
+          if (line != null) {
+            long folderId = Long.parseLong(line);
+            if (folderId > toReturn) {
+              toReturn = folderId;
+            }
           }
         } catch (NumberFormatException e) {
           System.err.println("ERROR: " + e.getMessage());
