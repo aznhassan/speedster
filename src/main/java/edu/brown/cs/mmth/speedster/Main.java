@@ -121,7 +121,8 @@ public final class Main {
     }
     for (File directory : directories) { // Subject Folders
       File[] files = directory.listFiles();
-      if (files.length == 0) {
+
+      if (files == null || files.length == 0) {
         continue;
       }
       File idFile = new File(directory, "/id");
