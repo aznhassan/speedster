@@ -1015,14 +1015,7 @@ Rules can take the following forms based on what is defined:
     function closeStyleMenu() {
         // var updated_styles = styleChangesToSave();
         // console.log("POST PARAMS: " + JSON.stringify(updated_styles));
-        var postParam = {
-            // styles_on_save: JSON.stringify(updated_styles)
-            
-        };
-
-        $.post('/updateCSS', postParam, function(responseJSON) {
-            // response may be not needed
-        });
+    
 
         // clear the style editing overlay
         prevEditingHTML = $('.example_content').html();
@@ -1378,7 +1371,7 @@ Rule:
             
 
             // box this rule... 
-            //console.log("CONTAINER: " + rule.container.style);
+
             if(rule.container && rule.container.style["background-color"] !== "inherit") {
                 document.getElementById('box_' + folder_id + rulename_id).checked = true;
             }
