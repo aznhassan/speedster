@@ -761,7 +761,7 @@ $(document).ready(function() {
             //         }
             //     }
 
-            //     // trying to do Nick's styling requests for container object; - sm15 #TODO
+            //    
 
 
             //     console.log("RULE: " + JSON.stringify(rule));
@@ -783,26 +783,17 @@ $(document).ready(function() {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
                 $('.example_overlay')[0].style.display = "table";
                 $('.example_content')[0].style.display = "table-cell";
-                // alert("UPDATING");
+
                 createEditStyleDivs();
 
-                // $(event.data.div).find('.collapse-main').removeClass('arrow-right');
                 
                 $('#inner_style_div_' + event.data.id)[0].style.display = 'block';
                 $('#collapse-main_' + event.data.id).removeClass('arrow-right');
                 $('#collapse-main_' + event.data.id).addClass('arrow-down');
 
-                // $(event.data.div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
-                //     $('#inner_style_div_' + event.data.id).slideToggle(175);
-                //     if($(this).hasClass('arrow-right')) {
-                //         $(this).removeClass('arrow-right');
-                //         $(this).addClass('arrow-down');
-
-                //     } else {
-                //         $(this).removeClass('arrow-down');
-                //         $(this).addClass('arrow-right');
-                //     }
-                // });
+                $('.close-button').click(function(event) {
+                    closeStyleMenu();
+                });
             });
             
         });
@@ -857,20 +848,35 @@ $(document).ready(function() {
                         }
                     },
 
-                    "container": 
-                    {
-                        "style":
-                        {
-                            "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
-                            "text-align": $(this).find(".center")[0].checked ? "center" : "left"
-                        }
-                    }
+                    // "container": 
+                    // {
+                    //     "style":
+                    //     {
+                    //         "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
+                    //         "text-align": $(this).find(".center")[0].checked ? "center" : "left"
+                    //     }
+                    // }
                 }
 
                 // trying to do Nick's styling requests for container object; - sm15 #TODO
+                if($(this).find('.box')[0].checked) {
+                    rule["container"] = {};
+                    rule["container"]["style"] = {}
+                    rule["container"]["style"]["background-color"] = "white";
+                }
+
+                if($(this).find('.center')[0].checked) {
+                    if(!rule["container"]) {
+                        rule["container"] = {};
+                        rule["container"]["style"] = {}
+                        rule["container"]["style"]["text-align"] = "center";
+                    } else {
+                        rule["container"]["style"]["text-align"] = "center";
+                    }
+                }
 
 
-                console.log("RULE: " + JSON.stringify(rule));
+                alert("RULE: " + JSON.stringify(rule));
                 rulesForThisFolder.push(rule);
             
                 
@@ -909,14 +915,14 @@ $(document).ready(function() {
      */
     function getTriggerEndSequence(inner_div, folderID, rulename) {
 
-        return $(inner_div).find('.newline-trigger')[0].checked ? "<br>\u200b" : document.getElementById('trigger-end-sequence_' + folderID + rulename).value;
+        return $(inner_div).find('.newline-trigger')[0].checked ? "<br>" : document.getElementById('trigger-end-sequence_' + folderID + rulename).value;
     }
 
     /*
      *
      */
     function getAfterEndSequence(inner_div, folderID) {
-        return $(inner_div).find(".newline-text-after")[0].checked ? "<br>\u200b" : $(inner_div).find('.text-after-end-sequence')[0].value;
+        return $(inner_div).find(".newline-text-after")[0].checked ? "<br>" : $(inner_div).find('.text-after-end-sequence')[0].value;
     }
 
    
@@ -1292,9 +1298,9 @@ Rule:
                 $.post('/deleteRule', postParam, function(responseJSON) {
                     $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
                     $('#new-style-header_' + event.data.id + event.data.rule).remove();
+                    $(this).remove();
                     $('#rule_div_' + event.data.id + event.data.rule).remove();
                     $('#line_break_' + event.data.id + event.data.rule).remove();
-                    $(this).remove();
                 });
             });
 
@@ -1367,12 +1373,12 @@ Rule:
 
             // box this rule... 
             console.log("CONTAINER: " + rule.container.style);
-            if(rule.container && rule.container.style["background-color"]) {
+            if(rule.container && rule.container.style["background-color"] !== "inherit") {
                 document.getElementById('box_' + folder_id + rulename_id).checked = true;
             }
 
             // center this rule ...
-            if(rule.container && rule.container.style["text-align"]) {
+            if(rule.container && rule.container.style["text-align"] === "center") {
                document.getElementById('center_' + folder_id + rulename_id).checked = true;
             }
 
