@@ -73,21 +73,32 @@ public class RuleCssMaker {
       name = name.toLowerCase().replace(" ", "_");
       // obj.remove("name");
       // obj.put("name", name);
+      boolean containerExists = true;
+      try {
+        obj.getJSONObject("container");
+      } catch (JSONException e) {
+        containerExists = false;
+      }
       // Adding the class value to internal JSON objects
       JSONObject trigger = obj.getJSONObject("trigger");
       addClassToJsonObject(name, "trigger", trigger);
       JSONObject after = obj.getJSONObject("after");
       addClassToJsonObject(name, "after", after);
-      JSONObject container = obj.getJSONObject("container");
-      addClassToJsonObject(name, "container", container);
+      JSONObject container = new JSONObject();
+      if (containerExists) {
+        container = obj.getJSONObject("container");
+        addClassToJsonObject(name, "container", container);
+      }
 
       // Reading internal JSON objects.
       obj.remove("trigger");
       obj.put("trigger", trigger);
       obj.remove("after");
       obj.put("after", after);
-      obj.remove("container");
-      obj.put("container", new JSONObject().put("style", new JSONObject()));
+      if (containerExists) {
+        obj.remove("container");
+        obj.put("container", new JSONObject().put("style", new JSONObject()));
+      }
 
       worked = writeRule(obj, folder, deleteRules);
       if (deleteRules) {
@@ -95,7 +106,9 @@ public class RuleCssMaker {
       }
       cssList.add(getCssFromObject(trigger, "trigger", name, folder));
       cssList.add(getCssFromObject(after, "after", name, folder));
-      cssList.add(getCssFromObject(container, "container", name, folder));
+      if (containerExists) {
+        cssList.add(getCssFromObject(container, "container", name, folder));
+      }
     }
 
     return worked && writeCss(cssList, folder/* , name */);
