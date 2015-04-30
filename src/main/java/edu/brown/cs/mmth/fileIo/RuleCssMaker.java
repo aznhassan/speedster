@@ -202,7 +202,7 @@ public final class RuleCssMaker {
       if (name.equals("font-family")) {
         css.append("\"").append(style).append("\"").append(";");
       } else {
-        css.append(name).append(";");
+        css.append(style).append(";");
       }
     }
     if (styleLength > 0) {
