@@ -512,24 +512,14 @@ public final class ApiHandler {
       }
       StringBuilder bd = new StringBuilder("[");
       for (File subject : subjects) {
-        File ruleDirectory = new File(subject, "/rules");
-        File[] rules = ruleDirectory.listFiles();
-        if (rules == null || rules.length == 0) {
+        String rules = getRulesInSubject(subject);
+        if (rules.equals("[]")) {
           continue;
-        }
-        for (File rule : rules) {
-          try (
-              BufferedReader br =
-                  new BufferedReader(new InputStreamReader(new FileInputStream(
-                      rule), "UTF-8"))) {
-            String line = "";
-            while ((line = br.readLine()) != null) {
-              bd.append(line);
-            }
-            bd.append(",");
-          } catch (IOException e) {
-            return makeExceptionJSON(e.getMessage());
-          }
+        } else {
+          rules = rules.substring(1);
+          rules = rules.substring(0, rules.length() - 1);
+          bd.append(rules);
+          bd.append(",");
         }
       }
       if (bd.length() > 1) {
@@ -538,6 +528,57 @@ public final class ApiHandler {
 
       bd.append("]");
       return bd.toString();
+    }
+  }
+
+  /**
+   * Grabs all the rules in a given subject.
+   * 
+   * @param subject
+   *          - The file that points to the subject directory.
+   * @return The JSON array of all the rules in the subject.
+   */
+  private static String getRulesInSubject(File subject) {
+    StringBuilder bd = new StringBuilder("[");
+    File ruleDirectory = new File(subject, "/rules");
+    File[] rules = ruleDirectory.listFiles();
+    if (rules == null || rules.length == 0) {
+      return "[]";
+    }
+    for (File rule : rules) {
+      try (
+          BufferedReader br =
+              new BufferedReader(new InputStreamReader(
+                  new FileInputStream(rule), "UTF-8"))) {
+        String line = "";
+        while ((line = br.readLine()) != null) {
+          bd.append(line);
+        }
+        bd.append(",");
+      } catch (IOException e) {
+        return makeExceptionJSON(e.getMessage());
+      }
+    }
+    if (bd.length() > 1) {
+      bd.deleteCharAt(bd.length() - 1); // deleting the extra ","
+    }
+    bd.append("]");
+    return bd.toString();
+  }
+
+  /**
+   * Grabs all the rules of a subject
+   * 
+   * @author hsufi
+   */
+  public static class GetRule implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String subject = qm.value("subject");
+      File subjectFile = new File(Main.getBasePath() + "/" + subject);
+      String toReturn = getRulesInSubject(subjectFile);
+      return toReturn;
     }
   }
 
