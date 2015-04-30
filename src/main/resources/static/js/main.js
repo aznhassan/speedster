@@ -123,10 +123,9 @@ $(document).ready(function() {
 
                     // #TODO: remove folder from edit style menu as well!
                     // edit: request for the updated folder list from server and update the global varible 'fList'
-                    $.get('/updatedFolders', postParam, function(responseJSON) {
-                        var json = $(".data");
-                        var jsonArray = JSON.parse(json.text());
-                        fList = jsonArray;
+                    $.get('/moreNotes', postParam, function(responseJSON) {
+                        var responseObject = JSON.parse(responseJSON);
+                        fList = responseObject;
                     });
 
                 });
@@ -410,6 +409,13 @@ $(document).ready(function() {
                             $(event.data.notes).slideToggle(175);
                         }
                     });
+
+                     var getParams = {};
+
+                     $.get('/moreNotes', getParams, function(responseJSON) {
+                        var responseObject= JSON.parse(responseJSON);
+                        fList = responseObject;
+                     });
 
                     // #TODO: Add a corresonding folder thing to the style overlay,
                     // edit: request for an updated folder list from the server and reassign the variable 'fList'
