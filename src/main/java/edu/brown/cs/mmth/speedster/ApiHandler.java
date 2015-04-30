@@ -113,16 +113,18 @@ public final class ApiHandler {
       // Creating a new folder in memory, along with its ID file.
       File folder = new File(Main.getBasePath() + "/" + subjectName);
       folder.mkdirs();
+      // new File(folder, "/rules").mkdir();
 
       boolean success = true;
 
       long id = Main.getAndIncrementId();
       File idFile = new File(Main.getBasePath() + "/" + subjectName + "/id");
-      FileWriter idWriter;
-      try {
-        idWriter = new FileWriter(idFile);
+      File customCss =
+          new File("src/main/resources/static/customCss/" + id + ".css");
+      try (FileWriter idWriter = new FileWriter(idFile);
+          FileWriter cssWriter = new FileWriter(customCss)) {
         idWriter.write(Long.toString(id));
-        idWriter.close();
+        cssWriter.write("");
       } catch (IOException e) {
         success = false;
       }
@@ -230,12 +232,12 @@ public final class ApiHandler {
       Map<String, Object> variables;
       if (returnNote != null) {
         variables =
-            ImmutableMap.of("title", "Speedster", "note",
+            ImmutableMap.of("title", returnNote.getName(), "note",
                 returnNote.getTextData(), "customCss", "../../customCss/"
                     + subjectId + ".css");
       } else {
         variables =
-            ImmutableMap.of("title", "Speedster", "note",
+            ImmutableMap.of("title", "Untitled", "note",
                 "Note doesn't exist!", "customCss", "../../customCss/"
                     + subjectId + ".css");
       }
@@ -484,7 +486,7 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String cssJson = qm.value("rule");
+      String cssJson = qm.value("rules");
       boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);
@@ -498,9 +500,7 @@ public final class ApiHandler {
 
   /**
    * Grabs all the rules from every class
-   * 
    * @author hsufi
-   *
    */
   public static class GetRules implements Route {
     @Override
@@ -600,13 +600,16 @@ public final class ApiHandler {
       if (!file.isDirectory()) {
         return makeExceptionJSON("Folder doesn't exist");
       }
-
       try {
+        long subjectId = NoteReader.getNoteSubjectId(folder);
+        File customCss =
+            new File("src/main/resources/static/customCss/" + subjectId
+                + ".css");
+        customCss.delete();
         FileUtils.deleteDirectory(file);
       } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");
       }
-
       return true;
     }
   }
@@ -628,7 +631,7 @@ public final class ApiHandler {
         boolean isAnsCorrect = Boolean.parseBoolean(ansCorrect);
         String sessionNo = qm.value("session_no");
         int sNo = Integer.parseInt(sessionNo);
-        String cardIDStr = qm.value("card_id");
+        String cardIDStr = qm.value("cardID");
         long cardID = Long.parseLong(cardIDStr);
 
         // Getting card with given ID (we know it is in memory

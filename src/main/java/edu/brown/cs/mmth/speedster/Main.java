@@ -9,10 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-import edu.brown.cs.mmth.fileIo.UpdaterThread;
-
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import edu.brown.cs.mmth.fileIo.UpdaterThread;
 
 /**
  * This is the main class that co-ordinates GUI with the back-end.
@@ -68,6 +67,7 @@ public final class Main {
         // Grab the highest value of every note or flashcard
         value = idRecovery();
         if (value == -1) {
+          System.err.println("");
           System.exit(1);
         }
       }
@@ -121,9 +121,11 @@ public final class Main {
     }
     for (File directory : directories) { // Subject Folders
       File[] files = directory.listFiles();
-      if (files.length == 0) {
-        continue;
+
+      if (files == null || files.length == 0) {
+        return 0;
       }
+
       File idFile = new File(directory, "/id");
       try (
           BufferedReader reader =
@@ -136,13 +138,19 @@ public final class Main {
             toReturn = folderId;
           }
         } catch (NumberFormatException e) {
-          continue;
+          System.err.println("ERROR: " + e.getMessage());
+          return -1;
         }
+
       } catch (IOException e) {
-        continue;
+        System.err.println("ERROR: " + e.getMessage());
+        return -1;
       }
       for (File file : files) { // Notes & Flashcards
         String name = file.getName();
+        if (!name.startsWith("N") && !name.startsWith("f")) {
+          continue;
+        }
         name = name.substring(1);
         try {
           long number = Long.parseLong(name);
@@ -150,7 +158,8 @@ public final class Main {
             toReturn = number;
           }
         } catch (NumberFormatException e1) {
-          continue;
+          System.err.println("ERROR: " + e1.getMessage());
+          return -1;
         }
       }
     }
@@ -187,13 +196,14 @@ public final class Main {
    */
   private void run() {
     OptionParser parser = new OptionParser();
-    parser.accepts("h","Shows help.").forHelp();
+    parser.accepts("h", "Shows help.").forHelp();
 
     OptionSet options = null;
     try {
       options = parser.parse(args);
     } catch (joptsimple.OptionException e) {
-      System.out.println("ERROR: JOpt exception " + e.getMessage()+". Run with -h flag for assistance.");
+      System.out.println("ERROR: JOpt exception " + e.getMessage()
+          + ". Run with -h flag for assistance.");
       System.exit(1);
     }
 
