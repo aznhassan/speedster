@@ -56,12 +56,7 @@ $(document).ready(function() {
             var json = $(".data");
             var jsonArray = JSON.parse(json.text());
             fList = jsonArray;
-            // alert("CALLBACK");
             displayTitles(jsonArray);
-
-
-
-            //displayTitles(folders);
         });
     }
 
@@ -118,7 +113,6 @@ $(document).ready(function() {
                     // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
                     // appropriately.
                     // window.location.href = '/notes';
-                    console.log("DELETE THIS PLZ :'(    " + $('.example_content').find('#' + event.data.id));
                     $(event.data.div).remove();
 
                     // #TODO: remove folder from edit style menu as well!
@@ -179,8 +173,6 @@ $(document).ready(function() {
             
 
             $(folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
-                console.log(event.data.notes);
-
                 if(event.data.notes.innerHTML !== "") {
                     $(event.data.notes).slideToggle(175);
                 }
@@ -236,11 +228,9 @@ $(document).ready(function() {
         // $(new_note_div).attr('contenteditable','true');
         $(new_note_div).html('<input type="text" class="note_title note_title_input" placeholder="NOTE NAME"></input>');
         $(new_note_div).find('.note_title').attr('contenteditable','true');
-        console.log($(folderDiv).find('.folder_header_span'));
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
         new_note_div.id = -1;
-        console.log("NEW NOTE ID: " + new_note_div.id);
-
+        
         // new_note_div.innerHTML = "NEW  NOTE";
         $(new_note_div).append('<div class="delete_icon" id="delete_icon_' + -1 + '"></div>');
         folderDiv.appendChild(new_note_div);
@@ -552,8 +542,6 @@ $(document).ready(function() {
         var getParams = {};
         var rules = [];
         $.get('/getRules', getParams, function(responseJSON) {
-             // var responseObject = JSON.parse(responseJSON);
-             console.log("RULESSSSSSSSSS PLZ: " + responseJSON);
              rules = JSON.parse(responseJSON);
              createExistingStyleRules(rules);
 
@@ -581,18 +569,15 @@ $(document).ready(function() {
     // ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
     // toggle(text-after-style-bar, folder id, font-weight)
     function setTextStyleToggle(style_text, folder_id, rulename, style_type) {
-        // alert(rulename);
-        var button = $('.style-toolbar').find('#' + style_text + folder_id + rulename + '_' + style_type);
+        var button = $('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
 
                 if($(this).attr('value') === 'none') {
                     var new_val = $(this).attr('name');
                     $(this).attr('value', new_val);
-                    console.log($(this).attr('value'));
                     $(this).css('background-color', 'rgba(0,0,0,0.3)');
                 } else if($(this).attr('value') === $(this).attr('name')) {
-                    console.log("HELLO");
                     $(this).attr('value', 'none');
                     $(this).css('background-color','inherit');
                 }
@@ -635,72 +620,6 @@ $(document).ready(function() {
     }
 
 
-    // function addStyleClickHandler(styleDiv, folderID, folderName) {
-    //     $('#submit_' + folderID).bind('click', {id: folderID, style_div: styleDiv, name: folderName}, function(event) {
-    //         var inner_div = $(event.data.style_div).find('#inner_style_div_' + event.data.id);
-    //         var rule = 
-    //         {   
-    //             "associated_folder_id": event.data.id,
-    //             "associated_folder_name": event.data.name,
-    //             "name": document.getElementById('rulename_' + event.data.id).value,
-    //             "trigger":
-    //             {
-    //                 "word": document.getElementById('rulestart_' + event.data.id).value,
-    //                 "endSeq": getTriggerEndSequence(inner_div, event.data.id),
-    //                 "style": 
-    //                 {
-    //                     "font-weight": getButtonValue('start-style-bar', 'font-weight', event.data.id),
-    //                     "font-style": getButtonValue('start-style-bar', 'font-style', event.data.id),
-    //                     "text-decoration": getButtonValue('start-style-bar', 'text-decoration', event.data.id),
-    //                     "font-family": getButtonValue('start-style-bar', 'font-family', event.data.id),
-    //                     "font-size": getButtonValue('start-style-bar', 'font-size', event.data.id),
-    //                 }
-    //             },
-
-    //             "after": 
-    //             {
-    //                 "endSeq": getAfterEndSequence(inner_div, event.data.id),
-    //                 "style": 
-    //                 {
-    //                     "font-weight": getButtonValue('text-after-style-bar', 'font-weight', event.data.id),
-    //                     "font-style": getButtonValue('text-after-style-bar', 'font-style', event.data.id),
-    //                     "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', event.data.id),
-    //                     "font-family": getButtonValue('text-after-style-bar', 'font-family', event.data.id),
-    //                     "font-size": getButtonValue('text-after-style-bar', 'font-size', event.data.id),
-    //                 }
-    //             },
-
-    //             "container": 
-    //             {
-    //                 "style":
-    //                 {
-    //                     "background-color": $(inner_div).find('.box')[0].checked ? "white" : "inherit",
-    //                     "text-align": $(inner_div).find(".center")[0].checked ? "center" : "left"
-    //                 }
-    //             }
-    //         }
-
-    //         var postParam = {
-    //             rule: JSON.stringify(rule)
-    //         }
-    //         // $.post('/updateCSS', postParam, function() {
-    //             // #TODO: collpase the style that has been saved after it has been saved.
-
-    //             // HTML changes to the 'New Style' form, on save: 
-    //             // '<span class="circle arrow-right existing-styles-collapse" id="existing-styles-collapse_' + folder_id + rulename_id + '"></span>' +
-    //             // '<span class="new-style-header">' + rulename + '</span>' + 
-    //             // followed by the rule_div as is....
-
-    //             // existing top HTML:
-    //             // '<span class="new-style-header-to-add"> New Style <span class="circle" id="style-circle">+</span></span>' + 
-                
-    //             // $(inner_div).find('.new-style-header-to-add').remove();
-
-    //         // });
-            
-    //     });
-    // }
-
 
     /**
      * Trying to grab all rule objects of a given folder/subject
@@ -710,71 +629,7 @@ $(document).ready(function() {
      */
     function getSubjectRules(styleDiv, folderID, folderName, rulename) {
         $('#submit_' + folderID + rulename).bind('click', {id: folderID, name: folderName, div: styleDiv, rule: rulename}, function(event) {
-            // var rulesForThisFolder = [];
             
-            
-            // $(event.data.div).find('.rule_div').each(function(i) {
-            //     // alert(i);
-            //     var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
-            //     if(!document.getElementById('rulename_' + event.data.id + name)) { 
-            //         if(rulename !== "") {
-            //             name = rulename;
-            //         } else {
-            //             name = "";
-            //         }
-            //     }
-                
-            //     console.log("STYLE DIV: " + $(event.data.div).find('.rule_div'));
-            //     var rule = 
-            //     {   
-            //         "associated_folder_id": event.data.id,
-            //         "associated_folder_name": event.data.name,
-            //         "name": document.getElementById('rulename_' + event.data.id + name).value,
-            //         "trigger":
-            //         {
-            //             "word": document.getElementById('rulestart_' + event.data.id + name).value,
-            //             "endSeq": getTriggerEndSequence(this, event.data.id, name),
-            //             "style": 
-            //             {
-            //                 "font-weight": getButtonValue('start-style-bar', 'font-weight', event.data.id, name),
-            //                 "font-style": getButtonValue('start-style-bar', 'font-style', event.data.id, name),
-            //                 "text-decoration": getButtonValue('start-style-bar', 'text-decoration', event.data.id, name),
-            //                 "font-family": getButtonValue('start-style-bar', 'font-family', event.data.id, name),
-            //                 "font-size": getButtonValue('start-style-bar', 'font-size', event.data.id, name),
-            //             }
-            //         },
-
-            //         "after": 
-            //         {
-            //             "endSeq": getAfterEndSequence(this, event.data.id, name),
-            //             "style": 
-            //             {
-            //                 "font-weight": getButtonValue('text-after-style-bar', 'font-weight', event.data.id, name),
-            //                 "font-style": getButtonValue('text-after-style-bar', 'font-style', event.data.id, name),
-            //                 "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', event.data.id, name),
-            //                 "font-family": getButtonValue('text-after-style-bar', 'font-family', event.data.id, name),
-            //                 "font-size": getButtonValue('text-after-style-bar', 'font-size', event.data.id, name),
-            //             }
-            //         },
-
-            //         "container": 
-            //         {
-            //             "style":
-            //             {
-            //                 "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
-            //                 "text-align": $(this).find(".center")[0].checked ? "center" : "left"
-            //             }
-            //         }
-            //     }
-
-            //    
-
-
-            //     console.log("RULE: " + JSON.stringify(rule));
-            //     rulesForThisFolder.push(rule);
-            
-                
-            // });
 
             var rulesForThisFolder = getRulesList(event.data.div, event.data.id, event.data.name, event.data.rule);
 
@@ -783,8 +638,7 @@ $(document).ready(function() {
             var postParam = {
                 rules: JSON.stringify(rulesForThisFolder)
             };
-            // alert(postParam.rules);
-
+            
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
                 $('.example_overlay')[0].style.display = "table";
@@ -811,7 +665,6 @@ $(document).ready(function() {
     function getRulesList(styleDiv, folder_id, folder_name, rulename) {
         var rulesForThisFolder = [];
         $(styleDiv).find('.rule_div').each(function(i) {
-                // alert(i);
                 var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
                 if(!document.getElementById('rulename_' + folder_id + name)) { 
                     if(rulename !== "") {
@@ -821,7 +674,6 @@ $(document).ready(function() {
                     }
                 }
                 
-                // console.log("STYLE DIV: " + $(stylDiv).find('.rule_div'));
                 var rule = 
                 {   
                     "associated_folder_id": folder_id,
@@ -882,15 +734,12 @@ $(document).ready(function() {
                 }
 
 
-                alert("RULE: " + JSON.stringify(rule));
                 rulesForThisFolder.push(rule);
             
                 
             });
             return rulesForThisFolder;
-            
-            
-    }
+        }
 
     /**
      * get the value for the styling toolbar buttons according to their unique id
@@ -1014,9 +863,7 @@ Rules can take the following forms based on what is defined:
      */
     function closeStyleMenu() {
         // var updated_styles = styleChangesToSave();
-        // console.log("POST PARAMS: " + JSON.stringify(updated_styles));
-    
-
+      
         // clear the style editing overlay
         prevEditingHTML = $('.example_content').html();
         $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
@@ -1028,138 +875,6 @@ Rules can take the following forms based on what is defined:
 
     }
 
-
-/* SAMPLE EXISTING RULES */
-    // var rule1 = {
-    //     "associated_folder_id":22,
-    //     "associated_folder_name": "CS 22: Discrete Structures and Probabilty",
-    //     "name": "quotes once more plz(^((&$#$%",
-    //     "trigger":
-    //     {
-    //         "word": "quotes plz",
-    //         "endSeq": "stop plz",
-    //         "style":
-    //         {
-    //             "font-weight":"bold",
-    //             "font-style":"none",
-    //             "text-decoration":"none",
-    //             "font-family": "Helvetica",
-    //             "font-size":"Big"
-    //         }
-    //     },
-
-    //     "after":
-    //     {
-    //         "endSeq": '<br>',
-    //         "style":
-    //         {
-    //             "font-weight":"none",
-    //             "font-style":"italic",
-    //             "text-decoration":"underline",
-    //             "font-family": "Helvetica",
-    //             "font-size":"Big"
-    //         }
-
-    //     },
-
-    //     "container":
-    //     {
-    //        "style":
-    //        {
-    //             "background-color":'inherit',
-    //             "text-align":'center'
-    //         }
-    //     }
-    // };
-    
-    // var rule2 = {
-    //     "associated_folder_id":22,
-    //     "associated_folder_name": "CS 22: Discrete Structures and Probabilty",
-    //     "name": "one more quotes though",
-    //     "trigger":
-    //     {
-    //         "word": "quotes plz",
-    //         "endSeq": "stop plz",
-    //         "style":
-    //         {
-    //             "font-weight":"bold",
-    //             "font-style":"none",
-    //             "text-decoration":"none",
-    //             "font-family": "Helvetica",
-    //             "font-size":"Big"
-    //         }
-    //     },
-
-    //     "after":
-    //     {
-    //         "endSeq": '<br>',
-    //         "style":
-    //         {
-    //             "font-weight":"none",
-    //             "font-style":"italic",
-    //             "text-decoration":"underline",
-    //             "font-family": "Helvetica",
-    //             "font-size":"Big"
-    //         }
-
-    //     },
-
-    //     "container":
-    //     {
-    //        "style":
-    //        {
-    //             "background-color":'inherit',
-    //             "text-align":'center'
-    //         }
-    //     }
-    // };
-
-    // var rule3 = {
-    //     "associated_folder_id":24,
-    //     "associated_folder_name": "History",
-    //     "name": "is this quotes though",
-    //     "trigger":
-    //     {
-    //         "word": "Tushar is a viking",
-    //         "endSeq": "ehhhhh",
-    //         "style":
-    //         {
-    //             "font-weight":"bold",
-    //             "font-style":"none",
-    //             "text-decoration":"none",
-    //             "font-family": "Helvetica",
-    //             "font-size":"Big"
-    //         }
-    //     },
-
-    //     "after":
-    //     {
-    //         "endSeq": 'some random end sequence',
-    //         "style":
-    //         {
-    //             "font-weight":"bold",
-    //             "font-style":"none",
-    //             "text-decoration":"underline",
-    //             "font-family": "Times New Roman",
-    //             "font-size":"Small"
-    //         }
-
-    //     },
-
-    //     "container":
-    //     {
-    //        "style":
-    //        {
-    //             "background-color":'inherit',
-    //             "text-align":'center'
-    //         }
-    //     }
-    // };
-
-   
-    // rules.push(rule2);
-    // rules.push(rule1);
-    // rules.push(rule3);
 
 /* 
 
@@ -1220,18 +935,18 @@ Rule:
     function createExistingStyleRules(rules) {
         console.log("length:    " + rules.length);
         for(var i = 0; i < rules.length; i++) {
-          
             var rule = rules[i];
 
             var rulename = rule.name;
-            // alert(rule);
             var rulename_id = rulename.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
-            console.log("RULENAME PARSED: " + rulename_id);
+            // if(rulename_id === "BOLD") {
+                console.log("RULE:   " + JSON.stringify(rule));
+            // }
+            
             var folder_id = rule.associated_folder_id;
             var folder_name = rule.associated_folder_name;
             var inner_div = document.getElementById('inner_style_div_' + folder_id);
-            console.log(inner_div);
-            // console.log(createRuleForm(folder_id, rulename));
+    
             $(inner_div).prepend('<span class="circle arrow-right existing-styles-collapse" id="existing-styles-collapse_' + folder_id + rulename_id + '"></span>' +
                 '<span class="new-style-header" id="new-style-header_' +folder_id +rulename_id+'">' + rulename + '</span>' + 
                 '<span class="delete_icon delete_icon_styles" id="delete_icon_' + folder_id + rulename_id + '"></span>' +
@@ -1247,7 +962,7 @@ Rule:
                 '<div class="extra_styles_div" id="extra_styles_div_' + folder_id + rulename_id + '"><span>' + 
                 'Extend these styles until<br>'   
                 + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + folder_id + rulename_id + '" placeholder = "Character String"></input>  OR \
-                <input type="checkbox" class="newline-trigger" id="' + folder_id + rulename_id + '"></input>  Newline<br><br>' + 
+                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + folder_id + rulename_id + '"></input>  Newline<br><br>' + 
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + folder_id + rulename_id + '" placeholder = "Character String"></input>  OR \
                 <input type="checkbox" class="newline-text-after" id="newline-text-after_' + folder_id + rulename_id + '"></input>  Newline<br>' + 
@@ -1258,7 +973,7 @@ Rule:
                 '<div class="submit-button" id="submit_' + folder_id + rulename_id + '">SAVE</div>' + 
             '</div><br id="line_break_' + folder_id + rulename_id +'">');
             
-            getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
+            
             
              $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', {id: folder_id, name: rulename_id}, function(event) {
                 $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
@@ -1283,7 +998,6 @@ Rule:
             });
 
             $('#delete_icon_' + folder_id + rulename_id).bind('click', {id:folder_id, folder: folder_name, rule:rulename_id}, function(event) {
-                console.log(document.getElementById(event.data.id));
                 var list = getRulesList(document.getElementById(event.data.id), event.data.id, event.data.folder, event.data.rule);
                 var deleted_rule_name = $('#new-style-header_' + event.data.id + event.data.rule)[0].innerText;
                
@@ -1297,98 +1011,113 @@ Rule:
                 $.post('/deleteRule', postParam, function(responseJSON) {
                     $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
                     $('#new-style-header_' + event.data.id + event.data.rule).remove();
-                    $(this).remove();
+                    $('#delete_icon_' + event.data.id + event.data.rule).remove();
                     $('#rule_div_' + event.data.id + event.data.rule).remove();
                     $('#line_break_' + event.data.id + event.data.rule).remove();
                 });
             });
 
             var ruleform = $(inner_div).find('#rule_div_' + folder_id + rulename_id);
-            console.log(document.getElementById('rulename_' + folder_id + rulename_id));
-            // populate rulename
-            document.getElementById('rulename_' + folder_id + rulename_id).value = rulename ? rulename: "";
 
-            // populate rule 'starts with word'
-            document.getElementById('rulestart_' + folder_id + rulename_id).value = rule.trigger.word ? rule.trigger.word : "";
-            var start_style_bar = document.getElementById('#start-style-bar' + folder_id + rulename_id);
+            if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
 
-            // populate start (trigger word) style bar
-            // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-            
-            if(rule.trigger.style["font-weight"] === 'bold') {
-                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight').value = 'bold';
-                $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
+
+                // populate rulename
+                document.getElementById('rulename_' + folder_id + rulename_id).value = rulename ? rulename: "";
+
+                // populate rule 'starts with word'
+                document.getElementById('rulestart_' + folder_id + rulename_id).value = rule.trigger.word ? rule.trigger.word : "";
+                var start_style_bar = document.getElementById('#start-style-bar' + folder_id + rulename_id);
+
+                // populate start (trigger word) style bar
+                // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
                 
+                if(rule.trigger["style"]["font-weight"] === "bold") {
+                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight').value = "bold";
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
+                    
+                } else {
+                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight').value = "none";
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','none');
+                }
+
+                if(rule.trigger["style"]["font-style"] === "italic") {
+                   document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
+                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
+                } else {
+                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style').value = "none";
+                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','none');
+                }
+
+                if(rule.trigger["style"]["text-decoration"] === "underline") {
+                   document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration').value = "underline";
+                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
+                } else {
+                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration').value = "none";
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", 'none');
+                }
+
+                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
+                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
+
+                setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
+                setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
+                setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'text-decoration');
+
+                setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'font-weight');
+                setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'font-style');
+                setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'text-decoration');
+
+                // extend these styles until ...
+                if(rule.trigger.endSeq !== "<br>") {
+                    document.getElementById('trigger-end-sequence_' + folder_id + rulename_id).value  = rule.trigger.endSeq ? rule.trigger.endSeq : "";
+                } else {
+                    document.getElementById('newline-trigger_' + folder_id + rulename_id).checked = true;
+                }
+
+                // style text after this rule until
+                if(rule.after.endSeq !== "<br>") {
+                    document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
+                } else {
+                    document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
+                }
+
+                // with these styles...
+                var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
+
+                if(rule.after["style"]["font-weight"] === "bold") {
+                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight').value = "bold";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
+                }
+
+                if(rule.after["style"]["font-style"] === "italic") {
+                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
+                }
+
+                if(rule.after["style"]["text-decoration"] === "underline") {
+                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration').value = "underline";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
+                }
+
+                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
+                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size').value = rule["after"]["style"]["font-size"];
+                
+
+                // box this rule... 
+
+                if(rule["container"] && rule["container"]["style"]["background-color"]) {
+                    document.getElementById('box_' + folder_id + rulename_id).checked = true;
+                }
+
+                // center this rule ...
+              
+                if(rule["container"] && rule["container"]["style"]["text-align"]) {
+                   document.getElementById('center_' + folder_id + rulename_id).checked = true;
+                }
             }
 
-            if(rule.trigger.style["font-style"] === 'italic') {
-               document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style').value = 'italic';
-               $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
-            } 
-
-            if(rule.trigger.style["text-decoration"] === 'underline') {
-               document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration').value = 'underline';
-               $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
-            }
-
-            document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule.trigger.style["font-family"];
-            document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule.trigger.style["font-size"];
-
-            // extend these styles until ...
-            if(rule.trigger.endSeq !== '<br>\u200b') {
-                document.getElementById('trigger-end-sequence_' + folder_id + rulename_id).value  = rule.trigger.endSeq ? rule.trigger.endSeq : "";
-            } else {
-                document.getElementById('newline-trigger_' + folder_id + rulename_id).checked = true;
-            }
-
-            // style text after this rule until
-            if(rule.after.endSeq !== '<br>\u200b') {
-                document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
-            } else {
-                document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
-            }
-
-            // with these styles...
-            var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
-
-            if(rule.after.style["font-weight"] === 'bold') {
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight').value = 'bold';
-                $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
-            }
-
-            if(rule.after.style["font-style"] === 'italic') {
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style').value = 'italic';
-                $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
-            }
-
-            if(rule.after.style["text-decoration"] === 'underline') {
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration').value = 'underline';
-                $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
-            }
-
-            document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule.after.style["font-family"];
-            document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size').value = rule.after.style["font-size"];
-            
-
-            // box this rule... 
-
-            if(rule.container && rule.container.style["background-color"] !== "inherit") {
-                document.getElementById('box_' + folder_id + rulename_id).checked = true;
-            }
-
-            // center this rule ...
-            if(rule.container && rule.container.style["text-align"] === "center") {
-               document.getElementById('center_' + folder_id + rulename_id).checked = true;
-            }
-
-
-            setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
-            setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
-            setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'text-decoration');
-
-            setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'font-weight');
-            setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'font-style');
-            setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'text-decoration');
+            getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
          
         }
     }
