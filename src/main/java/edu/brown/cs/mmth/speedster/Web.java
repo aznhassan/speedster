@@ -5,13 +5,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import freemarker.template.Configuration;
-
 import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
+import freemarker.template.Configuration;
 
 /**
  * Provides a launching mechanism for a web gui.
@@ -44,7 +43,7 @@ public final class Web {
     Spark.post("/newNote", new ApiHandler.NotesCreator());
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
     Spark.get("/getRules", new ApiHandler.GetRules());
-    // TODO: Fix delete folder.
+    Spark.post("/rulesForSubject", new ApiHandler.GetRule());
     Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());
     Spark.post("/deleteNote", new ApiHandler.DeleteNote());
     Spark.get("/newFolder", new ApiHandler.CreateFolder());
