@@ -5,8 +5,6 @@
 
 $(document).ready(function() {
 
-    // TODO: Surbhi, the next button is slated for destruction.
-    var nextButton = document.getElementById("next-button");
     var correctButton = document.getElementById("correct-button");
     var wrongButton = document.getElementById("wrong-button");
 
@@ -17,7 +15,6 @@ $(document).ready(function() {
       'id': 1  
     }; 
 
-
     // Session ID retrieved from variables map ftl was initiated with.
     var sessionIDCounter = $('#session_div')[0].innerHTML;
     
@@ -25,10 +22,10 @@ $(document).ready(function() {
     getNextFlashcard();
     
       // TODO: Use different trigger to avoid back and forth. 
-      $('.flashcard_div_front').hover(function(){
+      $('.flashcard_div_front').hover(function() {
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
-      },function(){
+      }, function() {
           $(this).removeClass('flip-front');
           //$('.flashcard_div_back').removeClass('flip-back');
       });
@@ -152,8 +149,8 @@ $(document).ready(function() {
      * Displaying a flashcard
      */
      function displayFlashcard(card) {
-        $('.flashcard_div_front').html('<p><b>Q: </b>' + card.q + '</p>');
-        $('.flashcard_div_back').html('<p><b>Q: </b>' + card.q +'<hr>'+'</p><p><b>A: </b>' + card.a + '</p>');
+        $('.flashcard_div_front').html('<br><br><br><p>Q: </b>' + card.q + '</p>');
+        $('.flashcard_div_back').html('<br><br><br><p>Q: </b>' + card.q +'<hr>'+'</p><p><b>A: </b>' + card.a + '</p>');
      }
 });
 

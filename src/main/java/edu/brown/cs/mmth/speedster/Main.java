@@ -23,7 +23,7 @@ public final class Main {
   /**
    * The base folder path.
    */
-  private static String basePath = "./.data";
+  private static String basePath = "./data";
   /**
    * The next id value to be used for either a note or a flashcard.
    */
@@ -56,7 +56,7 @@ public final class Main {
    * Grabs the current ID from memory
    */
   private static void getIdFromMemory() {
-    File file = new File("./.id");
+    File file = new File("./id");
     if (!file.isFile()) {
       // No id file, either they're running it for the first
       // time, or someone deleted the file which is a problem
@@ -133,9 +133,11 @@ public final class Main {
                   idFile), "UTF-8"))) {
         String line = reader.readLine();
         try {
-          long folderId = Long.parseLong(line);
-          if (folderId > toReturn) {
-            toReturn = folderId;
+          if (line != null) {
+            long folderId = Long.parseLong(line);
+            if (folderId > toReturn) {
+              toReturn = folderId;
+            }
           }
         } catch (NumberFormatException e) {
           System.err.println("ERROR: " + e.getMessage());

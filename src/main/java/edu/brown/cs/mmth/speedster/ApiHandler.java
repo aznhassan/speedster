@@ -121,9 +121,10 @@ public final class ApiHandler {
       File idFile = new File(Main.getBasePath() + "/" + subjectName + "/id");
       File customCss =
           new File("src/main/resources/static/customCss/" + id + ".css");
+      customCss.getParentFile().mkdirs();
       try (FileWriter idWriter = new FileWriter(idFile);
           FileWriter cssWriter = new FileWriter(customCss)) {
-        idWriter.write(Long.toString(id));
+        idWriter.write("" + id);
         cssWriter.write("");
       } catch (IOException e) {
         success = false;
