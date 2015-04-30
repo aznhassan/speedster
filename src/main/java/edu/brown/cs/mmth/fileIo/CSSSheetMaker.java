@@ -54,6 +54,7 @@ public class CSSSheetMaker {
     JSONArray rules = new JSONArray(jsonRules);
     String folder = "";
     int length = rules.length();
+    boolean deleteRules = true;
     for (int i = 0; i < length; i++) {
       JSONObject obj;
       try {
@@ -65,6 +66,9 @@ public class CSSSheetMaker {
 
       folder = obj.getString("associated_folder_name");
       String name = obj.getString("name");
+      if (name.isEmpty()) {
+        continue;
+      }
       name = name.toLowerCase().replace(" ", "_");
       // obj.remove("name");
       // obj.put("name", name);
@@ -84,7 +88,10 @@ public class CSSSheetMaker {
       obj.remove("container");
       obj.put("container", container);
 
-      worked = writeRule(obj, folder);
+      worked = writeRule(obj, folder, deleteRules);
+      if (deleteRules) {
+        deleteRules = false;
+      }
       cssList.add(getCssFromObject(trigger, "trigger", name, folder));
       cssList.add(getCssFromObject(after, "after", name, folder));
       cssList.add(getCssFromObject(container, "container", name, folder));
@@ -113,18 +120,23 @@ public class CSSSheetMaker {
    *          - The JSON object representing the rule.
    * @param folder
    *          - The folder of the rule.
+   * @param deleteRules
+   *          - Whether or not to delete the rules folder.
    * @return - A boolean indicating if the operation worked.
    */
-  private static boolean writeRule(JSONObject rule, String folder) {
+  private static boolean writeRule(JSONObject rule, String folder,
+      boolean deleteRules) {
     boolean toReturn = false;
     String name = rule.getString("name");
     String path = Main.getBasePath() + "/" + folder + "/rules/" + name;
     File file = new File(path);
-    try {
-      FileUtils.deleteDirectory(file);
-    } catch (IOException e1) {
-      System.err.println("ERROR:" + e1.getMessage());
-      return false;
+    if (file.getParentFile().isDirectory() && deleteRules) {
+      try {
+        FileUtils.deleteDirectory(file.getParentFile());
+      } catch (IOException e1) {
+        System.err.println("ERROR:" + e1.getMessage());
+        return false;
+      }
     }
     file.getParentFile().mkdirs();
     try (
