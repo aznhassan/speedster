@@ -17,6 +17,9 @@ the page is written in-->
   <body>
     <script src="../../js/jquery-2.1.1.js"></script>
     <script src="../../js/note.js"></script>
+    <div id="alertbox">
+      <p id="alerttext">Warning: unsaved changes!</p>
+    </div>
     
     <!-- It's important to not have any extra space inside the div, else formatting will be bad :( -->
     <div contenteditable="true" id="noteArea">${note}</div>

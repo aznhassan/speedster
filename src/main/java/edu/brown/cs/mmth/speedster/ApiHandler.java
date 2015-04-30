@@ -232,12 +232,12 @@ public final class ApiHandler {
       Map<String, Object> variables;
       if (returnNote != null) {
         variables =
-            ImmutableMap.of("title", "Speedster", "note",
+            ImmutableMap.of("title", returnNote.getName(), "note",
                 returnNote.getTextData(), "customCss", "../../customCss/"
                     + subjectId + ".css");
       } else {
         variables =
-            ImmutableMap.of("title", "Speedster", "note",
+            ImmutableMap.of("title", "Untitled", "note",
                 "Note doesn't exist!", "customCss", "../../customCss/"
                     + subjectId + ".css");
       }

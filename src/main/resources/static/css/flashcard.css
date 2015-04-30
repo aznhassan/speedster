@@ -1,8 +1,5 @@
-* {
-	border: 1px dashed red;
-}
-
 /* The divider line used on the back of flashcards to separate Q from A. */
+
 hr {
     color: black;
     width: 4px;
@@ -82,7 +79,7 @@ body {
     -moz-transform: rotateY(-180deg);
     -moz-transform-style: preserve-3d;
     -moz-backface-visibility: hidden;
-    /* -- transition is the magic sauce for animation -- */
+
     -o-transition: all .4s ease-in-out;
     -ms-transition: all .4s ease-in-out;
     -moz-transition: all .4s ease-in-out;
