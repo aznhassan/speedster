@@ -777,13 +777,31 @@ $(document).ready(function() {
             var postParam = {
                 rules: JSON.stringify(rulesForThisFolder)
             };
-            alert(postParam.rules);
+            // alert(postParam.rules);
 
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
                 $('.example_overlay')[0].style.display = "table";
                 $('.example_content')[0].style.display = "table-cell";
+                // alert("UPDATING");
                 createEditStyleDivs();
+
+                // $(event.data.div).find('.collapse-main').removeClass('arrow-right');
+                
+                $('#inner_style_div_' + event.data.id)[0].style.display = 'block';
+                $(event.data.div).find('.collapse-main').addClass('arrow-down');
+
+                // $(event.data.div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
+                //     $('#inner_style_div_' + event.data.id).slideToggle(175);
+                //     if($(this).hasClass('arrow-right')) {
+                //         $(this).removeClass('arrow-right');
+                //         $(this).addClass('arrow-down');
+
+                //     } else {
+                //         $(this).removeClass('arrow-down');
+                //         $(this).addClass('arrow-right');
+                //     }
+                // });
             });
             
         });
@@ -1262,16 +1280,20 @@ Rule:
                 console.log(document.getElementById(event.data.id));
                 var list = getRulesList(document.getElementById(event.data.id), event.data.id, event.data.folder, event.data.rule);
                 var deleted_rule_name = $('#new-style-header_' + event.data.id + event.data.rule)[0].innerText;
-                $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
-                $('#new-style-header_' + event.data.id + event.data.rule).remove();
-                $('#rule_div_' + event.data.id + event.data.rule).remove();
-                $(this).remove();
-                $('#line_break_' + event.data.id + event.data.rule).remove();
-                // alert(deleted_rule_name);
+               
 
-                // #TODO send list of updated rules of this folder as well as name of this rule being deleted/ 
-                
+                var postParam = {
+                    rules_list : JSON.stringify(list),
+                    deleted_rule: deleted_rule_name
+                }
 
+                $.post('/deleteRule', postParam, function(responseJSON) {
+                    $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
+                    $('#new-style-header_' + event.data.id + event.data.rule).remove();
+                    $('#rule_div_' + event.data.id + event.data.rule).remove();
+                    $('#line_break_' + event.data.id + event.data.rule).remove();
+                    $(this).remove();
+                });
             });
 
             var ruleform = $(inner_div).find('#rule_div_' + folder_id + rulename_id);
