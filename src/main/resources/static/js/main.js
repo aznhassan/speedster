@@ -1371,6 +1371,7 @@ Rule:
             
 
             // box this rule... 
+
             if(rule.container && rule.container.style["background-color"] !== "inherit") {
                 document.getElementById('box_' + folder_id + rulename_id).checked = true;
             }
