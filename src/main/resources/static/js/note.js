@@ -215,6 +215,7 @@ function stylize(correcting) {
     // separate the title from the rest of the note to prevent interpretation of rules
     var idx = res.indexOf(NEWLINE);
     var title = idx == -1 ? res : res.substring(0, idx);
+    document.title = unescapeHTML(title);
     res = idx == -1 ? '' : res.substring(idx);
 
 
@@ -316,38 +317,6 @@ function unescapeHTML(html) {
   return html.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/gi, function(m) { return map[m]; });
 }
 
-function encodeHTML(text) {
-  return text.replace(/[&"']/g, function(m) {
-    switch (m) {
-      case '&':
-        return '&amp;';
-      // case '<':
-      //   return '&lt;';
-      case '"':
-        return '&#34;';
-      case "'":
-      	return ''
-      default:
-        return '_';
-    }
-  });
-}
-
-function decodeHTML(text) {
-  return text.replace(/&amp;|&#34;/gi, function(m) {
-    switch (m) {
-      case '&amp;':
-        return '&';
-      // case '&lt;':
-      //   return '<';
-      case '&#34;':
-        return '"';
-      default:
-        return '_';
-    }
-  });
-}
-
 function compileUserRules(rules) {
 	return rules.map(compileUserRule);
 }
@@ -355,11 +324,11 @@ function compileUserRules(rules) {
 function compileUserRule(rule) {
 	var trigger = '(' + regEsc(rule.trigger.word) + ')'
 	var triggerEndSeq = (rule.trigger.endSeq ? '(.*?)' + '(' + regEsc(rule.trigger.endSeq) + '|$)' : '');
-	var triggerStyle = rule.trigger.style;
+	var triggerStyle = rule.trigger.class;
 
 	var afterEndSeq = (rule.after && rule.after.endSeq ? '(.*?)' + '(' + regEsc(rule.after.endSeq) + '|$)' : '');
-	var afterStyle = (rule.after ? rule.after.style || '' : '');
-	var containerStyle = (rule.container ? rule.container.style : '');
+	var afterStyle = (rule.after ? rule.after.class || '' : '');
+	var containerStyle = (rule.container ? rule.container.class : '');
 	var newline1 = containerStyle && rule.trigger.endSeq && rule.trigger.endSeq == '<br>\u200b' && !rule.after;
   var newline2 = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
 
@@ -426,6 +395,7 @@ function compileUserRule(rule) {
 	}
 }
 
+var saveAlertDown = false;
 
 function save() {
     var urlparts = window.location.pathname.split('/');
@@ -443,7 +413,17 @@ function save() {
     //console.log(params);
 
     $.post("/updateNote", params, function() {
-        // merp...
+        // Success! gr8
+        if (saveAlertDown) {
+          $('#alertbox').slideToggle('fast');
+          saveAlertDown = false;
+        }
+    }).fail(function() {
+        // Error
+        if (!saveAlertDown) {
+            $('#alertbox').slideToggle('fast');
+            saveAlertDown = true;
+        }
     });
 }
 
@@ -467,56 +447,47 @@ function gatherFlashcards() {
 ///////////////////////   MAIN   //////////////////////////////
 ///////////////////////////////////////////////////////////////
 
+function prepareUserRules(rules) {
+  //////////// Testing ////
+  rules.push({
+    'name': 'inline quotes',
+    'trigger': {
+      'word': '"',
+      'endSeq': '"',
+      'style': 'quotes'
+    }
+  });
 
-$(document).ready(function() {
-	var config = {
-		'backgroundColor': 4
-	};
+  rules.push({
+   'name': 'figure',
+    'trigger': {
+      'word': '[',
+      'endSeq': ']',
+      'style': 'equationcaption'
+    },
+    'after': {
+      'endSeq': '<br>\u200b',
+      'style': 'equation'
+    },
+    'container': {
+      'style': 'equationbox'
+    }
+  });
 
-	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085"; //getBackgroundColorOption(config.backgroundColor);
-
-	var rules = config[rules] || [];
-
-	//////////// Testing ////
-	rules.push({
-		'name': 'inline quotes',
-		'trigger': {
-			'word': '"',
-			'endSeq': '"',
-			'style': 'quotes'
-		}
-	});
-
-	rules.push({
-	 'name': 'figure',
-		'trigger': {
-			'word': '[',
-			'endSeq': ']',
-			'style': 'equationcaption'
-		},
-		'after': {
-			'endSeq': '<br>\u200b',
-			'style': 'equation'
-		},
-		'container': {
-			'style': 'equationbox'
-		}
-	});
-
-	rules.push({
-		'name': 'large quotes',
-		'trigger': {
-			'word': "``",
-			'style': 'largequote'
-		},
-		'after': {
-			'endSeq': '<br>\u200b',
-			'style': 'largequoteafter'
-		},
-		'container': {
-			'style': 'largequotebox'
-		}
-	});	
+  rules.push({
+    'name': 'large quotes',
+    'trigger': {
+      'word': "``",
+      'style': 'largequote'
+    },
+    'after': {
+      'endSeq': '<br>\u200b',
+      'style': 'largequoteafter'
+    },
+    'container': {
+      'style': 'largequotebox'
+    }
+  }); 
 
   rules.push({
     'name': 'psuedo-sections',
@@ -543,22 +514,43 @@ $(document).ready(function() {
     }
   });
 
-	////////////////////////
+  ////////////////////////
 
   // clean each rule by escaping bad characters
-	rules.forEach(function(v, i, arr) {
-		v.trigger.word = escapeHTML(v.trigger.word);
-		if (v.trigger.endSeq && v.trigger.endSeq != NEWLINE) {
-			v.trigger.endSeq = escapeHTML(v.trigger.endSeq);
-		}
-		if (v.after && v.after.endSeq && v.after.endSeq != NEWLINE) {
-			v.after.endSeq = escapeHTML(v.after.endSeq);
-		}
-	});
+  rules.forEach(function(v, i, arr) {
+      v.trigger.word = escapeHTML(v.trigger.word);
+      if (v.trigger.endSeq && v.trigger.endSeq != NEWLINE) {
+        v.trigger.endSeq = escapeHTML(v.trigger.endSeq);
+      }
+      if (v.after && v.after.endSeq && v.after.endSeq != NEWLINE) {
+        v.after.endSeq = escapeHTML(v.after.endSeq);
+      }
+  });
 
-	userRules = compileUserRules(rules);
+  userRules = compileUserRules(rules);
+}
 
-  var sendNotesCounter = 0;
+
+$(document).ready(function() {
+
+	document.body.style.backgroundColor = "#A1E869"; //"#FF8085";
+
+  var urlparts = window.location.pathname.split('/');
+  var params = {'subject': decodeURIComponent(urlparts[2])}
+
+  $.post('/rulesForSubject', params, function(responseJSON) {
+    console.log(responseJSON);
+      var rules = JSON.parse(responseJSON) || [];
+      prepareUserRules(rules);
+  });
+
+  if ($('#noteArea').text().length == 0) {
+    var t = $('head title').text();
+    console.log(t);
+    t = '<div class="title">' + t + '</div>';
+    console.log(t);
+    $('#noteArea')[0].innerHTML = t;
+  }
 
 	$("#noteArea").keyup(function(event) {
 		  var caller = $(event.target)[0];
@@ -586,8 +578,6 @@ $(document).ready(function() {
         save();
       }
   });
-
-  //$("#noteArea").focus();
 });
 
 function getBackgroundColorOption(option) {

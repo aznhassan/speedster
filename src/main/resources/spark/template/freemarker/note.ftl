@@ -5,7 +5,7 @@ the page is written in-->
 <html>
   <head>
     <meta charset="utf-8">
-    <title>${title}</title>
+    <title id="titletag">${title}</title>
     <link rel="stylesheet" href="../../css/note.css">
     
     <link href='http://fonts.googleapis.com/css?family=Bitter:400,700|Open+Sans:400italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
@@ -17,6 +17,9 @@ the page is written in-->
   <body>
     <script src="../../js/jquery-2.1.1.js"></script>
     <script src="../../js/note.js"></script>
+    <div id="alertbox">
+      <p id="alerttext">Warning: unsaved changes!</p>
+    </div>
     
     <!-- It's important to not have any extra space inside the div, else formatting will be bad :( -->
     <div contenteditable="true" id="noteArea">${note}</div>

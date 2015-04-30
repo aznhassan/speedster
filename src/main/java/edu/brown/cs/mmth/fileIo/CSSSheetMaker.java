@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,43 +49,48 @@ public class CSSSheetMaker {
       System.err.println("No JSON");
       return false;
     }
-    JSONObject obj;
-    try {
-      obj = new JSONObject(jsonRules);
-    } catch (JSONException e) {
-      System.err.println("ERROR: Not in JSON object format");
-      return false;
+    List<String> cssList = new ArrayList<>();
+    boolean worked = false;
+    JSONArray rules = new JSONArray(jsonRules);
+    String folder = "";
+    int length = rules.length();
+    for (int i = 0; i < length; i++) {
+      JSONObject obj;
+      try {
+        obj = rules.getJSONObject(i);
+      } catch (JSONException e) {
+        System.err.println("ERROR: Not in JSON object format");
+        return false;
+      }
+
+      folder = obj.getString("associated_folder_name");
+      String name = obj.getString("name");
+      name = name.toLowerCase().replace(" ", "_");
+      // obj.remove("name");
+      // obj.put("name", name);
+      // Adding the class value to internal JSON objects
+      JSONObject trigger = obj.getJSONObject("trigger");
+      addClassToJsonObject(name, "trigger", trigger);
+      JSONObject after = obj.getJSONObject("after");
+      addClassToJsonObject(name, "after", after);
+      JSONObject container = obj.getJSONObject("container");
+      addClassToJsonObject(name, "container", container);
+
+      // Reading internal JSON objects.
+      obj.remove("trigger");
+      obj.put("trigger", trigger);
+      obj.remove("after");
+      obj.put("after", after);
+      obj.remove("container");
+      obj.put("container", container);
+
+      worked = writeRule(obj, folder);
+      cssList.add(getCssFromObject(trigger, "trigger", name, folder));
+      cssList.add(getCssFromObject(after, "after", name, folder));
+      cssList.add(getCssFromObject(container, "container", name, folder));
     }
 
-    boolean worked = false;
-    String folder = obj.getString("associated_folder_name");
-    String name = obj.getString("name");
-    name = name.toLowerCase().replace(" ", "_");
-    // obj.remove("name");
-    // obj.put("name", name);
-    // Adding the class value to internal JSON objects
-    JSONObject trigger = obj.getJSONObject("trigger");
-    addClassToJsonObject(name, "trigger", trigger);
-    JSONObject after = obj.getJSONObject("after");
-    addClassToJsonObject(name, "after", after);
-    JSONObject container = obj.getJSONObject("container");
-    addClassToJsonObject(name, "container", container);
-
-    // Reading internal JSON objects.
-    obj.remove("trigger");
-    obj.put("trigger", trigger);
-    obj.remove("after");
-    obj.put("after", after);
-    obj.remove("container");
-    obj.put("container", container);
-
-    worked = writeRule(obj, folder);
-    List<String> cssList = new ArrayList();
-    cssList.add(getCssFromObject(trigger, "trigger", name, folder));
-    cssList.add(getCssFromObject(after, "after", name, folder));
-    cssList.add(getCssFromObject(container, "container", name, folder));
-    
-    return worked && writeCss(cssList, folder, name);
+    return worked && writeCss(cssList, folder/* , name */);
   }
 
   /**
@@ -113,6 +120,12 @@ public class CSSSheetMaker {
     String name = rule.getString("name");
     String path = Main.getBasePath() + "/" + folder + "/rules/" + name;
     File file = new File(path);
+    try {
+      FileUtils.deleteDirectory(file);
+    } catch (IOException e1) {
+      System.err.println("ERROR:" + e1.getMessage());
+      return false;
+    }
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
@@ -121,6 +134,7 @@ public class CSSSheetMaker {
       writer.write(rule.toString());
       toReturn = true;
     } catch (IOException e) {
+      System.err.println("ERROR:" + e.getMessage());
       return false;
     }
     return toReturn;
@@ -179,12 +193,9 @@ public class CSSSheetMaker {
    *          - The list of css strings to write to disk.
    * @param subject
    *          - The subject of the custom css.
-   * @param name
-   *          - The name of the rule
    * @return - Boolean indicating a successfull operation.
    */
-  private static boolean writeCss(List<String> cssList, String subject,
-      String name) {
+  private static boolean writeCss(List<String> cssList, String subject) {
     Long id = NoteReader.getNoteSubjectId(subject);
     String path = CSSPATH + "/" + id + ".css";
     File file = new File(path);
