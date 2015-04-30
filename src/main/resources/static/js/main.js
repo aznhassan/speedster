@@ -500,8 +500,7 @@ $(document).ready(function() {
             setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-style');
             setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'text-decoration');
 
-            // addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
-            getSubjectRules(style_div, fList[i].folder_id, fList[i].folder_name, "");
+            
             
             $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
                 $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
@@ -533,6 +532,8 @@ $(document).ready(function() {
                     $(this).addClass('arrow-right');
                 }
             });
+
+            getSubjectRules(style_div, fList[i].folder_id, fList[i].folder_name, "");
 
 
         }
@@ -572,7 +573,6 @@ $(document).ready(function() {
         var button = $('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
-
                 if($(this).attr('value') === 'none') {
                     var new_val = $(this).attr('name');
                     $(this).attr('value', new_val);
@@ -600,7 +600,7 @@ $(document).ready(function() {
     function createStyleToolbar(style, id, rulename) {
         return '<div class="style-toolbar" id="toolbar_' + style + id + rulename + '">  \
             <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-            <div class="italicButton" id="' +  style + id + rulename + '_font-style" value = "none" name="italic">i</div> \
+            <div class="italicButton" id="' +  style + id + rulename + '_font-style" value="none" name="italic">i</div> \
             <div class="underlineButton" id="' + style + id + rulename + '_text-decoration" value="none" name="underline">U</div> \
             <select class="font-family" id="' + style + id + rulename + '_font-family">    \
                 <option selected="selected" disabled="disabled">Font Type</option>  \
@@ -1121,61 +1121,6 @@ Rule:
          
         }
     }
-
-    /** 
-     * create rule form
-     */
-    function createRuleForm(folderID, rulename) {
-        return '<span class="circle arrow-right existing-styles-collapse" id="existing-styles-collapse_' + folder_id + rulename + '"></span>' +
-                '<span class="new-style-header">' + rulename + '</span>' + 
-            '<div class="rule_div" id="rule_div_' + folder_id + rulename + '">' +
-                'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + folder_id + rulename + '"></input><br>    \
-                should start with <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename + '" placeholder="Character String"></input><br>  \
-                and have these styles: <br>' + 
-                createStyleToolbar('start-style-bar', folder_id, rulename) + 
-                'Extend these styles until<br>'   
-                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + folder_id + rulename + '" placeholder = "Character String"></input>  OR \
-                <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
-                'Style text after this rule until<br>'
-                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + folder_id + rulename + '" placeholder = "Character String"></input>  OR \
-                <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
-                '<span>with these styles </span><br>' 
-                + createStyleToolbar('text-after-style-bar', folder_id, rulename) +
-                '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
-                '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
-                '<div class="submit-button" id="submit_' + folder_id + rulename + '">SAVE</div>' + 
-            '</div><br>'
-    }
-
-/***********************
-
-
-'<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
-    'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '"></input><br>    \
-    should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String"></input><br>  \
-    and have these styles: <br>' + 
-    createStyleToolbar('start-style-bar', fList[i].folder_id) + 
-    'Extend these styles until<br>'   
-    + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String"></input>  OR \
-    <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
-    'Style text after this rule until<br>'
-    + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
-    <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
-    'with these stylesinner_styl <br>' 
-    + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
-    '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
-    '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +
-    '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SUBMIT</div>' + 
-'</div>'
-
-
-
-
-
-************************/
-
-
-
 });
 
 
