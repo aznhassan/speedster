@@ -22,7 +22,7 @@
 
   </head>
   <body>
-     <h1>MMTH'S NOTES</h1><br>
+     <h1>NOTEWORTHY NOTES</h1><br>
 
 	 <div class="data" style="display:none">${data}</div>
 
@@ -35,7 +35,10 @@
 
      <div class="example_overlay" id="overlay"></div>
      <div class="example_content">
-        <span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>
+        <span class="style_overlay_header">
+            <span id="rule-header">STYLE RULES</span>
+            <span class="circle close-button">X</span>
+        </span>
 
      </div>
      <div id="main-div"></div><br>
