@@ -5,12 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.common.collect.Lists;
 
 import edu.brown.cs.mmth.speedster.Main;
 
@@ -58,8 +57,10 @@ public class CSSSheetMaker {
 
     boolean worked = false;
     String folder = obj.getString("associated_folder_name");
-    worked = writeRule(obj, folder);
     String name = obj.getString("name");
+    name = name.toLowerCase().replace(" ", "_");
+    // obj.remove("name");
+    // obj.put("name", name);
     // Adding the class value to internal JSON objects
     JSONObject trigger = obj.getJSONObject("trigger");
     addClassToJsonObject(name, "trigger", trigger);
@@ -76,16 +77,26 @@ public class CSSSheetMaker {
     obj.remove("container");
     obj.put("container", container);
 
-    List<String> cssList =
-        Lists.newArrayList(getCssFromObject(trigger, name, folder),
-            getCssFromObject(after, name, folder),
-            getCssFromObject(container, name, folder));
+    worked = writeRule(obj, folder);
+    List<String> cssList = new ArrayList();
+    cssList.add(getCssFromObject(trigger, "trigger", name, folder));
+    cssList.add(getCssFromObject(after, "after", name, folder));
+    cssList.add(getCssFromObject(container, "container", name, folder));
+    
     return worked && writeCss(cssList, folder, name);
   }
 
+  /**
+   * @param parentName
+   *          - The name of the parent JSON object.
+   * @param name
+   *          - The name of the JSON object.
+   * @param json
+   *          - The JSON object.
+   */
   private static void addClassToJsonObject(String parentName, String name,
       JSONObject json) {
-    json.put("class", name + "-" + name);
+    json.put("class", parentName + "-" + name);
   }
 
   /**
@@ -108,6 +119,7 @@ public class CSSSheetMaker {
             new BufferedWriter(new OutputStreamWriter(
                 new FileOutputStream(file), "UTF-8"))) {
       writer.write(rule.toString());
+      toReturn = true;
     } catch (IOException e) {
       return false;
     }
@@ -119,6 +131,8 @@ public class CSSSheetMaker {
    * 
    * @param obj
    *          - The JSON object containing the css rules.
+   * @param objectName
+   *          - The name of the object.
    * @param parentName
    *          - The name of the parent object, used for making the css class
    *          name.
@@ -127,15 +141,14 @@ public class CSSSheetMaker {
    * @return - The css to write to disk.
    */
 
-  private static String getCssFromObject(JSONObject obj, String parentName,
-      String folder) {
+  private static String getCssFromObject(JSONObject obj, String objectName,
+      String parentName, String folder) {
     /*
      * "style": { "font-weight":"bold", "font-style": "italic",
      * "text-decoration":"underline", "font-family": "Times New Roman",
      * "font-size": "small/medium/big" }
      */
 
-    String objectName = obj.getString("name");
     JSONObject styleObject = obj.getJSONObject("style");
     String[] styleNames = JSONObject.getNames(styleObject);
     int styleLength = styleNames.length;
@@ -154,8 +167,8 @@ public class CSSSheetMaker {
     }
     if (styleLength > 0) {
       css.deleteCharAt(css.length() - 1); // deleting the extra ";"
-      css.append("}");
     }
+    css.append("}");
     return css.toString();
   }
 
@@ -172,19 +185,20 @@ public class CSSSheetMaker {
    */
   private static boolean writeCss(List<String> cssList, String subject,
       String name) {
-    for (String css : cssList) {
-      Long id = NoteReader.getNoteSubjectId(subject);
-      String path = CSSPATH + "/" + id + ".css";
-      File file = new File(path);
-      file.getParentFile().mkdirs();
-      try (
-          BufferedWriter writer =
-              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                  file), "UTF-8"))) {
+    Long id = NoteReader.getNoteSubjectId(subject);
+    String path = CSSPATH + "/" + id + ".css";
+    File file = new File(path);
+    file.getParentFile().mkdirs();
+    try (
+        BufferedWriter writer =
+            new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
+      for (String css : cssList) {
         writer.write(css);
-      } catch (IOException e) {
-        return false;
+        writer.write("\n");
       }
+    } catch (IOException e) {
+      return false;
     }
     return true;
   }

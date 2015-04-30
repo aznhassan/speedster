@@ -16,6 +16,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import spark.ModelAndView;
+import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.TemplateViewRoute;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -26,16 +38,6 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
-import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
-import spark.Route;
-import spark.TemplateViewRoute;
-
-import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Handles the Ajax requests sent by the front end.
@@ -486,8 +488,9 @@ public final class ApiHandler {
       boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);
-      } catch (IOException e) {
+      } catch (IOException | JSONException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
+        return makeExceptionJSON(e.getMessage());
       }
       return success;
     }
@@ -509,24 +512,14 @@ public final class ApiHandler {
       }
       StringBuilder bd = new StringBuilder("[");
       for (File subject : subjects) {
-        File ruleDirectory = new File(subject, "/rules");
-        File[] rules = ruleDirectory.listFiles();
-        if (rules == null || rules.length == 0) {
+        String rules = getRulesInSubject(subject);
+        if (rules.equals("[]")) {
           continue;
-        }
-        for (File rule : rules) {
-          try (
-              BufferedReader br =
-                  new BufferedReader(new InputStreamReader(new FileInputStream(
-                      rule), "UTF-8"))) {
-            String line = "";
-            while ((line = br.readLine()) != null) {
-              bd.append(line);
-            }
-            bd.append(",");
-          } catch (IOException e) {
-            return makeExceptionJSON(e.getMessage());
-          }
+        } else {
+          rules = rules.substring(1);
+          rules = rules.substring(0, rules.length() - 1);
+          bd.append(rules);
+          bd.append(",");
         }
       }
       if (bd.length() > 1) {
@@ -535,6 +528,57 @@ public final class ApiHandler {
 
       bd.append("]");
       return bd.toString();
+    }
+  }
+
+  /**
+   * Grabs all the rules in a given subject.
+   * 
+   * @param subject
+   *          - The file that points to the subject directory.
+   * @return The JSON array of all the rules in the subject.
+   */
+  private static String getRulesInSubject(File subject) {
+    StringBuilder bd = new StringBuilder("[");
+    File ruleDirectory = new File(subject, "/rules");
+    File[] rules = ruleDirectory.listFiles();
+    if (rules == null || rules.length == 0) {
+      return "[]";
+    }
+    for (File rule : rules) {
+      try (
+          BufferedReader br =
+              new BufferedReader(new InputStreamReader(
+                  new FileInputStream(rule), "UTF-8"))) {
+        String line = "";
+        while ((line = br.readLine()) != null) {
+          bd.append(line);
+        }
+        bd.append(",");
+      } catch (IOException e) {
+        return makeExceptionJSON(e.getMessage());
+      }
+    }
+    if (bd.length() > 1) {
+      bd.deleteCharAt(bd.length() - 1); // deleting the extra ","
+    }
+    bd.append("]");
+    return bd.toString();
+  }
+
+  /**
+   * Grabs all the rules of a subject
+   * 
+   * @author hsufi
+   */
+  public static class GetRule implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String subject = qm.value("subject");
+      File subjectFile = new File(Main.getBasePath() + "/" + subject);
+      String toReturn = getRulesInSubject(subjectFile);
+      return toReturn;
     }
   }
 
