@@ -32,11 +32,11 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
-import edu.brown.cs.mmth.fileIo.CSSSheetMaker;
 import edu.brown.cs.mmth.fileIo.FlashCardReader;
 import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
+import edu.brown.cs.mmth.fileIo.RuleCssMaker;
 import edu.brown.cs.tbhargav.tries.Word;
 
 /**
@@ -518,7 +518,7 @@ public final class ApiHandler {
       String cssJson = qm.value("rules");
       boolean success = false;
       try {
-        success = CSSSheetMaker.writeJsonToFile(cssJson);
+        success = RuleCssMaker.writeJsonToFile(cssJson);
       } catch (IOException | JSONException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
         return makeExceptionJSON(e.getMessage());
@@ -557,6 +557,29 @@ public final class ApiHandler {
 
       bd.append("]");
       return bd.toString();
+    }
+  }
+
+  /**
+   * Grabs all the rules from every class
+   * 
+   * @author hsufi
+   */
+  public static class DeleteRule implements Route {
+    @Override
+    public Object handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String json = qm.value("rules_list");
+      String deletedRule = qm.value("rules_list");
+      String subject = qm.value("subject");
+      try {
+        boolean worked = false;
+        worked = RuleCssMaker.writeJsonToFile(json);
+        worked = worked && RuleCssMaker.deleteRule(subject, deletedRule);
+        return worked;
+      } catch (JSONException | IOException e) {
+        return makeExceptionJSON(e.getMessage());
+      }
     }
   }
 

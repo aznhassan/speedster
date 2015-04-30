@@ -32,21 +32,26 @@ public final class Web {
     FreeMarkerEngine freeMarker = createEngine();
 
     // Setup Spark Routes
+    Spark.post("/words", new ApiHandler.SuggestionsHandler());
+    // Rule Handlers
+    Spark.post("/updateCSS", new ApiHandler.UpdateRules());
+    Spark.post("/rulesForSubject", new ApiHandler.GetRule());
+    Spark.get("/getRules", new ApiHandler.GetRules());
+    Spark.post("/delteRule", new ApiHandler.DeleteRule());
+    // Note Handlers
     Spark.get("/notes", new ApiHandler.NoteMetaPageHandler(), freeMarker);
     Spark.get("/moreNotes", new ApiHandler.NoteMetaHandler());
-    Spark.post("/words", new ApiHandler.SuggestionsHandler());
-    Spark.post("/updateCSS", new ApiHandler.UpdateRules());
+    Spark.post("/newNote", new ApiHandler.NotesCreator());
+    Spark.post("/deleteNote", new ApiHandler.DeleteNote());
+    Spark.post("/updateNote", new ApiHandler.UpdateNotes());
     Spark.get("/getNote/:folder/:id", new ApiHandler.GetNote(), freeMarker);
+    // Flashcard Handlers
     Spark.post("/getNextFlashcard", new ApiHandler.GetNextFlashCard());
     Spark.get("/getNewSession/:subject", new ApiHandler.GetNewSession(),freeMarker);
-    Spark.post("/updateNote", new ApiHandler.UpdateNotes());
     Spark.post("/finishedCard", new ApiHandler.UpdateFlashCard());
-    Spark.post("/newNote", new ApiHandler.NotesCreator());
     Spark.get("/flashcard/:id", new ApiHandler.FlashCardView(), freeMarker);
-    Spark.get("/getRules", new ApiHandler.GetRules());
-    Spark.post("/rulesForSubject", new ApiHandler.GetRule());
+    // Subject Handlers
     Spark.post("/deleteFolder", new ApiHandler.DeleteSubject());
-    Spark.post("/deleteNote", new ApiHandler.DeleteNote());
     Spark.get("/newFolder", new ApiHandler.CreateFolder());
   }
 

@@ -16,14 +16,12 @@ import org.json.JSONObject;
 import edu.brown.cs.mmth.speedster.Main;
 
 /**
- * Writes changes to custom user css to file given JSON of the changes.
- * 
+ * Writes changes to custom rules and css to disk.
  * @author hsufi
- *
  */
-public class CSSSheetMaker {
+public class RuleCssMaker {
 
-  private CSSSheetMaker() {
+  private RuleCssMaker() {
   }
 
   private static final String CSSPATH = "./src/main/resources/static/customCss";
@@ -114,6 +112,19 @@ public class CSSSheetMaker {
   }
 
   /**
+   * Deletes the given rule in the the subject.
+   * @param subject
+   *          - the subject of the rule
+   * @param rule
+   *          - The name of the rule.
+   * @return Whether or not the operation was successful.
+   */
+  public static boolean deleteRule(String subject, String rule) {
+    File file = new File(Main.getBasePath() + "/" + subject + "/" + rule);
+    return file.delete();
+  }
+
+  /**
    * Writes a JSON rule to disk given the subject.
    * 
    * @param rule
@@ -156,7 +167,7 @@ public class CSSSheetMaker {
    * Pulls custom css from the object and writes the rules to disk.
    * 
    * @param obj
-   *          - The JSON object containing the css rules.
+   *          The JSON object containing the css rules.
    * @param objectName
    *          - The name of the object.
    * @param parentName
