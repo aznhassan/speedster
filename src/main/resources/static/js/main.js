@@ -260,16 +260,13 @@ $(document).ready(function() {
                 // #TODO: response also contains boolean indicating successful addition, deal with it
                 $.post('/newNote', postParam, function(responseJSON) {
                     // parse response for note data to display
-		    var responseObject = JSON.parse(responseJSON);
+		            var responseObject = JSON.parse(responseJSON);
 
-                /****** ALL THE FOLLOWING THINGS  SHOULD BE IN THE CALLBACK OF THE ABOVE POST REQUEST ****/
                     $(new_note_div).removeClass('new_note_name_div');
-                    $(new_note_div).html('<span class="note_title note_title_input">' + postParam.note_name + '</span>');
-                    new_note_div.className = "note_name_div";
+                    $(new_note_div).html('<span class="note_name">' + postParam.note_name + '</span>');
+                    $(new_note_div).addClass('note_name_div');
                     new_note_div.id = responseObject.note_id;
-		    //TODO: Does this need to happen?
-                    // note_div.innerHTML = postParam.note_name;// responseObject.note_name
-                    $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
+		            $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
                     
                     $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
                         window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
@@ -278,6 +275,8 @@ $(document).ready(function() {
                     // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
 
                     $(new_note_div).find('.delete_icon').bind('click', {folder_div: folderDiv, div: new_note_div, folder: postParam.folder_name}, function(event) {
+                        event.stopPropagation();
+                        event.preventDefault();
                         var postParam = {
                             note_id: this.id,
                             subject: event.data.folder
@@ -470,7 +469,7 @@ $(document).ready(function() {
             $(style_div).html('<span class="folder_style_header">' +   
             
             '<span class="circle collapse-main arrow-right"></span>' + '<span>' + '       ' + 
-            fList[i].folder_name  + 
+            fList[i].folder_name  + '</span>' + 
             '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
                 '<span class="new-style-header-to-add"> New Style <span class="circle" id="style-circle">+</span></span>' + 
                 '<div class="rule_div" id="rule_div_' + fList[i].folder_id + '">' +
@@ -504,7 +503,8 @@ $(document).ready(function() {
             setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-style');
             setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'text-decoration');
 
-            addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
+            // addStyleClickHandler(style_div, fList[i].folder_id, fList[i].folder_name);
+            getSubjectRules(style_div, fList[i].folder_id, fList[i].folder_name);
             
             $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
                 $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
@@ -549,6 +549,7 @@ $(document).ready(function() {
              console.log("RULESSSSSSSSSS PLZ: " + responseJSON);
              rules = JSON.parse(responseJSON);
              createExistingStyleRules(rules);
+
         });
 
         
@@ -582,15 +583,12 @@ $(document).ready(function() {
                     var new_val = $(this).attr('name');
                     $(this).attr('value', new_val);
                     console.log($(this).attr('value'));
-                    alert("once");
                     $(this).css('background-color', 'rgba(0,0,0,0.3)');
                 } else if($(this).attr('value') === $(this).attr('name')) {
                     console.log("HELLO");
                     $(this).attr('value', 'none');
                     $(this).css('background-color','inherit');
-                    alert("twice");
                 }
-                
             });
         }
     }
@@ -678,7 +676,95 @@ $(document).ready(function() {
             var postParam = {
                 rule: JSON.stringify(rule)
             }
-            $.post('/updateCSS', postParam, function() {
+            // $.post('/updateCSS', postParam, function() {
+                // #TODO: collpase the style that has been saved after it has been saved.
+
+                // HTML changes to the 'New Style' form, on save: 
+                // '<span class="circle arrow-right existing-styles-collapse" id="existing-styles-collapse_' + folder_id + rulename_id + '"></span>' +
+                // '<span class="new-style-header">' + rulename + '</span>' + 
+                // followed by the rule_div as is....
+
+                // existing top HTML:
+                // '<span class="new-style-header-to-add"> New Style <span class="circle" id="style-circle">+</span></span>' + 
+                
+                // $(inner_div).find('.new-style-header-to-add').remove();
+
+            // });
+            
+        });
+    }
+
+
+    /**
+     * Trying to grab all rule objects of a given folder/subject
+     * styleDiv is the style div of that folder.
+     * folderID and folderName is well... id and name of the folder
+     
+     */
+    function getSubjectRules(styleDiv, folderID, folderName) {
+        $('#submit_' + folderID).bind('click', {id: folderID, name: folderName, div: styleDiv}, function(event) {
+            var rulesForThisFolder = [];
+            
+            
+            $(event.data.div).find('.rule_div').each(function(i) {
+                // alert(i);
+                var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
+                if(!document.getElementById('rulename_' + event.data.id + name)) { 
+                    name = ""; 
+                }
+                
+                console.log("STYLE DIV: " + $(event.data.div).find('.rule_div'));
+                var rule = 
+                {   
+                    "associated_folder_id": event.data.id,
+                    "associated_folder_name": event.data.name,
+                    "name": document.getElementById('rulename_' + event.data.id + name).value,
+                    "trigger":
+                    {
+                        "word": document.getElementById('rulestart_' + event.data.id + name).value,
+                        "endSeq": getTriggerEndSequence(this, event.data.id, name),
+                        "style": 
+                        {
+                            "font-weight": getButtonValue('start-style-bar', 'font-weight', event.data.id, name),
+                            "font-style": getButtonValue('start-style-bar', 'font-style', event.data.id, name),
+                            "text-decoration": getButtonValue('start-style-bar', 'text-decoration', event.data.id, name),
+                            "font-family": getButtonValue('start-style-bar', 'font-family', event.data.id, name),
+                            "font-size": getButtonValue('start-style-bar', 'font-size', event.data.id, name),
+                        }
+                    },
+
+                    "after": 
+                    {
+                        "endSeq": getAfterEndSequence(this, event.data.id, name),
+                        "style": 
+                        {
+                            "font-weight": getButtonValue('text-after-style-bar', 'font-weight', event.data.id, name),
+                            "font-style": getButtonValue('text-after-style-bar', 'font-style', event.data.id, name),
+                            "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', event.data.id, name),
+                            "font-family": getButtonValue('text-after-style-bar', 'font-family', event.data.id, name),
+                            "font-size": getButtonValue('text-after-style-bar', 'font-size', event.data.id, name),
+                        }
+                    },
+
+                    "container": 
+                    {
+                        "style":
+                        {
+                            "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
+                            "text-align": $(this).find(".center")[0].checked ? "center" : "left"
+                        }
+                    }
+                }
+                console.log("RULE: " + JSON.stringify(rule));
+                rulesForThisFolder.push(rule);
+            });
+            
+            var postParam = {
+                rules: JSON.stringify(rulesForThisFolder)
+            };
+            // alert(postParam.rules);
+
+            $.post('/updateCSS', postParam, function(responseJSON) {
 
             });
             
@@ -694,13 +780,13 @@ $(document).ready(function() {
      style_type = 'font-weight'
      folder_id = folder id ...
      */
-    function getButtonValue(style_text, style_type, folder_id) {
+    function getButtonValue(style_text, style_type, folder_id, rulename) {
         // ex: note2_bold
         if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
-            return $(document.getElementById(style_text + folder_id + '_' + style_type)).attr('value');
+            return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).attr('value');
         } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
-            if($(document.getElementById(style_text + folder_id + '_' + style_type)).val()) {
-                return $(document.getElementById(style_text + folder_id + '_' + style_type)).val();
+            if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val()) {
+                return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val();
             } else if(style_type === 'font-family') {
                 return 'Arial';
             } else {
@@ -712,8 +798,9 @@ $(document).ready(function() {
     /*
      *
      */
-    function getTriggerEndSequence(inner_div, folderID) {
-        return $(inner_div).find('.newline-trigger')[0].checked ? "<br>\u200b" : document.getElementById('trigger-end-sequence_' + folderID).value;
+    function getTriggerEndSequence(inner_div, folderID, rulename) {
+
+        return $(inner_div).find('.newline-trigger')[0].checked ? "<br>\u200b" : document.getElementById('trigger-end-sequence_' + folderID + rulename).value;
     }
 
     /*
@@ -1207,7 +1294,7 @@ Rule:
     'Style text after this rule until<br>'
     + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String"></input>  OR \
     <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
-    'with these styles <br>' 
+    'with these stylesinner_styl <br>' 
     + createStyleToolbar('text-after-style-bar', fList[i].folder_id) +
     '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
     '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br>' +

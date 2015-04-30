@@ -84,6 +84,11 @@ p {
 	width: 300%;
 }
 
+.note_name_div:hover {
+	border-radius: 5px;
+	background-color: rgba(0,0,0,0.1);
+}
+
 
 input[type=text] .note_title_input {
 	margin-left: 7.3%;
@@ -177,14 +182,9 @@ input[type=text] .note_title_input {
 	/*padding-right: 5%;*/
 }
 
-.note_name_div:hover, {
-	border-radius: 5px;
-	background-color: rgba(0,0,0,0.1);
-}
 
-.new_folder_name_div {
-/* 	text-align:center; */
-}
+
+
 
 .flashcard_icon {
 	/* border: 1px solid rgba(0,0,0,0.3); */
