@@ -246,71 +246,100 @@ public final class ApiHandler {
   }
 
   /**
-   * Loads metadata associated with all notes.
+   * Loads metadata associated with all notes and puts that data into a hidden
+   * div.
    *
    * @author hsufi
    *
    */
-  public static class NoteMetaHandler implements TemplateViewRoute {
+  public static class NoteMetaPageHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      /*
-       * [ { "folder_id":id, "folder_name":name, "notes": [{ "note_id":id,
-       * "note_name":name }, { "note_id":id, "note_name":name }] }" ]
-       */
-      File baseDirectory = new File(Main.getBasePath());
-      File[] subjects = baseDirectory.listFiles();
       String emptyJSON = "{}";
       Map<String, Object> empty =
           ImmutableMap.of("title", "Welcome home", "data", emptyJSON);
-      if (subjects == null || subjects.length == 0) {
+
+      String data = getMetaData(req);
+      if (data.equals(emptyJSON)) {
         return new ModelAndView(empty, "main.ftl");
-      }
-      List<File> subjectList = Arrays.asList(subjects);
-      Collections.sort(subjectList, new Comparator<File>() {
-        public int compare(File o1, File o2) {
-          return o1.getName().compareTo(o2.getName());
-        }
-      });
-
-      JSONArray array = new JSONArray();
-      for (File subject : subjects) {
-        Collection<Note> noteCollection =
-            NoteReader.readNotes(subject.getName());
-        if (noteCollection == null) {
-          return new ModelAndView(empty, "main.ftl");
-        }
-
-        List<Note> noteList = new ArrayList<>();
-        noteList.addAll(noteCollection);
-        Collections.sort(noteList, new Comparator<Note>() {
-          public int compare(Note n1, Note n2) {
-            return n1.getName().compareTo(n2.getName());
-          }
-        });
-        JSONObject folder = new JSONObject();
-        folder.put("folder_name", subject.getName());
-        Long id = NoteReader.getNoteSubjectId(subject.getName());
-        if (id == -1) {
-          continue; // Improper ID file.
-        }
-        folder.put("folder_id", id);
-        JSONArray noteArray = new JSONArray();
-        for (Note note : noteList) {
-          JSONObject obj = new JSONObject();
-          obj.put("note_id", note.getId());
-          obj.put("note_name", note.getName());
-          noteArray.put(obj);
-        }
-        folder.put("notes", noteArray);
-        array.put(folder);
       }
       // Grab the note with this id from the db
       Map<String, Object> variables =
-          ImmutableMap.of("title", "Welcome home", "data", array.toString());
+          ImmutableMap.of("title", "Welcome home", "data", data);
       return new ModelAndView(variables, "main.ftl");
     }
+  }
+
+  /**
+   * Loads metadata associated with all notes and puts that data into a hidden
+   * div.
+   * @author hsufi
+   */
+  public static class NoteMetaHandler implements Route {
+    @Override
+    public String handle(final Request req, final Response res) {
+      String emptyJSON = "{}";
+      String data = getMetaData(req);
+      if (data.equals(emptyJSON)) {
+        return emptyJSON;
+      }
+      return data;
+    }
+  }
+
+
+  private static String getMetaData(Request req) {
+    QueryParamsMap qm = req.queryMap();
+    /*
+     * [ { "folder_id":id, "folder_name":name, "notes": [{ "note_id":id,
+     * "note_name":name }, { "note_id":id, "note_name":name }] }" ]
+     */
+    File baseDirectory = new File(Main.getBasePath());
+    File[] subjects = baseDirectory.listFiles();
+
+    if (subjects == null || subjects.length == 0) {
+      return "{}";
+    }
+    List<File> subjectList = Arrays.asList(subjects);
+    Collections.sort(subjectList, new Comparator<File>() {
+      public int compare(File o1, File o2) {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    JSONArray array = new JSONArray();
+    for (File subject : subjects) {
+      Collection<Note> noteCollection = NoteReader.readNotes(subject.getName());
+      if (noteCollection == null) {
+        return "{}";
+        // return new ModelAndView(empty, "main.ftl");
+      }
+
+      List<Note> noteList = new ArrayList<>();
+      noteList.addAll(noteCollection);
+      Collections.sort(noteList, new Comparator<Note>() {
+        public int compare(Note n1, Note n2) {
+          return n1.getName().compareTo(n2.getName());
+        }
+      });
+      JSONObject folder = new JSONObject();
+      folder.put("folder_name", subject.getName());
+      Long id = NoteReader.getNoteSubjectId(subject.getName());
+      if (id == -1) {
+        continue; // Improper ID file.
+      }
+      folder.put("folder_id", id);
+      JSONArray noteArray = new JSONArray();
+      for (Note note : noteList) {
+        JSONObject obj = new JSONObject();
+        obj.put("note_id", note.getId());
+        obj.put("note_name", note.getName());
+        noteArray.put(obj);
+      }
+      folder.put("notes", noteArray);
+      array.put(folder);
+    }
+    return array.toString();
   }
 
   /**
@@ -673,7 +702,7 @@ public final class ApiHandler {
       String folder_name = qm.value("folder_name");
       String note_name = qm.value("note_name");
 
-      Note note = new Note("", folder_name, note_name);
+      Note note = new Note(note_name, folder_name, note_name);
       note.setId(Main.getAndIncrementId());
       // Writing note to file.
       NoteWriter.writeNotes(Lists.newArrayList(note));
