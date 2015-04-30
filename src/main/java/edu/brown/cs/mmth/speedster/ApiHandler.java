@@ -518,7 +518,7 @@ public final class ApiHandler {
       String cssJson = qm.value("rules");
       boolean success = false;
       try {
-        success = RuleCssMaker.writeJsonToFile(cssJson);
+        success = RuleCssMaker.writeJsonToFile(cssJson, "");
       } catch (IOException | JSONException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
         return makeExceptionJSON(e.getMessage());
@@ -570,12 +570,10 @@ public final class ApiHandler {
     public Object handle(Request req, Response res) {
       QueryParamsMap qm = req.queryMap();
       String json = qm.value("rules_list");
-      String deletedRule = qm.value("rules_list");
-      String subject = qm.value("subject");
+      String deletedRule = qm.value("deleted_rule");
       try {
         boolean worked = false;
-        worked = RuleCssMaker.writeJsonToFile(json);
-        worked = worked && RuleCssMaker.deleteRule(subject, deletedRule);
+        worked = RuleCssMaker.writeJsonToFile(json, deletedRule);
         return worked;
       } catch (JSONException | IOException e) {
         return makeExceptionJSON(e.getMessage());

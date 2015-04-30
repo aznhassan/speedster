@@ -37,12 +37,15 @@ public class RuleCssMaker {
    * @param jsonRules
    *          - The CSS JSON that will replace the current custom user style
    *          sheet of the given subject.
+   * @param disculdeRule
+   *          - The rule to disclude from being written.
    * @return - Boolean specifying whether or not writing operation was
    *         successful.
    * @throws IOException
    *           - When an error writing to file occurs
    */
-  public static boolean writeJsonToFile(String jsonRules) throws IOException {
+  public static boolean writeJsonToFile(String jsonRules, String discludeRule)
+      throws IOException {
     if (jsonRules == null) {
       System.err.println("No JSON");
       return false;
@@ -64,7 +67,7 @@ public class RuleCssMaker {
 
       folder = obj.getString("associated_folder_name");
       String name = obj.getString("name");
-      if (name.isEmpty()) {
+      if (name.isEmpty() || name.equals(discludeRule)) {
         continue;
       }
       name = name.toLowerCase().replace(" ", "_");
@@ -84,7 +87,7 @@ public class RuleCssMaker {
       obj.remove("after");
       obj.put("after", after);
       obj.remove("container");
-      obj.put("container", container);
+      obj.put("container", new JSONObject().put("style", new JSONObject()));
 
       worked = writeRule(obj, folder, deleteRules);
       if (deleteRules) {
@@ -109,19 +112,6 @@ public class RuleCssMaker {
   private static void addClassToJsonObject(String parentName, String name,
       JSONObject json) {
     json.put("class", parentName + "-" + name);
-  }
-
-  /**
-   * Deletes the given rule in the the subject.
-   * @param subject
-   *          - the subject of the rule
-   * @param rule
-   *          - The name of the rule.
-   * @return Whether or not the operation was successful.
-   */
-  public static boolean deleteRule(String subject, String rule) {
-    File file = new File(Main.getBasePath() + "/" + subject + "/" + rule);
-    return file.delete();
   }
 
   /**

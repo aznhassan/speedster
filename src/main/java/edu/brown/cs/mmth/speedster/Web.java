@@ -37,7 +37,7 @@ public final class Web {
     Spark.post("/updateCSS", new ApiHandler.UpdateRules());
     Spark.post("/rulesForSubject", new ApiHandler.GetRule());
     Spark.get("/getRules", new ApiHandler.GetRules());
-    Spark.post("/delteRule", new ApiHandler.DeleteRule());
+    Spark.post("/deleteRule", new ApiHandler.DeleteRule());
     // Note Handlers
     Spark.get("/notes", new ApiHandler.NoteMetaPageHandler(), freeMarker);
     Spark.get("/moreNotes", new ApiHandler.NoteMetaHandler());
