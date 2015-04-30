@@ -220,6 +220,12 @@ input[type=text] .note_title_input {
 	margin-bottom: -0.15%;
 }
 
+.delete_icon_styles {
+	visibility: visible;
+	display: inline-block;
+	background-size: 20px 18px;
+}
+
 
 
 .title_note, .note_title_input, textarea {
