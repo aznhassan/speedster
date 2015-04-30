@@ -6,6 +6,7 @@ body {
     font-size: 17px;
     letter-spacing: 1px;
     padding-top: 3%;
+    /*overflow:scroll;*/
 }
 
 h1 {
@@ -218,6 +219,12 @@ input[type=text] .note_title_input {
 	/*float: right;*/
 	/* display: table-cell; */
 	margin-bottom: -0.15%;
+}
+
+.delete_icon_styles {
+	visibility: visible;
+	display: inline-block;
+	background-size: 20px 18px;
 }
 
 
