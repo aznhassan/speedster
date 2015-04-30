@@ -113,16 +113,18 @@ public final class ApiHandler {
       // Creating a new folder in memory, along with its ID file.
       File folder = new File(Main.getBasePath() + "/" + subjectName);
       folder.mkdirs();
+      // new File(folder, "/rules").mkdir();
 
       boolean success = true;
 
       long id = Main.getAndIncrementId();
       File idFile = new File(Main.getBasePath() + "/" + subjectName + "/id");
-      FileWriter idWriter;
-      try {
-        idWriter = new FileWriter(idFile);
+      File customCss =
+          new File("src/main/resources/static/customCss/" + id + ".css");
+      try (FileWriter idWriter = new FileWriter(idFile);
+          FileWriter cssWriter = new FileWriter(customCss)) {
         idWriter.write(Long.toString(id));
-        idWriter.close();
+        cssWriter.write("");
       } catch (IOException e) {
         success = false;
       }
@@ -498,9 +500,7 @@ public final class ApiHandler {
 
   /**
    * Grabs all the rules from every class
-   * 
    * @author hsufi
-   *
    */
   public static class GetRules implements Route {
     @Override
@@ -600,18 +600,16 @@ public final class ApiHandler {
       if (!file.isDirectory()) {
         return makeExceptionJSON("Folder doesn't exist");
       }
-
       try {
-        FileUtils.deleteDirectory(file);
         long subjectId = NoteReader.getNoteSubjectId(folder);
         File customCss =
             new File("src/main/resources/static/customCss/" + subjectId
                 + ".css");
         customCss.delete();
+        FileUtils.deleteDirectory(file);
       } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");
       }
-
       return true;
     }
   }
