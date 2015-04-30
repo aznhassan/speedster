@@ -82,7 +82,7 @@ public class CSSSheetMaker {
     cssList.add(getCssFromObject(trigger, "trigger", name, folder));
     cssList.add(getCssFromObject(after, "after", name, folder));
     cssList.add(getCssFromObject(container, "container", name, folder));
-
+    
     return worked && writeCss(cssList, folder, name);
   }
 

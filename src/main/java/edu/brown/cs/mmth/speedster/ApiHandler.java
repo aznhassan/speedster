@@ -16,6 +16,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import spark.ModelAndView;
+import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.TemplateViewRoute;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -26,16 +38,6 @@ import edu.brown.cs.mmth.fileIo.FlashCardWriter;
 import edu.brown.cs.mmth.fileIo.NoteReader;
 import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.tbhargav.tries.Word;
-import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
-import spark.Route;
-import spark.TemplateViewRoute;
-
-import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Handles the Ajax requests sent by the front end.
@@ -486,8 +488,9 @@ public final class ApiHandler {
       boolean success = false;
       try {
         success = CSSSheetMaker.writeJsonToFile(cssJson);
-      } catch (IOException e) {
+      } catch (IOException | JSONException e) {
         System.err.println("ERROR: CSS error " + e.getMessage());
+        return makeExceptionJSON(e.getMessage());
       }
       return success;
     }
