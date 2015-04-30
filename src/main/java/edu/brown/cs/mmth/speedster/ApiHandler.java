@@ -603,6 +603,11 @@ public final class ApiHandler {
 
       try {
         FileUtils.deleteDirectory(file);
+        long subjectId = NoteReader.getNoteSubjectId(folder);
+        File customCss =
+            new File("src/main/resources/static/customCss/" + subjectId
+                + ".css");
+        customCss.delete();
       } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");
       }
