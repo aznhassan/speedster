@@ -400,12 +400,37 @@ $(document).ready(function() {
                         }
                     });
 
+
+                    $(new_folder_div).find('.delete_icon').bind('click', {div: new_folder_div, name: folder_name, id: folder_id}, function(event) {
+                        var postParam = {
+                            folder: event.data.name
+                        }
+                
+                
+                        $.post('/deleteFolder', postParam, function(responseJSON) {
+                            // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
+                            // appropriately.
+                            // window.location.href = '/notes';
+                            $(event.data.div).remove();
+
+                            // #TODO: remove folder from edit style menu as well!
+                            // edit: request for the updated folder list from server and update the global varible 'fList'
+                            $.get('/moreNotes', postParam, function(responseJSON) {
+                                var responseObject = JSON.parse(responseJSON);
+                                fList = responseObject;
+                            });
+
+                        });
+                    });
+
                      var getParams = {};
 
                      $.get('/moreNotes', getParams, function(responseJSON) {
                         var responseObject= JSON.parse(responseJSON);
                         fList = responseObject;
                      });
+
+                     
 
                     // #TODO: Add a corresonding folder thing to the style overlay,
                     // edit: request for an updated folder list from the server and reassign the variable 'fList'
@@ -543,7 +568,9 @@ $(document).ready(function() {
         var getParams = {};
         var rules = [];
         $.get('/getRules', getParams, function(responseJSON) {
+            console.log("RULES RECIEVED:   " + responseJSON);
              rules = JSON.parse(responseJSON);
+
              createExistingStyleRules(rules);
 
         });
@@ -633,8 +660,6 @@ $(document).ready(function() {
 
             var rulesForThisFolder = getRulesList(event.data.div, event.data.id, event.data.name, event.data.rule);
 
-            
-            
             var postParam = {
                 rules: JSON.stringify(rulesForThisFolder)
             };
@@ -1032,7 +1057,7 @@ Rule:
                 // populate start (trigger word) style bar
                 // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
                 
-                if(rule.trigger["style"]["font-weight"] === "bold") {
+                if(rule.trigger["style"]["font-weight"] == "bold") {
                     document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight').value = "bold";
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
                     
@@ -1041,7 +1066,7 @@ Rule:
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','none');
                 }
 
-                if(rule.trigger["style"]["font-style"] === "italic") {
+                if(rule.trigger["style"]["font-style"] == "italic") {
                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
                 } else {
@@ -1049,7 +1074,7 @@ Rule:
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','none');
                 }
 
-                if(rule.trigger["style"]["text-decoration"] === "underline") {
+                if(rule.trigger["style"]["text-decoration"] == "underline") {
                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration').value = "underline";
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1085,17 +1110,17 @@ Rule:
                 // with these styles...
                 var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
 
-                if(rule.after["style"]["font-weight"] === "bold") {
+                if(rule.after["style"]["font-weight"] == "bold") {
                     document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight').value = "bold";
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
                 }
 
-                if(rule.after["style"]["font-style"] === "italic") {
+                if(rule.after["style"]["font-style"] == "italic") {
                     document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
                 }
 
-                if(rule.after["style"]["text-decoration"] === "underline") {
+                if(rule.after["style"]["text-decoration"] == "underline") {
                     document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration').value = "underline";
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
                 }
