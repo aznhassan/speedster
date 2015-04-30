@@ -19,7 +19,7 @@ import edu.brown.cs.mmth.speedster.Main;
  * Writes changes to custom rules and css to disk.
  * @author hsufi
  */
-public class RuleCssMaker {
+public final class RuleCssMaker {
 
   private RuleCssMaker() {
   }

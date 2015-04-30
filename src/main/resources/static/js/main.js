@@ -1372,7 +1372,7 @@ Rule:
             
 
             // box this rule... 
-            console.log("CONTAINER: " + rule.container.style);
+            //console.log("CONTAINER: " + rule.container.style);
             if(rule.container && rule.container.style["background-color"] !== "inherit") {
                 document.getElementById('box_' + folder_id + rulename_id).checked = true;
             }
