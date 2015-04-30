@@ -56,7 +56,7 @@ public class CSSSheetMaker {
     for (int i = 0; i < length; i++) {
       JSONObject obj;
       try {
-        obj = new JSONObject(jsonRules);
+        obj = rules.getJSONObject(i);
       } catch (JSONException e) {
         System.err.println("ERROR: Not in JSON object format");
         return false;
