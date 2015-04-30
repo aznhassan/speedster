@@ -119,6 +119,22 @@ public final class RuleCssMaker {
       }
     }
 
+    if (deleteRules) {
+      // No rules to write to disk so rules were not deleted.
+      worked = true;
+      File file = new File(Main.getBasePath() + "/" + folder + "/rules/");
+      if (file.isDirectory() && deleteRules) {
+        try {
+          FileUtils.deleteDirectory(file);
+        } catch (IOException e1) {
+          System.err.println("ERROR:" + e1.getMessage());
+          return false;
+        }
+      }
+    }
+    if (cssList.isEmpty()) {
+      cssList.add("");
+    }
     return worked && writeCss(cssList, folder/* , name */);
   }
 
