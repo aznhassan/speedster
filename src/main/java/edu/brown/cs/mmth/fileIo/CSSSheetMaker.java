@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -119,6 +120,12 @@ public class CSSSheetMaker {
     String name = rule.getString("name");
     String path = Main.getBasePath() + "/" + folder + "/rules/" + name;
     File file = new File(path);
+    try {
+      FileUtils.deleteDirectory(file);
+    } catch (IOException e1) {
+      System.err.println("ERROR:" + e1.getMessage());
+      return false;
+    }
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
@@ -127,6 +134,7 @@ public class CSSSheetMaker {
       writer.write(rule.toString());
       toReturn = true;
     } catch (IOException e) {
+      System.err.println("ERROR:" + e.getMessage());
       return false;
     }
     return toReturn;
