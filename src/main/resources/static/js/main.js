@@ -468,7 +468,7 @@ $(document).ready(function() {
             
             $(style_div).html('<span class="folder_style_header">' +   
             
-            '<span class="circle collapse-main arrow-right"></span>' + '<span>' + '       ' + 
+            '<span class="circle collapse-main arrow-right" id="collapse-main_' + fList[i].folder_id + '"></span>' + '<span>' + '       ' + 
             fList[i].folder_name  + '</span>' + 
             '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
                 '<span class="new-style-header-to-add"> New Style <span class="circle" id="style-circle">+</span></span>' + 
@@ -789,7 +789,8 @@ $(document).ready(function() {
                 // $(event.data.div).find('.collapse-main').removeClass('arrow-right');
                 
                 $('#inner_style_div_' + event.data.id)[0].style.display = 'block';
-                $(event.data.div).find('.collapse-main').addClass('arrow-down');
+                $('#collapse-main_' + event.data.id).removeClass('arrow-right');
+                $('#collapse-main_' + event.data.id).addClass('arrow-down');
 
                 // $(event.data.div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
                 //     $('#inner_style_div_' + event.data.id).slideToggle(175);
@@ -1284,7 +1285,8 @@ Rule:
 
                 var postParam = {
                     rules_list : JSON.stringify(list),
-                    deleted_rule: deleted_rule_name
+                    deleted_rule: deleted_rule_name,
+                    subject: event.data.folder
                 }
 
                 $.post('/deleteRule', postParam, function(responseJSON) {

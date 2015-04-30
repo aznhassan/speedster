@@ -23,7 +23,7 @@
   <body>
      <h1>MMTH'S NOTES</h1><br>
 
-		<div class="data" style="display:none">${data}</div>
+	 <div class="data" style="display:none">${data}</div>
 
      <!-- Again, we're serving up the unminified source for clarity. -->
      <script src="/js/jquery-2.1.1.js"></script>

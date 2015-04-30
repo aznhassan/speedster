@@ -6,6 +6,7 @@ body {
     font-size: 17px;
     letter-spacing: 1px;
     padding-top: 3%;
+    /*overflow:scroll;*/
 }
 
 h1 {

@@ -2,7 +2,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 120%;
+    height: 100%;
     width: 100%;
     background-color: rgba(0,0,0,0.5);
     z-index: 10;
@@ -16,13 +16,14 @@
     position:absolute;
     margin-left: 10%;
     margin-right:auto;
-    margin-bottom: 30%;
-    background-color: rgba(255,255,255,0.7);
+    /* margin-bottom: 50%; */
+    background-color: rgba(255,255,255,0.9);
     z-index: 11; /* 1px higher than the overlay layer */
     display: none;
     overflow: scroll;
     padding-bottom: 5%;
     padding-top: 2%;
+    margin-top: -5%;
 }
 
 #rule-header {
