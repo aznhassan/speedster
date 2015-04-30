@@ -426,6 +426,7 @@ function compileUserRule(rule) {
 	}
 }
 
+var saveAlertDown = false;
 
 function save() {
     var urlparts = window.location.pathname.split('/');
@@ -443,7 +444,17 @@ function save() {
     //console.log(params);
 
     $.post("/updateNote", params, function() {
-        // merp...
+        // Success! gr8
+        if (saveAlertDown) {
+          $('#alertbox').slideToggle('fast');
+          saveAlertDown = false;
+        }
+    }).fail(function() {
+        // Error
+        if (!saveAlertDown) {
+            $('#alertbox').slideToggle('fast');
+            saveAlertDown = true;
+        }
     });
 }
 
