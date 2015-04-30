@@ -263,6 +263,11 @@ public final class ApiHandler {
       if (data.equals(emptyJSON)) {
         return new ModelAndView(empty, "main.ftl");
       }
+      // Forcing browswer not to cache this page.
+      res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP
+                                                                          // 1.1.
+      res.header("Pragma", "no-cache"); // HTTP 1.0.
+      res.header("Expires", "0"); // Proxies.
       // Grab the note with this id from the db
       Map<String, Object> variables =
           ImmutableMap.of("title", "Welcome home", "data", data);
