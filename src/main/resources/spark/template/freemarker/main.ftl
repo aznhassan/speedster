@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css"> -->
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/editing.css">
+    <link rel="shortcut icon" href="../css/favicon.ico" />
     <link href='http://fonts.googleapis.com/css?family=Bitter:400,700|Open+Sans:400italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
   </head>
