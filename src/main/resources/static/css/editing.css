@@ -17,12 +17,12 @@
     margin-left: 10%;
     margin-right:auto;
     /* margin-bottom: 50%; */
-    background-color: rgba(255,255,255,0.9);
+    background-color: white;
     z-index: 11; /* 1px higher than the overlay layer */
     display: none;
     overflow: scroll;
     padding-bottom: 5%;
-    padding-top: 2%;
+    /* padding-top: 2%; */
     margin-top: -5%;
 }
 
@@ -260,7 +260,7 @@ select {
     line-height:medium;
     float: right;
     margin-right: 3%;
-    margin-top: -3%;
+    margin-top: -5%;
 }
 
 input[type=checkbox] {
@@ -275,6 +275,16 @@ input[type=checkbox] {
 
 .new-style-header-to-add {
     margin-left: 4.5%;
+}
+
+.style_overlay_header {
+    /* background-color:pink; */
+    /* width:100%; */
+    width: inherit;
+    padding-top: 3%;
+    background-color: inherit;
+    /* margin:  10%; */
+    position: fixed;
 }
 
 
