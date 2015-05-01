@@ -70,6 +70,8 @@ p {
 .main_note_div {
 	display: none;
 	padding-left: 12%;
+	padding-right: 12%;
+	width: 100%;
 }
 
 .note_name_div, .new_note_name_div {
@@ -82,7 +84,8 @@ p {
 	margin-top: 0.7%;
 	margin-bottom: 0.7%;
 	margin-left: 4%;
-	width: 300%;
+	width: 100%;
+	margin-right: 5%;
 }
 
 .note_name_div:hover {
