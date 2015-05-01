@@ -40,12 +40,8 @@ $(document).ready(function() {
      */
     $(wrongButton).click(function() {
         sendFlashcardUpdates(false);
-        $('.flashcard_div_front').remove();
-        $('.flashcard_div_back').remove();
-        $('.flashcard-container').append('<div class="flashcard_div_front"></div>');
-        $('.flashcard-container').append('<div class="flashcard_div_back"></div>');
-        // $('.flashcard_div_front').removeClass('flip-front');
-        // $('.flashcard_div_back').removeClass('flip-back');
+        $('.flashcard_div_front').removeClass('flip-front');
+        $('.flashcard_div_back').removeClass('flip-back');
     });
 
     /**
@@ -53,13 +49,8 @@ $(document).ready(function() {
      */
     $(correctButton).click(function() {
         sendFlashcardUpdates(true);
-        $('.flashcard_div_front').remove();
-        $('.flashcard_div_back').remove();
-        $('.flashcard-container').append('<div class="flashcard_div_front"></div>');
-        $('.flashcard-container').append('<div class="flashcard_div_back"></div>');
-
-        // $('.flashcard_div_front').removeClass('flip-front');
-        // $('.flashcard_div_back').removeClass('flip-back');
+        $('.flashcard_div_front').removeClass('flip-front');
+        $('.flashcard_div_back').removeClass('flip-back');
     }) 
 
   
