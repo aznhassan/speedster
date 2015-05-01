@@ -30,10 +30,12 @@ public final class LEDGen implements SuggestionGenInterface {
 
   /**
    * Takes in two strings and returns their edit distance.
-   *
+   * 
    * @param word1
+   *          - The first word.
    * @param word2
-   * @return LED b/w word1 & word2
+   *          - The second word.
+   * @return LED of word1 and word2.
    */
   public static int computeEditDist(final String word1, final String word2) {
     int[][] ledMatrix = new int[word1.length() + 1][word2.length() + 1];
@@ -55,7 +57,8 @@ public final class LEDGen implements SuggestionGenInterface {
         if (a[i - 1] == b[j - 1]) {
           ledMatrix[i][j] = ledMatrix[i - 1][j - 1];
         } else {
-          int minPrev = Math.min(ledMatrix[i - 1][j - 1],
+          int minPrev =
+              Math.min(ledMatrix[i - 1][j - 1],
                   Math.min(ledMatrix[i][j - 1], ledMatrix[i - 1][j]));
           ledMatrix[i][j] = 1 + minPrev;
         }
@@ -94,19 +97,21 @@ public final class LEDGen implements SuggestionGenInterface {
   }
 
   /**
+   * <pre>
    * Recursive helper method to generate suggestion, limits based on LED DIST.
-   *
-   * @param root
-   * @param lower
-   * @param upper
-   * @param word
+   * 
+   * @param root - The root node.
+   * @param lower - The lower limit.
+   * @param upper - The upper limit.
+   * @param word - The word for which to compute led.
    * @return
+   * </pre>
    */
   private List<Word> recursiveLEDTrieNav(final TrieNode<Word> root,
-          final int lower, final int upper, final String word) {
+      final int lower, final int upper, final String word) {
     ArrayList<Word> wordsWithinDist = new ArrayList<Word>();
     if ((root.isWord()) && (root.getCurrText().length() > lower)
-            && (root.getCurrText().length() < upper)) {
+        && (root.getCurrText().length() < upper)) {
       if (computeEditDist(root.getCurrText(), word) <= ledDist) {
         wordsWithinDist.add(root.getStoredValue());
       }

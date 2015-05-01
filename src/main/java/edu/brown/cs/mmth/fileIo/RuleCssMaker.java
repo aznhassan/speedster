@@ -17,6 +17,7 @@ import edu.brown.cs.mmth.speedster.Main;
 
 /**
  * Writes changes to custom rules and css to disk.
+ *
  * @author hsufi
  */
 public final class RuleCssMaker {
@@ -26,19 +27,21 @@ public final class RuleCssMaker {
 
   private static final String CSSPATH = "./src/main/resources/static/customCss";
 
+  /**
+   * Returns the path on disk to the custom css folder.
+   *
+   * @return - The CSS Path.
+   */
   public static String getCssPath() {
     return CSSPATH;
   }
 
   /**
-   * @param cssJson
-   *          - The CSS JSON that will replace the current custom user style
-   *          sheet of the given subject.
    * @param jsonRules
    *          - The CSS JSON that will replace the current custom user style
    *          sheet of the given subject.
-   * @param disculdeRule
-   *          - The rule to disclude from being written.
+   * @param excludeRule
+   *          - The rule to exclude from being written.
    * @return - Boolean specifying whether or not writing operation was
    *         successful.
    * @throws IOException
@@ -69,7 +72,6 @@ public final class RuleCssMaker {
 
       String name = obj.getString("name");
       if (name.isEmpty() || name.equals(excludeRule)) {
-        System.out.println("EXCLUDED");
         continue;
       }
       name = name.toLowerCase().replace(" ", "_");
@@ -151,7 +153,7 @@ public final class RuleCssMaker {
 
   /**
    * Writes a JSON rule to disk given the subject.
-   * 
+   *
    * @param rule
    *          - The JSON object representing the rule.
    * @param folder
@@ -177,8 +179,8 @@ public final class RuleCssMaker {
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8"))) {
+        new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(file), "UTF-8"))) {
       writer.write(rule.toString());
       toReturn = true;
     } catch (IOException e) {
@@ -190,7 +192,7 @@ public final class RuleCssMaker {
 
   /**
    * Pulls custom css from the object and writes the rules to disk.
-   * 
+   *
    * @param obj
    *          The JSON object containing the css rules.
    * @param objectName
@@ -236,7 +238,7 @@ public final class RuleCssMaker {
 
   /**
    * Given the subject will write the css for said subject onto disk.
-   * 
+   *
    * @param css
    *          - The list of css strings to write to disk.
    * @param subject
@@ -250,8 +252,8 @@ public final class RuleCssMaker {
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8"))) {
+        new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(file), "UTF-8"))) {
       for (String css : cssList) {
         writer.write(css);
         writer.write("\n");
