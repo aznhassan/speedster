@@ -26,7 +26,9 @@ How to build the program: mvn package
 
 How to run program from command line:
 
-The program is launched using ./run. For assistance enter "./run --h" (help flag). GUI by default opens at: http://localhost:4567/
+The program is launched using ./run. For assistance enter "./run --h" (help flag). 
+
+GUI by default opens at: http://localhost:4567/notes
 
 How to run the tests: 
 
