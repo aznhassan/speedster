@@ -23,6 +23,9 @@ import edu.brown.cs.mmth.fileIo.Writeable;
  */
 public class Flashcard implements Readable, Writeable {
 
+  private static final int PERCENT = 100;
+  private static final int RANKVAL = 10;
+
   /**
    * Computes a universal flashcard rank based on given data.
    *
@@ -36,15 +39,15 @@ public class Flashcard implements Readable, Writeable {
    */
   public static int computeFlashcardRank(final int numDays,
       final int noCorrect, final int noWrong) {
-    int dayWeight = numDays * 10;
+    int dayWeight = numDays * RANKVAL;
     double ratio;
 
     // Getting one card correct once is the same as getting it correct none
     // (small edge case).
     if (noCorrect == 0) {
-      ratio = noWrong * 100;
+      ratio = noWrong * PERCENT;
     } else {
-      ratio = noWrong / (double) noCorrect * 100.0;
+      ratio = noWrong / (double) noCorrect * PERCENT;
     }
 
     int rank = (int) (dayWeight + ratio);
@@ -147,6 +150,7 @@ public class Flashcard implements Readable, Writeable {
   /**
    * Given a JSON object that has the fields, will update each field of the
    * FlashCard. - The FlashCard as JSON.
+   * @param json the json to update the fields with.
    */
   @Override
   public void updateFields(final String json) {
@@ -267,11 +271,11 @@ public class Flashcard implements Readable, Writeable {
   /**
    * Mutator for _rank.
    *
-   * @param _rank
+   * @param rankL
    *          the _rank to set
    */
-  public void set_rank(final int _rank) {
-    rank = _rank;
+  public void setRank(final int rankL) {
+    rank = rankL;
   }
 
   /**
@@ -367,11 +371,11 @@ public class Flashcard implements Readable, Writeable {
   /**
    * Mutator for note Id.
    *
-   * @param id
+   * @param idL
    *          - The id of to set as the Note's id.
    */
-  public void setNoteId(long id) {
-    this.noteId = id;
+  public void setNoteId(long idL) {
+    this.noteId = idL;
   }
 
 }

@@ -24,6 +24,10 @@ public final class LEDGen implements SuggestionGenInterface {
    */
   private static int ledDist;
 
+  /**
+   * Parameterized constructor for LEDGen.
+   * @param ledDist1 the distance to calculate to.
+   */
   public LEDGen(final int ledDist1) {
     ledDist = ledDist1;
   }
