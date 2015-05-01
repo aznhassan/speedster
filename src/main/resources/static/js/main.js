@@ -604,7 +604,7 @@ $(document).ready(function() {
                     $(this).css('background-color','inherit');
                 }
 
-                alert($(this).attr('value'));
+                // alert($(this).attr('value'));
             });
         }
     }
@@ -803,7 +803,7 @@ $(document).ready(function() {
 
         if(style_type === "font-size") {
             alert("FONT SIZEEEE");
-            alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
+            //alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
             if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Small") {
                 return '17px';
             } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type))[0].value === "Medium") {
@@ -1106,7 +1106,17 @@ Rule:
                 }
 
                 document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
-                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
+
+
+                if(rule["after"]["style"]['font-size'] === "17px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                } else if(rule["after"]["style"]["font-size"] === "22px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                } else {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                }
+
+                // document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
 
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
@@ -1159,8 +1169,13 @@ Rule:
 
                 document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
 
-            
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size').value = rule["after"]["style"]["font-size"];
+                if(rule["after"]["style"]['font-size'] === "17px") {
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                } else if(rule["after"]["style"]["font-size"] === "22px") {
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                } else {
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                }
                 
 
                 // box this rule... 
