@@ -14,8 +14,8 @@ var SUGGESTION_CELL_HEIGHT = 30;
 var userRules = [];
 
 var NEWLINE = '<br>\u200b';
-var NEWLINE_RECEIVED = '99999999999'; // received from server; delimits newline (impossible for user to submit themselves)
-
+var NEWLINELENGTH = 11; // received from server; delimits newline (impossible for user to submit themselves)
+var NEWLINEDUMMY = '12345678910';
 
 /* Config
 
@@ -105,7 +105,7 @@ function getSelectionParentElement() {
 }
 
 // The following code is used to save and restore the caret position in an HTML tree
-// I believe it does so by storing a hidden character in the text and then returning back to that on restore (I think... still have to read it)
+// I believe it does so by storing a hidden character in the text and then returning back to that on restore
 var saveSelection, restoreSelection;
 if (window.getSelection && document.createRange) {
     saveSelection = function(containerEl) {
@@ -208,6 +208,7 @@ function stylize(correcting) {
     }
 
     // Encode HTML special chars for distinction from our own insertions
+    console.log(res);
     res = escapeHTML(res);
 
     // \u200b -> <br>\u200b
@@ -263,10 +264,10 @@ function stylize(correcting) {
     //     return a + '<span class="section">' + b + '</span>' + c;
     // });
 
-    res = title + res;
-
     // Decode HTML special chars
     res = unescapeHTML(res);
+
+    res = title + res;
 
     $("#noteArea")[0].innerHTML = res;
     restoreSelection($("#noteArea")[0], savedSelection);
@@ -296,26 +297,26 @@ function regEsc(string) {
 
 function escapeHTML(text) {
   	var map = {
-    	'&': '&amp;',
-    	'<': '&lt;',
-    	'>': '&gt;',
-    	'"': '&quot;',
-    	"'": '&#039;'
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
   	};
 
-  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    return text.replace(/[&<>"']/g, function(m) { console.log('escaping:' + m); return map[m]; });
 }
 
 function unescapeHTML(html) {
-	var map = {
-		'&amp;': '&',
-    	'&lt;': '<',
-    	'&gt;': '>',
-    	'&quot;': '"',
-   		'&#039;': "'"
-  	};
+    var map = {
+		    '&amp;': '&',
+        '&lt;': '<',
+        '&gt;': '>',
+        '&quot;': '"',
+   	    '&#039;': "'"
+    };
 
-  return html.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/gi, function(m) { return map[m]; });
+    return html.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/gi, function(m) { console.log( 'restoring:' + m); return map[m]; });
 }
 
 function compileUserRules(rules) {
@@ -411,7 +412,6 @@ function save() {
       'noteid': urlparts[3],
       'subject': decodeURIComponent(urlparts[2])
     }
-    //console.log(params);
 
     $.post("/updateNote", params, function() {
         // Success! gr8
@@ -467,7 +467,7 @@ function prepareUserRules(rules) {
       'class': 'equationcaption'
     },
     'after': {
-      'endSeq': '<br>\u200b',
+      'endSeq': NEWLINEDUMMY,
       'class': 'equation'
     },
     'container': {
@@ -482,7 +482,7 @@ function prepareUserRules(rules) {
       'class': 'largequote'
     },
     'after': {
-      'endSeq': '<br>\u200b',
+      'endSeq': NEWLINEDUMMY,
       'class': 'largequoteafter'
     },
     'container': {
@@ -495,25 +495,25 @@ function prepareUserRules(rules) {
     'trigger': {
       'word': '|',
       'class': 'section',
-      'endSeq': '<br>\u200b'
+      'endSeq': NEWLINEDUMMY
     }
   });
 
-  rules.push({
-    'name': 'tab note',
-    'trigger': {
-      'word': '$',
-      'class': 'section',
-      'endSeq': '<br>\u200b'
-    },
-    'after': {
-      'endSeq': '<br>\u200b',
-      'class': 'noteafter'
-    },
-    'container': {
-      'class': 'box'
-    }
-  });
+  // rules.push({
+  //   'name': 'tab note',
+  //   'trigger': {
+  //     'word': '$',
+  //     'class': 'section',
+  //     'endSeq': NEWLINEDUMMY
+  //   },
+  //   'after': {
+  //     'endSeq': NEWLINEDUMMY',
+  //     'class': 'noteafter'
+  //   },
+  //   'container': {
+  //     'class': 'box'
+  //   }
+  // });
 
   ////////////////////////
 
@@ -521,10 +521,10 @@ function prepareUserRules(rules) {
   rules.forEach(function(v, i, arr) {
       v.trigger.word = escapeHTML(v.trigger.word);
       if (v.trigger.endSeq) {
-        v.trigger.endSeq = (v.trigger.endSeq == NEWLINE_RECEIVED ? NEWLINE : escapeHTML(v.trigger.endSeq));
+        v.trigger.endSeq = (v.trigger.endSeq.length == NEWLINELENGTH ? NEWLINE : escapeHTML(v.trigger.endSeq));
       }
       if (v.after && v.after.endSeq) {
-        v.after.endSeq = (v.after.endSeq == NEWLINE_RECEIVED ? NEWLINE : escapeHTML(v.after.endSeq))
+        v.after.endSeq = (v.after.endSeq.length == NEWLINELENGTH ? NEWLINE : escapeHTML(v.after.endSeq));
       }
   });
 
@@ -550,9 +550,7 @@ $(document).ready(function() {
 
   if ($('#noteArea').text().length == 0) {
     var t = $('head title').text();
-    console.log(t);
     t = '<div class="title">' + t + '</div>';
-    console.log(t);
     $('#noteArea')[0].innerHTML = t;
   }
 
