@@ -662,7 +662,7 @@ $(document).ready(function() {
                 rules: JSON.stringify(rulesForThisFolder)
             };
 
-            // console.log("RULES SENT:  " + postParam.rules);
+            console.log("RULES SENT:  " + postParam.rules);
             
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
@@ -692,12 +692,9 @@ $(document).ready(function() {
         $(styleDiv).find('.rule_div').each(function(i) {
                 var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
                 if(!document.getElementById('rulename_' + folder_id + name)) { 
-                    if(rulename !== "") {
-                        name = rulename;
-                    } else {
-                        name = "";
-                    }
-                }
+                    name = "";
+                } 
+                rulename = name;
                 
                 var rule = 
                 {   
@@ -788,7 +785,7 @@ $(document).ready(function() {
                     rule["container"]["style"]["margin"] = "auto";
                 }
 
-                console.log(rule);
+                // console.log(rule);
 
                 rulesForThisFolder.push(rule);
                 
