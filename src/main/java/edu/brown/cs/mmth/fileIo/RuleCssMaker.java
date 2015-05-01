@@ -53,11 +53,6 @@ public final class RuleCssMaker {
     List<String> cssList = new ArrayList<>();
     boolean worked = false;
     JSONArray rules = new JSONArray(jsonRules);
-    for(int i = 0; i < rules.length(); i++) {
-      System.out.println(rules.getJSONObject(i));
-      System.out.println("__________________________________________________\n\n");
-    }
-    System.out.println(excludeRule);
     String folder = "";
     int length = rules.length();
     boolean deleteRules = true;
@@ -73,7 +68,6 @@ public final class RuleCssMaker {
       folder = obj.getString("associated_folder_name");
 
       String name = obj.getString("name");
-      System.out.println("NAME === "  +  name);
       if (name.isEmpty() || name.equals(excludeRule)) {
         System.out.println("EXCLUDED");
         continue;
@@ -109,7 +103,7 @@ public final class RuleCssMaker {
       obj.put("after", after);
       if (containerExists) {
         obj.remove("container");
-        obj.put("container", new JSONObject().put("style", new JSONObject()));
+        obj.put("container", container);
       }
 
       worked = writeRule(obj, folder, deleteRules);
