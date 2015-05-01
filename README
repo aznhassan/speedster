@@ -17,26 +17,39 @@ Project Authors (in reverse alphabetical order):
 
 * Tushar Bhargava <tbhargav>
 * Surbhi Madan <sm15>
-* Nick McKenna
-* Hassan Sufi 
+* Nick McKenna 
+* Hassan Sufi <hsufi>
 
-Project Status: Individually functional, overall broken. Work in progress. 
-
-Current Bugs: 
-
-1.) Now Surbhi needs to get the Flashcard view working but data will be there if the given subject name is correct!
-
+Project Status: Fully functional, no known bugs, with proper documentation and test suite. 
 
 How to build the program: mvn package
 
 How to run program from command line:
 
-The program is launched using ./run. For assistance enter "./run --h" (help flag). GUI by default opens at: http://localhost:4567/
+The program is launched using ./run. For assistance enter "./run --h" (help flag). 
+
+GUI by default opens at: http://localhost:4567/notes
 
 How to run the tests: 
 
 * mvn package will run all of the JUnit tests.
 
 
+ _________________________________________
+/ Findbugs you are far too faint of heart \
+\ for endeavours like these.              /
+ -----------------------------------------
+        \   0__0
+         \  (oo)\_______
+            (__)\       )e
+                ||\____/|
+                ||     ||
 
+
+
+Explanation of FindBug errors: 
+
+1.) DLS_DEAD_LOCAL_STORE: As Findbugs notes in its manual, this error often has a lot of false positives, and well, the SuggestionRanker dead stores bugs are false positives. The variables being complained about are used extensively.
+
+2.) NP_NULL_ON_SOME_PATH: The autocorrect main actually checks for fileNames not being null or empty before the given code, and exits if it is empty. Therefore this error is redundant, and null pointer derefereference can never occur.
 

@@ -22,7 +22,7 @@ public final class LEDGen implements SuggestionGenInterface {
    * Modifying this value allows you to run the LED algorithm to find words with
    * varying edit distances.
    */
-  private static int ledDist;
+  private int ledDist;
 
   /**
    * Parameterized constructor for LEDGen.
@@ -76,7 +76,7 @@ public final class LEDGen implements SuggestionGenInterface {
    *
    * @return the ledDist
    */
-  static int getLedDist() {
+  int getLedDist() {
     return ledDist;
   }
 

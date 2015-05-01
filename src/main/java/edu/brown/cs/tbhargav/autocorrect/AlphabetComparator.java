@@ -3,6 +3,7 @@
  */
 package edu.brown.cs.tbhargav.autocorrect;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import edu.brown.cs.tbhargav.tries.Word;
@@ -13,7 +14,12 @@ import edu.brown.cs.tbhargav.tries.Word;
  * @author tbhargav
  *
  */
-final class AlphabetComparator implements Comparator<Word> {
+final class AlphabetComparator implements Comparator<Word>, Serializable {
+
+  /**
+   * Serial ID.
+   */
+  private static final long serialVersionUID = 8159178490157491114L;
 
   @Override
   public int compare(final Word o1, final Word o2) {

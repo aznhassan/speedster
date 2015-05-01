@@ -20,7 +20,6 @@ import spark.template.freemarker.FreeMarkerEngine;
 public final class Web {
 
   private static final int INTERNAL_SERVER_ERROR = 500;
-  private static final int PORT = 4567;
 
   private Web() { /* Constructor... defeated! */
   }

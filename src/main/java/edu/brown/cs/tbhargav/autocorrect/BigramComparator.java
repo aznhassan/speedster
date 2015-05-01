@@ -3,6 +3,7 @@
  */
 package edu.brown.cs.tbhargav.autocorrect;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import edu.brown.cs.tbhargav.tries.Word;
@@ -14,8 +15,12 @@ import edu.brown.cs.tbhargav.tries.Word;
  * @author tbhargav
  *
  */
-final class BigramComparator implements Comparator<Word> {
+final class BigramComparator implements Comparator<Word>, Serializable {
 
+  /**
+   * SerialID.
+   */
+  private static final long serialVersionUID = 237776143197185720L;
   private final String prevWord;
 
   /**

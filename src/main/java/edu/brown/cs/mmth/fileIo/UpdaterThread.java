@@ -5,11 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Collection;
 
-import com.google.common.collect.Lists;
-
-import edu.brown.cs.mmth.speedster.Flashcard;
 import edu.brown.cs.mmth.speedster.Main;
 
 /**
@@ -47,28 +43,14 @@ public class UpdaterThread implements Runnable {
     File file = new File("./.id");
     try (
         BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(
-            new FileOutputStream(file), "UTF-8"))) {
+            new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
       writer.write("" + Main.getId());
     } catch (IOException e) {
       System.out.println("ERROR: " + e.getMessage());
       return false;
     }
     return true;
-  }
-
-  /**
-   * Writes the updated flashcards to disk.
-   *
-   * @return - Writes updated flashcard to disk.
-   */
-  private boolean writeUpdatedFlashCards() {
-    Collection<Flashcard> flashcards = FlashCardReader.getUpdatedCards();
-    boolean worked = false;
-    for (Flashcard card : flashcards) {
-      worked = worked & FlashCardWriter.writeCards(Lists.newArrayList(card));
-    }
-    return worked;
   }
 
 }
