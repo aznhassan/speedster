@@ -741,7 +741,29 @@ $(document).ready(function() {
                     // }
                 }
 
-                // trying to do Nick's styling requests for container object; - sm15 #TODO
+                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                //     delete rule["after"];
+                // } 
+
+                // if(rule["after"]) {
+                //     if(rule["after"]["style"]["font-weight"] === "none") {
+                //         delete rule["after"]["style"]["font-weight"];
+                //     }
+
+                //     if(rule["after"]["style"]["font-style"] === "none") {
+                //         delete rule["after"]["style"]["font-style"];
+                //     }
+
+                //     if(rule["after"]["style"]["text-decoration"] === "none") {
+                //         delete rule["after"]["style"]["text-decoration"]
+                //     }
+
+                // }
+
+
+                // trying to do Nick's styling requests for container object; - sm15 
+                // #TODO: Do the same with rule.after as with rule.container
+                // in other words, don't send an rule.after object if nothing is specified.
                 if($('#box_' + folder_id + rulename)[0].checked) {
                     rule["container"] = {};
                     rule["container"]["style"] = {}
@@ -766,8 +788,6 @@ $(document).ready(function() {
                     rule["container"]["style"]["margin"] = "auto";
                 }
 
-                // alert(rule["name"]);
-                // alert(rule["trigger"]["word"]);
                 rulesForThisFolder.push(rule);
                 
                
@@ -802,14 +822,16 @@ $(document).ready(function() {
         } 
 
         if(style_type === "font-size") {
-            alert("FONT SIZEEEE");
+            // alert("FONT SIZEEEE");
             //alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
             if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Small") {
                 return '17px';
-            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type))[0].value === "Medium") {
+            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Medium") {
                 return '22px';
-            } else {
+            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Big"){
                 return '30px';
+            } else {
+                return '17px';
             }
         }
     }
@@ -1077,8 +1099,8 @@ Rule:
 
                 // populate start (trigger word) style bar
                 // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-                console.log(rule.trigger["style"]);
-                console.log(rule.after["style"]);
+               
+                console.log(rule["container"]);
                 if(rule.trigger["style"]["font-weight"] == "bold") {
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value','bold');
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');

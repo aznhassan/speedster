@@ -39,18 +39,20 @@ $(document).ready(function() {
      * but the global card stats change.
      */
     $(wrongButton).click(function() {
-        sendFlashcardUpdates(false);
-        $('.flashcard_div_front').removeClass('flip-front');
         $('.flashcard_div_back').removeClass('flip-back');
+        $('.flashcard_div_front').removeClass('flip-front');
+       
+        sendFlashcardUpdates(false);
     });
 
     /**
      * click handler for answered button
      */
     $(correctButton).click(function() {
-        sendFlashcardUpdates(true);
-        $('.flashcard_div_front').removeClass('flip-front');
         $('.flashcard_div_back').removeClass('flip-back');
+        $('.flashcard_div_front').removeClass('flip-front');
+        
+        sendFlashcardUpdates(true);
     }) 
 
   
