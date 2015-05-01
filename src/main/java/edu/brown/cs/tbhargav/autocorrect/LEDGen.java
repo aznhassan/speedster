@@ -30,7 +30,7 @@ public final class LEDGen implements SuggestionGenInterface {
 
   /**
    * Takes in two strings and returns their edit distance.
-   * 
+   *
    * @param word1
    *          - The first word.
    * @param word2
@@ -79,7 +79,7 @@ public final class LEDGen implements SuggestionGenInterface {
   @Override
   public List<Word> getSuggestions(final Trie<Word> trie, final String word) {
 
-    assert (ledDist >= 0);
+    assert ledDist >= 0;
 
     if (ledDist < 0) {
       throw new IllegalArgumentException();
@@ -99,7 +99,7 @@ public final class LEDGen implements SuggestionGenInterface {
   /**
    * <pre>
    * Recursive helper method to generate suggestion, limits based on LED DIST.
-   * 
+   *
    * @param root - The root node.
    * @param lower - The lower limit.
    * @param upper - The upper limit.
@@ -110,8 +110,8 @@ public final class LEDGen implements SuggestionGenInterface {
   private List<Word> recursiveLEDTrieNav(final TrieNode<Word> root,
       final int lower, final int upper, final String word) {
     ArrayList<Word> wordsWithinDist = new ArrayList<Word>();
-    if ((root.isWord()) && (root.getCurrText().length() > lower)
-        && (root.getCurrText().length() < upper)) {
+    if (root.isWord() && root.getCurrText().length() > lower
+        && root.getCurrText().length() < upper) {
       if (computeEditDist(root.getCurrText(), word) <= ledDist) {
         wordsWithinDist.add(root.getStoredValue());
       }

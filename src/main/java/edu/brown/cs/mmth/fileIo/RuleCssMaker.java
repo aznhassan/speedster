@@ -192,8 +192,8 @@ public final class RuleCssMaker {
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(
-            new FileOutputStream(file), "UTF-8"))) {
+            new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
       writer.write(rule.toString());
       toReturn = true;
     } catch (IOException e) {
@@ -265,8 +265,8 @@ public final class RuleCssMaker {
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(
-            new FileOutputStream(file), "UTF-8"))) {
+            new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
       for (String css : cssList) {
         writer.write(css);
         writer.write("\n");

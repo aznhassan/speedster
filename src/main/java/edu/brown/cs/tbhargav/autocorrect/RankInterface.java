@@ -21,7 +21,7 @@ public interface RankInterface {
    * Takes in a list of 'Word's and returns them in order of their ranking
    * (according to criteria unique to the specific algorithm). (List because
    * order matters).
-   * 
+   *
    * @param word - The word.
    * @param prevWord - The previous word.
    * @param words - The words to sort.
@@ -35,7 +35,7 @@ public interface RankInterface {
    * <pre>
    * Checks whether given words are equal (in accordance with specific ranking)
    * or not.
-   * 
+   *
    * @param o1 - The first word.
    * @param o2 - The second word.
    * @param prevWord - The previous word.

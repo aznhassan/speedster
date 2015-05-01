@@ -44,8 +44,8 @@ public final class FlashCardWriter {
       file.getParentFile().mkdirs();
       try (
           BufferedWriter writer =
-          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-              file), "UTF-8"));) {
+              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                  file), "UTF-8"));) {
 
         List<String> dataToWrite = card.getDataToStore();
         int length = dataToWrite.size();

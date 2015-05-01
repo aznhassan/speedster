@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
 import edu.brown.cs.mmth.fileIo.UpdaterThread;
 
 /**
@@ -31,7 +32,7 @@ public final class Main {
 
   /**
    * Grabs the current id and increments by one.
-   * 
+   *
    * @return - The id (prior incrementation).
    */
   public synchronized static long getAndIncrementId() {
@@ -49,7 +50,7 @@ public final class Main {
 
   /**
    * Grabs the current id.
-   * 
+   *
    * @return - The id.
    */
   public synchronized static long getId() {
@@ -77,8 +78,8 @@ public final class Main {
       }
       try (
           BufferedWriter writer =
-              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                  file), "UTF-8"))) {
+          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+              file), "UTF-8"))) {
         writer.write("" + value); // starting the count.
       } catch (IOException e) {
         System.err.println("ERROR: " + e.getMessage());
@@ -89,8 +90,8 @@ public final class Main {
     }
     try (
         BufferedReader reader =
-            new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                "UTF-8"))) {
+        new BufferedReader(new InputStreamReader(new FileInputStream(file),
+            "UTF-8"))) {
       String line = "";
       line = reader.readLine();
       if (line != null && !line.isEmpty()) {
@@ -133,8 +134,8 @@ public final class Main {
       File idFile = new File(directory, "/id");
       try (
           BufferedReader reader =
-              new BufferedReader(new InputStreamReader(new FileInputStream(
-                  idFile), "UTF-8"))) {
+          new BufferedReader(new InputStreamReader(new FileInputStream(
+              idFile), "UTF-8"))) {
         String line = reader.readLine();
         try {
           if (line != null) {

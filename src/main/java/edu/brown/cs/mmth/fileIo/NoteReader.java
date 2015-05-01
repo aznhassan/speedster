@@ -19,6 +19,7 @@ import edu.brown.cs.mmth.speedster.Note;
 
 /**
  * Reads all the notes within a given directory into Note objects.
+ *
  * @author tbhargav
  *
  */
@@ -26,6 +27,7 @@ public class NoteReader {
 
   /**
    * Reads note files in a given path into our 'Note' object.
+   *
    * @param subject
    *          whose notes you want.
    * @return collection of note. In case of error return null.
@@ -54,8 +56,8 @@ public class NoteReader {
             StringBuilder json = new StringBuilder();
             try (
                 BufferedReader br =
-                new BufferedReader(new InputStreamReader(
-                    new FileInputStream(fileEntry), "UTF-8"))) {
+                    new BufferedReader(new InputStreamReader(
+                        new FileInputStream(fileEntry), "UTF-8"))) {
               String line;
               while ((line = br.readLine()) != null) {
                 json.append(line);
@@ -95,6 +97,7 @@ public class NoteReader {
 
   /**
    * Grabs the ID associated with the Subject.
+   *
    * @param subject
    *          - The subject of the note.
    * @return - The ID of the subject, returns -1 on error.
@@ -109,8 +112,8 @@ public class NoteReader {
     }
     try (
         BufferedReader br =
-        new BufferedReader(new InputStreamReader(new FileInputStream(file),
-            "UTF-8"))) {
+            new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                "UTF-8"))) {
       String id = br.readLine();
       Long toReturn = -1L;
       try {

@@ -13,6 +13,14 @@ import java.util.Map;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
+import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
+import edu.brown.cs.tbhargav.tries.Trie;
+import edu.brown.cs.tbhargav.tries.Word;
+
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -22,13 +30,6 @@ import spark.Spark;
 import spark.SparkBase;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-
-import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
-import edu.brown.cs.tbhargav.tries.Trie;
-import edu.brown.cs.tbhargav.tries.Word;
 
 /**
  * This the main class of the project. It handles the CLI and GUI command
@@ -150,7 +151,7 @@ public class Main {
 
   /**
    * Accessor method.
-   * 
+   *
    * @return the globalTrie
    */
   public static Trie<Word> getGlobalTrie() {
@@ -399,7 +400,7 @@ public class Main {
       optParser.accepts("gui", "Launches GUI interface of program!");
       optParser.accepts("prefix", "Activates prefix suggestions.");
       optParser.accepts("led", "Activate Levenshtein edit distance.")
-          .withRequiredArg().ofType(Integer.class);
+      .withRequiredArg().ofType(Integer.class);
       optParser.accepts("whitespace", "Activate splitting suggestions.");
       optParser.accepts("smart", "Activates my smart ordering!");
       optParser.accepts("h", "show help").forHelp();

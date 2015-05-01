@@ -12,7 +12,7 @@ import java.util.ArrayList;
  *
  */
 public final class Trie<E extends TrieStorable> {
-  private TrieNode<E> root;
+  private final TrieNode<E> root;
 
   /**
    * Default constructor.
@@ -84,7 +84,7 @@ public final class Trie<E extends TrieStorable> {
   /**
    * <pre>
    * Goes through tree to locate the node from a particular string.
-   * 
+   *
    * @param text - The text to find.
    * @return the node if found, null otherwise.
    * </pre>
@@ -135,7 +135,7 @@ public final class Trie<E extends TrieStorable> {
   /**
    * <pre>
    * Returns the words that given prefix can lead to.
-   * 
+   *
    * @param prefix - The prefix.
    * @return list of words (vals).
    * </pre>
@@ -161,7 +161,7 @@ public final class Trie<E extends TrieStorable> {
   /**
    * <pre>
    * Adds given values to trie.
-   * 
+   *
    * @param valuesToAdd - The values to add.
    * </pre>
    */

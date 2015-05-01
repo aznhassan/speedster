@@ -181,7 +181,7 @@ public final class ApiHandler {
             ImmutableMap.of("q", "You are done reviewing!", "a",
                 "Yes, you heard it right the first time! "
                     + "Close tab to end session.", "session_number", sessionID,
-                    "card_id", "-1");
+                "card_id", "-1");
       } else {
         variables =
             ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
@@ -206,7 +206,7 @@ public final class ApiHandler {
       } catch (NumberFormatException e) {
         Map<String, Object> problem =
             ImmutableMap
-            .of("title", "Speedster", "content", "Improper note id");
+                .of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
       String subject = req.params(":folder");
@@ -621,8 +621,8 @@ public final class ApiHandler {
     for (File rule : rules) {
       try (
           BufferedReader br =
-          new BufferedReader(new InputStreamReader(
-              new FileInputStream(rule), "UTF-8"))) {
+              new BufferedReader(new InputStreamReader(
+                  new FileInputStream(rule), "UTF-8"))) {
         String line = "";
         while ((line = br.readLine()) != null) {
           bd.append(line);

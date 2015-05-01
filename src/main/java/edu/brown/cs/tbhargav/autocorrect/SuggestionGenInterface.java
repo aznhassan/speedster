@@ -18,7 +18,7 @@ public interface SuggestionGenInterface {
   /**
    * <pre>
    * Gets the suggestions based on generation mechanism.
-   * 
+   *
    * @param trie - The trie of words.
    * @param typedWord - The word that was typed.
    * @return list of suggested words.

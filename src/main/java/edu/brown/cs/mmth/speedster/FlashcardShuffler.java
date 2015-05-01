@@ -14,13 +14,14 @@ import java.util.Map;
  * Determines which flashcard to display next (in session). Uses difficulty,
  * randomness and contextual performance to determine the flashcard to show
  * next. Each object of this class represents one flashcard viewing session.
+ *
  * @author tbhargav
  */
 public class FlashcardShuffler {
 
   private final Collection<Flashcard> cards;
   private List<Flashcard> rankedCards;
-  private static Map<Integer, FlashcardShuffler> cache=new HashMap<>();
+  private static Map<Integer, FlashcardShuffler> cache = new HashMap<>();
   /**
    * The shuffling relies on the value of this counter. 0 means using the
    * difficulty rank, 1 means random choice and 2 means easier card. Ranks are
@@ -31,6 +32,7 @@ public class FlashcardShuffler {
   /**
    * Parameterized constructor. Accepts flashcards to shuffle and display in
    * given session.
+   *
    * @param lCards
    *          the cards to display in given session.
    */
@@ -44,36 +46,43 @@ public class FlashcardShuffler {
 
   /**
    * Checks whether cache has FlashcardShuffler object for given session.
-   * @param sessionID the unique identifier of given session.
+   *
+   * @param sessionID
+   *          the unique identifier of given session.
    * @return boolean true if session number is contained, false otherwise.
    */
   public static boolean hasSession(int sessionID) {
-    if(cache.containsKey(sessionID)) {
+    if (cache.containsKey(sessionID)) {
       return true;
     } else {
       return false;
     }
   }
-  
+
   /**
-   * Gets FlashcardShuffler associated with session ID. Returns null
-   * if ID not contained. 
-   * @param sessionID a unique session identifier.
+   * Gets FlashcardShuffler associated with session ID. Returns null if ID not
+   * contained.
+   *
+   * @param sessionID
+   *          a unique session identifier.
    * @return FlashcardShuffler linked with session ID.
    */
   public static FlashcardShuffler getSession(int sessionID) {
     return cache.get(sessionID);
   }
-  
+
   /**
    * Adds a new session to cache.
-   * @param sessionID unique session identifier (must not exist already).
-   * @param obj FlashcardShuffler object linked with ID.
+   *
+   * @param sessionID
+   *          unique session identifier (must not exist already).
+   * @param obj
+   *          FlashcardShuffler object linked with ID.
    */
   public static void addSession(int sessionID, FlashcardShuffler obj) {
     cache.put(sessionID, obj);
   }
-  
+
   private void calcRankOfCards() {
     List<Flashcard> lRankedCards = new ArrayList<>();
     lRankedCards.addAll(cards);
@@ -93,7 +102,7 @@ public class FlashcardShuffler {
     if (cards.contains(card)) {
       cards.remove(card);
     }
-    if(rankedCards.contains(card)) {
+    if (rankedCards.contains(card)) {
       rankedCards.remove(card);
     }
   }
@@ -101,6 +110,7 @@ public class FlashcardShuffler {
   /**
    * Determines which card will be displayed next based on technique counter
    * value and shuffling logic.
+   *
    * @return flashcard object to display next. Null if session is over.
    */
   public Flashcard nextCard() {
@@ -116,9 +126,9 @@ public class FlashcardShuffler {
       return rankedCards.get(0);
     } else if (techniqueCounter % 3 == 1) {
       techniqueCounter++;
-      int random = (int) ((Math.random() * (rankedCards.size() - 2))+1);
+      int random = (int) (Math.random() * (rankedCards.size() - 2) + 1);
       // Displays random card but avoids 'hardest' card if possible.
-      if(rankedCards.size()==1) {
+      if (rankedCards.size() == 1) {
         return rankedCards.get(0);
       }
       return rankedCards.get(random);

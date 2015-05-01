@@ -15,6 +15,7 @@ import edu.brown.cs.mmth.speedster.Main;
 /**
  * Writes the current value of the Id variable in Main to memory, runs every n
  * seconds.
+ *
  * @author hsufi
  *
  */
@@ -39,14 +40,15 @@ public class UpdaterThread implements Runnable {
 
   /**
    * Writes the ID counter to disk.
+   *
    * @return - Writes the ID counter to disk.
    */
   private boolean writeId() {
     File file = new File("./.id");
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8"))) {
+        new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(file), "UTF-8"))) {
       writer.write("" + Main.getId());
     } catch (IOException e) {
       System.out.println("ERROR: " + e.getMessage());
@@ -57,6 +59,7 @@ public class UpdaterThread implements Runnable {
 
   /**
    * Writes the updated flashcards to disk.
+   *
    * @return - Writes updated flashcard to disk.
    */
   private boolean writeUpdatedFlashCards() {

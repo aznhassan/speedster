@@ -34,7 +34,7 @@ public final class ExactMatchRank implements RankInterface {
     ArrayList<Word> nothingChanged = new ArrayList<Word>();
     nothingChanged.addAll(wordsCopy);
 
-    assert (nothingChanged.size() == words.size());
+    assert nothingChanged.size() == words.size();
 
     return nothingChanged;
   }

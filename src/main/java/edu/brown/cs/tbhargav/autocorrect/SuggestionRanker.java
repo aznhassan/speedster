@@ -22,7 +22,7 @@ public final class SuggestionRanker {
   /**
    * <pre>
    * List of ordered rules to follow while ranking.
-   * 
+   *
    * @param rulesL - List of RankInterfaces.
    * </pre>
    */

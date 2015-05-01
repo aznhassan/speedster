@@ -23,7 +23,7 @@ public final class AlphabetRank implements RankInterface {
     ArrayList<Word> sortedWords = new ArrayList<Word>();
     sortedWords.addAll(words);
     Collections.sort(sortedWords, new AlphabetComparator());
-    assert (sortedWords.size() == words.size());
+    assert sortedWords.size() == words.size();
     return sortedWords;
   }
 

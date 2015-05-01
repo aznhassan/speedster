@@ -17,6 +17,7 @@ import edu.brown.cs.mmth.fileIo.Writeable;
 /**
  * This card models a flashcard. It stores all associated data and allows direct
  * file IO. It also has the method
+ *
  * @author tbhargav
  *
  */
@@ -24,6 +25,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Computes a universal flashcard rank based on given data.
+   *
    * @param numDays
    *          -The number of days since the flash card was last reviewed.
    * @param noCorrect
@@ -95,6 +97,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Constructs a new flash card.
+   *
    * @param answer
    *          - The answer of the card.
    * @param question
@@ -120,6 +123,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for answer.
+   *
    * @return the answer
    */
   public String getAnswer() {
@@ -159,6 +163,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Grabs the number of days since last use.
+   *
    * @return - The number of days since last use
    */
   public long getElapsedDays() {
@@ -174,6 +179,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for lastUse.
+   *
    * @return the lastUse
    */
   public Date getLastUse() {
@@ -189,6 +195,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for numberTimesCorrect.
+   *
    * @return the numberTimesCorrect
    */
   public int getNumberTimesCorrect() {
@@ -197,6 +204,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for numberTimesWrong.
+   *
    * @return the numberTimesWrong
    */
   public int getNumberTimesWrong() {
@@ -205,6 +213,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for question.
+   *
    * @return the question
    */
   public String getQuestion() {
@@ -213,6 +222,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor and updator method for rank.
+   *
    * @return the _rank
    */
   public int getRank() {
@@ -224,6 +234,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Grabs the subject of the Flashcard.
+   *
    * @return - Returns the subject name.
    */
   public String getSubject() {
@@ -232,6 +243,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for subjectName.
+   *
    * @return the subjectName
    */
   public String getSubjectName() {
@@ -245,6 +257,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for displayForThisSession.
+   *
    * @return the displayForThisSession
    */
   public boolean isDisplayForThisSession() {
@@ -253,6 +266,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for _rank.
+   *
    * @param _rank
    *          the _rank to set
    */
@@ -262,6 +276,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for answer.
+   *
    * @param answer
    *          the answer to set
    */
@@ -271,6 +286,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for displayForThisSession.
+   *
    * @param displayForThisSession
    *          the displayForThisSession to set
    */
@@ -285,6 +301,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for lastUse.
+   *
    * @param lastUse
    *          the lastUse to set
    */
@@ -294,6 +311,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for numberTimesCorrect.
+   *
    * @param numberTimesCorrect
    *          the numberTimesCorrect to set
    */
@@ -303,6 +321,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for numberTimesWrong.
+   *
    * @param numberTimesWrong
    *          the numberTimesWrong to set
    */
@@ -312,6 +331,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for question.
+   *
    * @param question
    *          the question to set
    */
@@ -321,6 +341,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for subjectName.
+   *
    * @param subjectName
    *          the subjectName to set
    */
@@ -335,6 +356,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Accessor for note Id.
+   *
    * @return - The id of the note.
    */
   public long getNoteId() {
@@ -343,6 +365,7 @@ public class Flashcard implements Readable, Writeable {
 
   /**
    * Mutator for note Id.
+   *
    * @param id
    *          - The id of to set as the Note's id.
    */

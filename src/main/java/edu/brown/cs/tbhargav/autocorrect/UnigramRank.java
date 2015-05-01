@@ -24,7 +24,7 @@ public final class UnigramRank implements RankInterface {
     ArrayList<Word> sortedWords = new ArrayList<Word>();
     sortedWords.addAll(words);
     Collections.sort(sortedWords, new UnigramComparator());
-    assert (sortedWords.size() == words.size());
+    assert sortedWords.size() == words.size();
     return sortedWords;
   }
 

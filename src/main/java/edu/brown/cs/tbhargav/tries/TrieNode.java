@@ -17,9 +17,9 @@ import java.util.HashMap;
 public final class TrieNode<E> {
   // Instance variables
   private String currText;
-  private HashMap<Character, TrieNode<E>> edges;
+  private final HashMap<Character, TrieNode<E>> edges;
   private E storedValue;
-  private int depth;
+  private final int depth;
 
   /**
    * Constructor that makes node with given text.
@@ -67,7 +67,7 @@ public final class TrieNode<E> {
 
   /**
    * Accessor method.
-   * 
+   *
    * @return the edges.
    */
   public HashMap<Character, TrieNode<E>> getEdges() {
@@ -85,11 +85,11 @@ public final class TrieNode<E> {
 
   /**
    * Predicate method for checking whether stored value is word.
-   * 
+   *
    * @return true or false
    */
   public boolean isWord() {
-    return (storedValue != null);
+    return storedValue != null;
   }
 
   /**

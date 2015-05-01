@@ -20,6 +20,7 @@ import edu.brown.cs.mmth.speedster.Note;
 
 /**
  * Reads Flashcards from disk.
+ *
  * @author hsufi
  *
  */
@@ -36,6 +37,7 @@ public final class FlashCardReader {
   /**
    * Returns flashcard from cache. Null if flashcard with given ID is not
    * present.
+   *
    * @param id
    *          the unique identifier for the flashcard
    * @return the flashcard object corresponding to that ID. Null if not found.
@@ -51,6 +53,7 @@ public final class FlashCardReader {
   /**
    * Accessor for all the cards in cache, that are the only ones that could have
    * been potentially updated (with correct/wrong stats).
+   *
    * @return collection of 'Flashcard'.
    */
   public static Collection<Flashcard> getUpdatedCards() {
@@ -59,6 +62,7 @@ public final class FlashCardReader {
 
   /**
    * Returns all flashcards linked with given note.
+   *
    * @param note
    *          note object whose associated cards we want.
    * @return collection of flashcard objects.
@@ -72,6 +76,7 @@ public final class FlashCardReader {
 
   /**
    * Reads flashcards (if any) from within folder.
+   *
    * @param folder
    *          to look into.
    * @param subject
@@ -92,8 +97,8 @@ public final class FlashCardReader {
       }
       try (
           BufferedReader reader =
-          new BufferedReader(new InputStreamReader(
-              new FileInputStream(file), "UTF-8"))) {
+              new BufferedReader(new InputStreamReader(
+                  new FileInputStream(file), "UTF-8"))) {
         StringBuilder object = new StringBuilder();
         String line = "";
         while ((line = reader.readLine()) != null) {
@@ -134,6 +139,7 @@ public final class FlashCardReader {
 
   /**
    * Reads in a list of Flashcards from memory and creates a list of Flashcards.
+   *
    * @param subject
    *          - The subject of the flashCard.
    * @return A list of Flashcard objects.

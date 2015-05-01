@@ -57,8 +57,8 @@ public final class NoteWriter {
 
       try (
           BufferedWriter br =
-              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                  file), "UTF-8"))) {
+          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+              file), "UTF-8"))) {
         // We will only get a single string to write.
         JSONObject obj = new JSONObject();
         int length = dataToWrite.size();

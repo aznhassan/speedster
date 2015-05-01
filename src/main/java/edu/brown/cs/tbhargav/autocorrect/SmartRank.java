@@ -55,7 +55,7 @@ public final class SmartRank implements RankInterface {
       rankedWords.addAll(suggestions);
     }
 
-    assert (rankedWords.size() == words.size());
+    assert rankedWords.size() == words.size();
 
     return rankedWords;
   }
