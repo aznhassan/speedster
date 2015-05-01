@@ -1159,7 +1159,7 @@ Rule:
                 // style text after this rule until
                 if(rule.after && rule.after.endSeq !== "99999999999") {
                     document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
-                } else {
+                } else if(rule.after && rule.after.endSeq === "99999999999") {
                     document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
                 }
 
