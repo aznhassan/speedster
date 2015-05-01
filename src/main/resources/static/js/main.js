@@ -741,9 +741,9 @@ $(document).ready(function() {
                     // }
                 }
 
-                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
-                //     delete rule["after"];
-                // } 
+                if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                    delete rule["after"];
+                } 
 
                 // if(rule["after"]) {
                 //     if(rule["after"]["style"]["font-weight"] === "none") {
@@ -789,9 +789,6 @@ $(document).ready(function() {
                 }
 
                 rulesForThisFolder.push(rule);
-                
-               
-            
                 
             });
             return rulesForThisFolder;
@@ -1201,15 +1198,15 @@ Rule:
                 
 
                 // box this rule... 
-
+                alert(rule["container"]);
                 if(rule["container"] && rule["container"]["style"]["background-color"]) {
-                    document.getElementById('box_' + folder_id + rulename_id).checked = true;
+                    $(document.getElementById('box_' + folder_id + rulename_id))[0].checked = true;
                 }
 
                 // center this rule ...
               
                 if(rule["container"] && rule["container"]["style"]["text-align"]) {
-                   document.getElementById('center_' + folder_id + rulename_id).checked = true;
+                   $(document.getElementById('center_' + folder_id + rulename_id))[0].checked = true;
                 }
 
             }
