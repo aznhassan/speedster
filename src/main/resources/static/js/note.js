@@ -529,6 +529,9 @@ function prepareUserRules(rules) {
   });
 
   userRules = compileUserRules(rules);
+
+  $('#noteArea').focus();
+  stylize(false);
 }
 
 
