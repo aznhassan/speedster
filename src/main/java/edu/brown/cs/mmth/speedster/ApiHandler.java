@@ -123,7 +123,7 @@ public final class ApiHandler {
           ImmutableMap.of("title", subjectName, "id", -1, "error", data);
       String jsonError = GSON.toJson(errorVariables);
       boolean madeFolders = folder.mkdirs();
-      if (!madeFolders) {
+      if (!madeFolders && !folder.getParentFile().isDirectory()) {
         return jsonError;
       }
       // new File(folder, "/rules").mkdir();
@@ -133,7 +133,8 @@ public final class ApiHandler {
       File idFile = new File(Main.getBasePath() + "/" + subjectName + "/id");
       File customCss =
           new File("src/main/resources/static/customCss/" + id + ".css");
-      if (!customCss.getParentFile().mkdirs()) {
+      if (!customCss.getParentFile().mkdirs()
+          && !customCss.getParentFile().isDirectory()) {
         return jsonError;
       }
       try (BufferedWriter idWriter =

@@ -54,7 +54,7 @@ public final class NoteWriter {
       File file = new File(finalPath);
       // Creates directories in case they don't exist.
       boolean madeFiles = file.getParentFile().mkdirs();
-      if (!madeFiles) {
+      if (!madeFiles && !file.getParentFile().isDirectory()) {
         return false;
       }
 

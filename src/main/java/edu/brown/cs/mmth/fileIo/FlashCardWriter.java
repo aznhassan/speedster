@@ -42,7 +42,7 @@ public final class FlashCardWriter {
           new File(basePath + "/" + card.getSubject() + "/N" + card.getNoteId()
               + "/f" + card.getId());
       boolean directoriesMade = file.getParentFile().mkdirs();
-      if (!directoriesMade) {
+      if (!directoriesMade && !file.getParentFile().isDirectory()) {
         return false;
       }
       try (

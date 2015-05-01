@@ -190,7 +190,7 @@ public final class RuleCssMaker {
       }
     }
     boolean filesMade = file.getParentFile().mkdirs();
-    if (!filesMade) {
+    if (!filesMade  && !file.getParentFile().isDirectory()) {
       return false;
     }
     try (
@@ -266,7 +266,7 @@ public final class RuleCssMaker {
     String path = CSSPATH + "/" + id + ".css";
     File file = new File(path);
     boolean filesMade = file.getParentFile().mkdirs();
-    if (!filesMade) {
+    if (!filesMade && !file.getParentFile().isDirectory()) {
       return false;
     }
     try (
