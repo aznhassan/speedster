@@ -662,7 +662,7 @@ $(document).ready(function() {
                 rules: JSON.stringify(rulesForThisFolder)
             };
 
-            // console.log("RULES SENT:  " + postParam.rules);
+            console.log("RULES SENT:  " + postParam.rules);
             
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
@@ -692,12 +692,9 @@ $(document).ready(function() {
         $(styleDiv).find('.rule_div').each(function(i) {
                 var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
                 if(!document.getElementById('rulename_' + folder_id + name)) { 
-                    if(rulename !== "") {
-                        name = rulename;
-                    } else {
-                        name = "";
-                    }
-                }
+                    name = "";
+                } 
+                rulename = name;
                 
                 var rule = 
                 {   
@@ -741,9 +738,9 @@ $(document).ready(function() {
                     // }
                 }
 
-                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
-                //     delete rule["after"];
-                // } 
+                if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                    delete rule["after"];
+                } 
 
                 // if(rule["after"]) {
                 //     if(rule["after"]["style"]["font-weight"] === "none") {
@@ -788,7 +785,7 @@ $(document).ready(function() {
                     rule["container"]["style"]["margin"] = "auto";
                 }
 
-                console.log(rule);
+                // console.log(rule);
 
                 rulesForThisFolder.push(rule);
                 
@@ -1159,7 +1156,7 @@ Rule:
                 // style text after this rule until
                 if(rule.after && rule.after.endSeq !== "99999999999") {
                     document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
-                } else {
+                } else if(rule.after && rule.after.endSeq === "99999999999") {
                     document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
                 }
 
