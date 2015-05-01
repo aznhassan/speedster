@@ -47,7 +47,7 @@ public class Flashcard implements Readable, Writeable {
     if (noCorrect == 0) {
       ratio = noWrong * PERCENT;
     } else {
-      ratio = noWrong / noCorrect * PERCENT;
+      ratio = noWrong / (double) noCorrect * PERCENT;
     }
 
     int rank = (int) (dayWeight + ratio);
@@ -136,14 +136,14 @@ public class Flashcard implements Readable, Writeable {
   @Override
   public List<String> getDataToStore() {
     List<String> toReturn = new ArrayList<>();
-    toReturn.add("rank:" + new Long(rank).toString());
+    toReturn.add("rank:" + Long.toString(rank));
     toReturn.add("subjectName:" + subjectName);
     toReturn.add("noteId:" + noteId);
-    toReturn.add("ntc:" + new Integer(numberTimesCorrect).toString());
-    toReturn.add("ntw:" + new Integer(numberTimesWrong).toString());
+    toReturn.add("ntc:" + Integer.toString(numberTimesCorrect));
+    toReturn.add("ntw:" + Integer.toString(numberTimesWrong));
     toReturn.add("question:" + question);
     toReturn.add("answer:" + answer);
-    toReturn.add("lastUse:" + new Long(lastUse.getTime()).toString());
+    toReturn.add("lastUse:" + Long.toString(lastUse.getTime()));
     return toReturn;
   }
 
@@ -187,7 +187,7 @@ public class Flashcard implements Readable, Writeable {
    * @return the lastUse
    */
   public Date getLastUse() {
-    return lastUse;
+    return new Date(lastUse.getTime());
   }
 
   /**
@@ -256,7 +256,7 @@ public class Flashcard implements Readable, Writeable {
 
   @Override
   public int hashCode() {
-    return new Long(id).hashCode();
+    return Long.valueOf(id).hashCode();
   }
 
   /**
@@ -310,7 +310,8 @@ public class Flashcard implements Readable, Writeable {
    *          the lastUse to set
    */
   public void setLastUse(final Date lastUse) {
-    this.lastUse = lastUse;
+    Date myDate = new Date(lastUse.getTime());
+    this.lastUse = myDate;
   }
 
   /**

@@ -53,7 +53,10 @@ public final class NoteWriter {
 
       File file = new File(finalPath);
       // Creates directories in case they don't exist.
-      file.getParentFile().mkdirs();
+      boolean madeFiles = file.getParentFile().mkdirs();
+      if (!madeFiles) {
+        return false;
+      }
 
       try (
           BufferedWriter br =
