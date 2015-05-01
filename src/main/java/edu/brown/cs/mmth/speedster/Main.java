@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import edu.brown.cs.mmth.fileIo.UpdaterThread;
+
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import edu.brown.cs.mmth.fileIo.UpdaterThread;
 
 /**
  * This is the main class that co-ordinates GUI with the back-end.
@@ -35,7 +36,7 @@ public final class Main {
    *
    * @return - The id (prior incrementation).
    */
-  public synchronized static long getAndIncrementId() {
+  public static synchronized long getAndIncrementId() {
     return id++;
   }
 
@@ -53,12 +54,12 @@ public final class Main {
    *
    * @return - The id.
    */
-  public synchronized static long getId() {
+  public static synchronized long getId() {
     return id;
   }
 
   /**
-   * Grabs the current ID from memory
+   * Grabs the current ID from memory.
    */
   private static void getIdFromMemory() {
     File file = new File("./id");
@@ -83,8 +84,6 @@ public final class Main {
         writer.write("" + value); // starting the count.
       } catch (IOException e) {
         System.err.println("ERROR: " + e.getMessage());
-        // TODO: Remember you have to remember stack trace.
-        // e.printStackTrace();
         System.exit(1);
       }
     }

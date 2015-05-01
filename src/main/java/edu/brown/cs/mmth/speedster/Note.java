@@ -18,7 +18,7 @@ import edu.brown.cs.mmth.fileIo.Writeable;
 public class Note implements Readable, Writeable {
 
   /**
-   * The String that holds the written note information
+   * The String that holds the written note information.
    */
   private String textData;
   private final String subject;
@@ -42,7 +42,7 @@ public class Note implements Readable, Writeable {
   }
 
   /**
-   * Grabs the name of the note
+   * Grabs the name of the note.
    *
    * @return - The name field of the note..
    */

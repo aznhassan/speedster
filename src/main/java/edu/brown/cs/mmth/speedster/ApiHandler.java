@@ -110,8 +110,10 @@ public final class ApiHandler {
       try {
         subjectName = URLDecoder.decode(qm.value("title"), "UTF-8");
       } catch (UnsupportedEncodingException e1) {
-        // TODO: better error handling.
-        e1.printStackTrace();
+        String data = makeExceptionJSON(e1.getMessage());
+        Map<String, Object> variables =
+            ImmutableMap.of("title", subjectName, "id", -1, "error", data);
+        return GSON.toJson(variables);
       }
 
       // Creating a new folder in memory, along with its ID file.
@@ -136,7 +138,7 @@ public final class ApiHandler {
 
       Map<String, Object> variables =
           ImmutableMap.of("title", subjectName, "id", id, "error", success);
-      return gson.toJson(variables);
+      return GSON.toJson(variables);
     }
   }
 
@@ -153,9 +155,9 @@ public final class ApiHandler {
       QueryParamsMap qm = req.queryMap();
 
       String sessionNo = qm.value("session_number");
-      int sessionID = 0;
+      int sessionIDL = 0;
       try {
-        sessionID = Integer.parseInt(sessionNo);
+        sessionIDL = Integer.parseInt(sessionNo);
       } catch (NumberFormatException e) {
         return "Invalid session ID provided.";
       }
@@ -164,8 +166,8 @@ public final class ApiHandler {
       // creating
       // a new one if none is found.
       FlashcardShuffler currSession;
-      if (FlashcardShuffler.hasSession(sessionID)) {
-        currSession = FlashcardShuffler.getSession(sessionID);
+      if (FlashcardShuffler.hasSession(sessionIDL)) {
+        currSession = FlashcardShuffler.getSession(sessionIDL);
       } else {
         return null;
       }
@@ -180,14 +182,14 @@ public final class ApiHandler {
         variables =
             ImmutableMap.of("q", "You are done reviewing!", "a",
                 "Yes, you heard it right the first time! "
-                    + "Close tab to end session.", "session_number", sessionID,
-                "card_id", "-1");
+                    + "Close tab to end session.", "session_number", sessionIDL,
+                    "card_id", "-1");
       } else {
         variables =
             ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
-                "session_number", sessionID, "card_id", next.getId());
+                "session_number", sessionIDL, "card_id", next.getId());
       }
-      return gson.toJson(variables);
+      return GSON.toJson(variables);
     }
   }
 
@@ -206,7 +208,7 @@ public final class ApiHandler {
       } catch (NumberFormatException e) {
         Map<String, Object> problem =
             ImmutableMap
-                .of("title", "Speedster", "content", "Improper note id");
+            .of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
       String subject = req.params(":folder");
@@ -385,7 +387,8 @@ public final class ApiHandler {
 
       if (!withoutWord.toString().isEmpty()) {
         prevWord =
-            withoutWord.toString().split(" ")[withoutWord.toString().split(" ").length - 1];
+            withoutWord.toString().split(" ")
+            [withoutWord.toString().split(" ").length - 1];
       }
 
       List<Word> suggs =
@@ -411,7 +414,7 @@ public final class ApiHandler {
       variables =
           ImmutableMap.of("title", "Hollywood Connections", "message", " ",
               "orig", inputText, "suggs", sb.toString());
-      return gson.toJson(variables);
+      return GSON.toJson(variables);
     }
   }
 
@@ -483,8 +486,6 @@ public final class ApiHandler {
         // create a new one.
         boolean cardExisted = false;
 
-        // TODO: Duplicate being created here maybe.
-
         for (Flashcard card : cards) {
           // If card with same question exists, update answer.
           if (card.getQuestion().equals(currCard.getString("q"))) {
@@ -511,8 +512,7 @@ public final class ApiHandler {
       try {
         FileUtils.deleteDirectory(noteFolder);
       } catch (IOException e) {
-        // TODO: Better error handling!
-        return "";
+        return makeExceptionJSON(e.getMessage());
       }
 
       // Writing note to disk.
@@ -548,7 +548,7 @@ public final class ApiHandler {
 
   /**
    * <pre>
-   * Grabs all the rules from every class
+   * Grabs all the rules from every class.
    * @author hsufi
    * </pre>
    */
@@ -583,7 +583,7 @@ public final class ApiHandler {
 
   /**
    * <pre>
-   * Grabs all the rules from every class
+   * Grabs all the rules from every class.
    * @author hsufi
    * </pre>
    */
@@ -621,8 +621,8 @@ public final class ApiHandler {
     for (File rule : rules) {
       try (
           BufferedReader br =
-              new BufferedReader(new InputStreamReader(
-                  new FileInputStream(rule), "UTF-8"))) {
+          new BufferedReader(new InputStreamReader(
+              new FileInputStream(rule), "UTF-8"))) {
         String line = "";
         while ((line = br.readLine()) != null) {
           bd.append(line);
@@ -641,7 +641,7 @@ public final class ApiHandler {
 
   /**
    * <pre>
-   * Grabs all the rules of a subject
+   * Grabs all the rules of a subject.
    * @author hsufi
    * </pre>
    */
@@ -726,8 +726,7 @@ public final class ApiHandler {
           currCard.setNumberTimesWrong(currCard.getNumberTimesWrong() + 1);
         }
       } catch (Exception e) {
-        // TODO: Better error handling rules!
-        return null;
+        return makeExceptionJSON(e.getMessage());
       }
 
       // Nothing to return.
@@ -746,10 +745,10 @@ public final class ApiHandler {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String folder_name = qm.value("folder_name");
-      String note_name = qm.value("note_name");
+      String folderName = qm.value("folder_name");
+      String noteName = qm.value("note_name");
 
-      Note note = new Note(note_name, folder_name, note_name);
+      Note note = new Note(noteName, folderName, noteName);
       note.setId(Main.getAndIncrementId());
       // Writing note to file.
       NoteWriter.writeNotes(Lists.newArrayList(note));
@@ -764,7 +763,7 @@ public final class ApiHandler {
    * Gson object to make things into JSON.
    * </pre>
    */
-  private static final Gson gson = new Gson();
+  private static final Gson GSON = new Gson();
 
   private static int sessionID = 0;
 

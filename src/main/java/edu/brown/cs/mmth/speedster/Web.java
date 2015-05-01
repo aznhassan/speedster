@@ -85,7 +85,7 @@ public final class Web {
   private static class ExceptionPrinter implements ExceptionHandler {
     @Override
     public void
-        handle(final Exception e, final Request req, final Response res) {
+    handle(final Exception e, final Request req, final Response res) {
       res.status(INTERNAL_SERVER_ERROR);
       StringWriter stacktrace = new StringWriter();
       try (PrintWriter pw = new PrintWriter(stacktrace)) {
