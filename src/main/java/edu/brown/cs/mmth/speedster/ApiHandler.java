@@ -242,6 +242,11 @@ public final class ApiHandler {
                 "Note doesn't exist!", "customCss", "../../customCss/"
                     + subjectId + ".css");
       }
+   // Forcing browswer not to cache this page.
+      res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP
+                                                                          // 1.1.
+      res.header("Pragma", "no-cache"); // HTTP 1.0.
+      res.header("Expires", "0"); // Proxies.
       return new ModelAndView(variables, "note.ftl");
     }
   }

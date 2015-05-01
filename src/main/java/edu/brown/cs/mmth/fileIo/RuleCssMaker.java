@@ -82,6 +82,10 @@ public final class RuleCssMaker {
       // Adding the class value to internal JSON objects
       JSONObject trigger = obj.getJSONObject("trigger");
       addClassToJsonObject(name, "trigger", trigger);
+      String triggerRuleName = trigger.getString("word");
+      if (triggerRuleName.isEmpty()) {
+        continue;
+      }
       JSONObject after = obj.getJSONObject("after");
       addClassToJsonObject(name, "after", after);
       JSONObject container = new JSONObject();
