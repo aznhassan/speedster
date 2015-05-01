@@ -19,7 +19,7 @@ public final class ExactMatchRank implements RankInterface {
 
   @Override
   public List<Word> rankedSuggestions(final String word, final String prevWord,
-          final Collection<Word> words) {
+      final Collection<Word> words) {
     List<Word> wordsCopy = new ArrayList<Word>();
     wordsCopy.addAll(words);
     for (Word w : words) {
@@ -41,7 +41,7 @@ public final class ExactMatchRank implements RankInterface {
 
   @Override
   public boolean areEqual(final Word o1, final Word o2, final String prevWord,
-          final String word) {
+      final String word) {
     if (o1.getStringText().equalsIgnoreCase(word)) {
       if (o2.getStringText().equalsIgnoreCase(word)) {
         return true;

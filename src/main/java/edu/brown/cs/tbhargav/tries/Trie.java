@@ -26,6 +26,7 @@ public final class Trie<E extends TrieStorable> {
    * Parameterized constructor.
    *
    * @param initialVals
+   *          - The initial values.
    */
   public Trie(final Iterable<E> initialVals) {
     root = new TrieNode<E>();
@@ -36,21 +37,22 @@ public final class Trie<E extends TrieStorable> {
   /**
    * Accessor method.
    *
-   * @return the root
+   * @return the root.
    */
   public TrieNode<E> getRoot() {
     return root;
   }
 
   /**
+   * <pre>
    * Adds new value to Trie in the proper sorted order, recursively.
-   *
-   * @param root1
-   * @param val
-   * @param toStore
+   * @param root1 - The node to add the value to.
+   * @param val - The val to add.
+   * @param toStore - The String to add.
+   * </pre>
    */
   private void addValue(final TrieNode<E> root1, final E val,
-          final String toStore) {
+      final String toStore) {
     char[] toStoreArr = toStore.toLowerCase().toCharArray();
 
     // Base case.
@@ -60,7 +62,7 @@ public final class Trie<E extends TrieStorable> {
         nodeToAdd.setStoredValue(val);
       } else {
         root1.addCharEdge(toStoreArr[0], new TrieNode<E>(root1.getCurrText()
-                + toStoreArr[0], root1.getDepth() + 1));
+            + toStoreArr[0], root1.getDepth() + 1));
         TrieNode<E> nodeToAdd = root1.getCharNode(toStoreArr[0]);
         nodeToAdd.setStoredValue(val);
       }
@@ -69,21 +71,23 @@ public final class Trie<E extends TrieStorable> {
 
     if (root1.hasCharEdge(toStoreArr[0])) {
       addValue(root1.getCharNode(toStoreArr[0]), val,
-              toStore.substring(1, toStore.length()));
+          toStore.substring(1, toStore.length()));
     } else {
       root1.addCharEdge(toStoreArr[0], new TrieNode<E>(root1.getCurrText()
-              + toStoreArr[0], root1.getDepth() + 1));
+          + toStoreArr[0], root1.getDepth() + 1));
       addValue(root1.getCharNode(toStoreArr[0]), val,
-              toStore.substring(1, toStore.length()));
+          toStore.substring(1, toStore.length()));
     }
 
   }
 
   /**
+   * <pre>
    * Goes through tree to locate the node from a particular string.
-   *
-   * @param text
-   * @return the node if found, null otherwise
+   * 
+   * @param text - The text to find.
+   * @return the node if found, null otherwise.
+   * </pre>
    */
   public TrieNode<E> getNodeFromString(final String text) {
     char[] charArray = text.toCharArray();
@@ -112,6 +116,12 @@ public final class Trie<E extends TrieStorable> {
     printTreeHelper(root);
   }
 
+  /**
+   * <pre>
+   * Helps to print the tree.
+   * @param root1 - The root to print.
+   * </pre>
+   */
   private void printTreeHelper(final TrieNode<E> root1) {
     for (TrieNode<E> node : root1.getChildrenNodes()) {
       System.out.print(node.getCurrText() + " ");
@@ -123,10 +133,12 @@ public final class Trie<E extends TrieStorable> {
   }
 
   /**
+   * <pre>
    * Returns the words that given prefix can lead to.
-   *
-   * @param prefix
+   * 
+   * @param prefix - The prefix.
    * @return list of words (vals).
+   * </pre>
    */
   public ArrayList<E> wordsBasedOnPrefix(final String prefix) {
     TrieNode<E> rootL = getNodeFromString(prefix);
@@ -147,9 +159,11 @@ public final class Trie<E extends TrieStorable> {
   }
 
   /**
+   * <pre>
    * Adds given values to trie.
-   *
-   * @param valuesToAdd
+   * 
+   * @param valuesToAdd - The values to add.
+   * </pre>
    */
   public void addValues(final Iterable<E> valuesToAdd) {
     for (E val : valuesToAdd) {

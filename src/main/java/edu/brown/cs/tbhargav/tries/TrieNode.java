@@ -25,7 +25,9 @@ public final class TrieNode<E> {
    * Constructor that makes node with given text.
    *
    * @param text
+   *          - The text to make.
    * @param depthL
+   *          - The depth.
    */
   public TrieNode(final String text, final int depthL) {
     currText = text;
@@ -65,8 +67,8 @@ public final class TrieNode<E> {
 
   /**
    * Accessor method.
-   *
-   * @return the edges
+   * 
+   * @return the edges.
    */
   public HashMap<Character, TrieNode<E>> getEdges() {
     return edges;
@@ -83,7 +85,7 @@ public final class TrieNode<E> {
 
   /**
    * Predicate method for checking whether stored value is word.
-   *
+   * 
    * @return true or false
    */
   public boolean isWord() {
@@ -100,40 +102,44 @@ public final class TrieNode<E> {
   }
 
   /**
+   * <pre>
    * Returns node that is pointed to by the specified character edge.
-   *
-   * @param c
+   * @param c - The char to find.
    * @return the node or null if it doesn't exist
+   * </pre>
    */
   public TrieNode<E> getCharNode(final char c) {
     return edges.get(c);
   }
 
   /**
+   * <pre>
    * Returns all the children nodes.
-   *
    * @return children nodes.
+   * </pre>
    */
   public Collection<TrieNode<E>> getChildrenNodes() {
     return edges.values();
   }
 
   /**
+   * <pre>
    * Returns whether edge of specified char exists.
-   *
-   * @param c
-   * @return true or false
+   * @param c - The char to check for.
+   * @return true or false.
+   * </pre>
    */
   public boolean hasCharEdge(final char c) {
     return edges.containsKey(c);
   }
 
   /**
+   * <pre>
    * Mutator method.
-   *
-   * @param edges
-   *          the edges to set.
+   * @param edgeChar - the edge character.
+   * @param nodeToAdd - the node to add.
    * @return true if added edge, false if edge already in method.
+   * </pre>
    */
   public boolean addCharEdge(final char edgeChar, final TrieNode<E> nodeToAdd) {
     if (edges.containsKey(edgeChar)) {
@@ -145,10 +151,10 @@ public final class TrieNode<E> {
   }
 
   /**
+   * <pre>
    * Mutator method.
-   *
-   * @param storedWord1
-   *          the storedWord to set
+   * @param storedWord1  the storedWord to set
+   * </pre>
    */
   public void setStoredValue(final E storedWord1) {
     this.storedValue = storedWord1;

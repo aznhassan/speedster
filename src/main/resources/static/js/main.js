@@ -604,7 +604,7 @@ $(document).ready(function() {
                     $(this).css('background-color','inherit');
                 }
 
-                alert($(this).attr('value'));
+                // alert($(this).attr('value'));
             });
         }
     }
@@ -662,7 +662,7 @@ $(document).ready(function() {
                 rules: JSON.stringify(rulesForThisFolder)
             };
 
-            console.log("RULES SENT:  " + postParam.rules);
+            // console.log("RULES SENT:  " + postParam.rules);
             
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
@@ -741,8 +741,30 @@ $(document).ready(function() {
                     // }
                 }
 
-                // trying to do Nick's styling requests for container object; - sm15 #TODO
-                if($('#box_' + folder_id + rulename)[0].checked) {
+                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                //     delete rule["after"];
+                // } 
+
+                // if(rule["after"]) {
+                //     if(rule["after"]["style"]["font-weight"] === "none") {
+                //         delete rule["after"]["style"]["font-weight"];
+                //     }
+
+                //     if(rule["after"]["style"]["font-style"] === "none") {
+                //         delete rule["after"]["style"]["font-style"];
+                //     }
+
+                //     if(rule["after"]["style"]["text-decoration"] === "none") {
+                //         delete rule["after"]["style"]["text-decoration"]
+                //     }
+
+                // }
+
+
+                // trying to do Nick's styling requests for container object; 
+                // #TODO: Do the same with rule.after as with rule.container
+                // in other words, don't send an rule.after object if nothing is specified.
+                if(document.getElementById('box_' + folder_id + rulename).checked === true) {
                     rule["container"] = {};
                     rule["container"]["style"] = {}
                     rule["container"]["style"]["background-color"] = "rgba(255, 255, 255, 0.35)";
@@ -751,27 +773,24 @@ $(document).ready(function() {
                     rule["container"]["style"]["padding-right"] = "7px";
                 }
 
-                if($('#center_' + folder_id + rulename)[0].checked) {
-                    if(!rule["container"]) {
-                        rule["container"] = {};
-                        rule["container"]["style"] = {}
+                if(document.getElementById('center_' + folder_id + rulename).checked === true) {
+                    if(rule["container"]) {
                         rule["container"]["style"]["text-align"] = "center";
                     } else {
+                        rule["container"] = {};
+                        rule["container"]["style"] = {}
                         rule["container"]["style"]["text-align"] = "center";
                     }
                 }
 
-                if($('#box_' + folder_id + rulename)[0].checked && $('#center_' + folder_id + rulename)[0].checked) {
+                if(document.getElementById('box_' + folder_id + rulename).checked && document.getElementById('center_' + folder_id + rulename).checked) {
                     rule["container"]["style"]["display"] = "table";
                     rule["container"]["style"]["margin"] = "auto";
                 }
 
-                // alert(rule["name"]);
-                // alert(rule["trigger"]["word"]);
+                console.log(rule);
+
                 rulesForThisFolder.push(rule);
-                
-               
-            
                 
             });
             return rulesForThisFolder;
@@ -802,14 +821,16 @@ $(document).ready(function() {
         } 
 
         if(style_type === "font-size") {
-            alert("FONT SIZEEEE");
-            alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
+            // alert("FONT SIZEEEE");
+            //alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
             if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Small") {
                 return '17px';
-            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type))[0].value === "Medium") {
+            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Medium") {
                 return '22px';
-            } else {
+            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Big"){
                 return '30px';
+            } else {
+                return '17px';
             }
         }
     }
@@ -1077,8 +1098,8 @@ Rule:
 
                 // populate start (trigger word) style bar
                 // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-                console.log(rule.trigger["style"]);
-                console.log(rule.after["style"]);
+               
+                console.log(rule["container"]);
                 if(rule.trigger["style"]["font-weight"] == "bold") {
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value','bold');
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
@@ -1106,7 +1127,19 @@ Rule:
                 }
 
                 document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
-                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
+
+                if(rule["after"]) {
+                    if(rule["after"]["style"]['font-size'] === "17px") {
+                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                    } else if(rule["after"]["style"]["font-size"] === "22px") {
+                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                    } else {
+                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                    }
+                }
+                
+
+                // document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
 
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
@@ -1124,7 +1157,7 @@ Rule:
                 }
 
                 // style text after this rule until
-                if(rule.after.endSeq !== "99999999999") {
+                if(rule.after && rule.after.endSeq !== "99999999999") {
                     document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
                 } else {
                     document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
@@ -1133,7 +1166,7 @@ Rule:
                 // with these styles...
                 var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
 
-                if(rule.after["style"]["font-weight"] == "bold") {
+                if(rule.after && rule.after["style"]["font-weight"] == "bold") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'bold');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1141,7 +1174,7 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
                 }
 
-                if(rule.after["style"]["font-style"] == "italic") {
+                if(rule.after && rule.after["style"]["font-style"] == "italic") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1149,7 +1182,7 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "inherit");
                 }
 
-                if(rule.after["style"]["text-decoration"] == "underline") {
+                if(rule.after && rule.after["style"]["text-decoration"] == "underline") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','underline');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1157,22 +1190,32 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
                 }
 
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
-
-            
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size').value = rule["after"]["style"]["font-size"];
+                if(rule["after"]) {
+                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
+                }
+                
+                if(rule["after"]) {
+                    if(rule["after"]["style"]['font-size'] === "17px") {
+                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                    } else if(rule["after"]["style"]["font-size"] === "22px") {
+                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                    } else {
+                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                    }
+                }
+                
                 
 
                 // box this rule... 
-
+                // alert(rule["container"]);
                 if(rule["container"] && rule["container"]["style"]["background-color"]) {
-                    document.getElementById('box_' + folder_id + rulename_id).checked = true;
+                    $(document.getElementById('box_' + folder_id + rulename_id))[0].checked = true;
                 }
 
                 // center this rule ...
               
                 if(rule["container"] && rule["container"]["style"]["text-align"]) {
-                   document.getElementById('center_' + folder_id + rulename_id).checked = true;
+                   $(document.getElementById('center_' + folder_id + rulename_id))[0].checked = true;
                 }
 
             }

@@ -29,20 +29,20 @@ public final class SmartRank implements RankInterface {
 
   @Override
   public List<Word> rankedSuggestions(final String word, final String prevWord,
-          final Collection<Word> words) {
+      final Collection<Word> words) {
     ArrayList<Word> rankedWords = new ArrayList<Word>();
     ArrayList<Word> suggestions = new ArrayList<Word>();
     suggestions.addAll(words);
-    ExtWordsFileParser fileReader = new ExtWordsFileParser(
-            "smartRankCorpus.txt");
+    ExtWordsFileParser fileReader =
+        new ExtWordsFileParser("smartRankCorpus.txt");
     ArrayList<String> commonWordsText = new ArrayList<String>();
     try {
       commonWordsText = fileReader.readWords();
     } catch (IOException e) {
       fileReader.closeReader();
     }
-    HashMap<String, Word> commonWords = Word
-            .makeWordsFromStrings(commonWordsText);
+    HashMap<String, Word> commonWords =
+        Word.makeWordsFromStrings(commonWordsText);
 
     for (Word w : suggestions) {
       if (commonWords.containsKey(w.getStringText())) {
@@ -62,19 +62,19 @@ public final class SmartRank implements RankInterface {
 
   @Override
   public boolean areEqual(final Word o1, final Word o2, final String prevWord,
-          final String word) {
-    ExtWordsFileParser fileReader = new ExtWordsFileParser(
-            "smartRankCorpus.txt");
+      final String word) {
+    ExtWordsFileParser fileReader =
+        new ExtWordsFileParser("smartRankCorpus.txt");
     ArrayList<String> commonWordsText = new ArrayList<String>();
     try {
       commonWordsText = fileReader.readWords();
     } catch (IOException e) {
       fileReader.closeReader();
     }
-    HashMap<String, Word> commonWords = Word
-            .makeWordsFromStrings(commonWordsText);
+    HashMap<String, Word> commonWords =
+        Word.makeWordsFromStrings(commonWordsText);
     if (commonWords.containsKey(o1.getStringText())
-            && commonWords.containsKey(o2.getStringText())) {
+        && commonWords.containsKey(o2.getStringText())) {
       return true;
     }
 

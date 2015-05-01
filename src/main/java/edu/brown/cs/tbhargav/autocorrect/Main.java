@@ -11,16 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-
-import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
-import edu.brown.cs.tbhargav.tries.Trie;
-import edu.brown.cs.tbhargav.tries.Word;
-
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-
 import spark.ModelAndView;
 import spark.QueryParamsMap;
 import spark.Request;
@@ -30,6 +22,13 @@ import spark.Spark;
 import spark.SparkBase;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+
+import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
+import edu.brown.cs.tbhargav.tries.Trie;
+import edu.brown.cs.tbhargav.tries.Word;
 
 /**
  * This the main class of the project. It handles the CLI and GUI command
@@ -61,9 +60,10 @@ public class Main {
   }
 
   /**
+   * <pre>
    * The main method that launches the CLI/GUI.
-   *
-   * @param args
+   * @param args - The arguments given to the program.
+   * </pre>
    */
   public static void main(final String[] args) {
     List<String> fileNames = initialCommandParser(args);
@@ -120,9 +120,10 @@ public class Main {
   }
 
   /**
+   * <pre>
    * Creates the global trie using given file names.
-   * 
-   * @param fileNames
+   * @param fileNames - The list of filenames.
+   * </pre>
    */
   public static void createTrie(final List<String> fileNames) {
     turnBasicGenOn();
@@ -170,8 +171,9 @@ public class Main {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
       // Defining the variable 'title'
-      Map<String, Object> variables = ImmutableMap.of("title",
-              "Mind your language!", "message", " ", "orig", "", "suggs", "");
+      Map<String, Object> variables =
+          ImmutableMap.of("title", "Mind your language!", "message", " ",
+              "orig", "", "suggs", "");
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -202,8 +204,8 @@ public class Main {
       }
 
       if (!withoutWord.toString().isEmpty()) {
-        prevWord = withoutWord.toString().split(" ")[withoutWord.toString()
-                .split(" ").length - 1];
+        prevWord =
+            withoutWord.toString().split(" ")[withoutWord.toString().split(" ").length - 1];
       }
 
       List<Word> suggs = suggGenAndRanker(globalTrie, word, prevWord);
@@ -223,8 +225,9 @@ public class Main {
       // Adding suggestions in manually!
       Map<String, Object> variables;
 
-      variables = ImmutableMap.of("title", "Mind your language", "message",
-              " ", "orig", inputText, "suggs", sb.toString());
+      variables =
+          ImmutableMap.of("title", "Mind your language", "message", " ",
+              "orig", inputText, "suggs", sb.toString());
 
       return gson.toJson(variables);
 
@@ -264,8 +267,8 @@ public class Main {
       }
 
       if (!withoutWord.toString().isEmpty()) {
-        prevWord = withoutWord.toString().split(" ")[withoutWord.toString()
-                .split(" ").length - 1];
+        prevWord =
+            withoutWord.toString().split(" ")[withoutWord.toString().split(" ").length - 1];
       }
 
       List<Word> suggs = suggGenAndRanker(trie, word, prevWord);
@@ -279,14 +282,16 @@ public class Main {
   }
 
   /**
+   * <pre>
    * Generates sugg. and ranks them based on initial cmd.
-   *
-   * @param trie
-   * @param input
-   * @return
+   * @param trie - The trie.
+   * @param word - The word.
+   * @param prevWord - The previous word.
+   * @return Returns a list of ranked suggestions.
+   * </pre>
    */
   public static List<Word> suggGenAndRanker(final Trie<Word> trie,
-          final String word, final String prevWord) {
+      final String word, final String prevWord) {
     List<Word> suggs = new ArrayList<Word>();
     List<SuggestionGenInterface> gens = new ArrayList<SuggestionGenInterface>();
 
@@ -308,7 +313,7 @@ public class Main {
         boolean alreadyIn = false;
         for (Word s : suggs) {
           if (s.getStringText().trim()
-                  .equalsIgnoreCase(w.getStringText().trim())) {
+              .equalsIgnoreCase(w.getStringText().trim())) {
             alreadyIn = true;
           }
         }
@@ -324,7 +329,8 @@ public class Main {
       ArrayList<Word> temp = new ArrayList<Word>();
       temp.addAll(new WhitespaceGen().getSuggestions(trie, word));
       for (int i = 0; i < temp.size() - 1; i += 2) {
-        Word join = new Word(temp.get(i).getStringText() + " "
+        Word join =
+            new Word(temp.get(i).getStringText() + " "
                 + temp.get(i + 1).getStringText());
         join.setFrequency(temp.get(i).getFrequency());
         join.setAdjacentWords(temp.get(i).getAdjacentWords());
@@ -346,7 +352,7 @@ public class Main {
     // Edge (default) case
     if (suggs.size() == 0) {
       if (trie.getNodeFromString(word) != null
-              && trie.getNodeFromString(word).isWord()) {
+          && trie.getNodeFromString(word).isWord()) {
         suggs.add(new Word(word));
       }
       return suggs;
@@ -393,7 +399,7 @@ public class Main {
       optParser.accepts("gui", "Launches GUI interface of program!");
       optParser.accepts("prefix", "Activates prefix suggestions.");
       optParser.accepts("led", "Activate Levenshtein edit distance.")
-              .withRequiredArg().ofType(Integer.class);
+          .withRequiredArg().ofType(Integer.class);
       optParser.accepts("whitespace", "Activate splitting suggestions.");
       optParser.accepts("smart", "Activates my smart ordering!");
       optParser.accepts("h", "show help").forHelp();
@@ -434,8 +440,8 @@ public class Main {
         smart = true;
       }
 
-      List<String> nonOptionArguments = (List<String>) options
-              .nonOptionArguments();
+      List<String> nonOptionArguments =
+          (List<String>) options.nonOptionArguments();
       return nonOptionArguments;
 
     } catch (Exception e) {

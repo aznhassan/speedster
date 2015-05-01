@@ -41,6 +41,7 @@ public final class Word implements TrieStorable {
    * Parameterized constructor for Word data structure.
    *
    * @param wordTextL
+   *          - The text.
    */
   public Word(final String wordTextL) {
     wordText = wordTextL;
@@ -53,10 +54,10 @@ public final class Word implements TrieStorable {
    *
    * @param wordText
    *          (in order list of words).
-   * @return list of 'Word' objects
+   * @return list of 'Word' objects.
    */
   public static HashMap<String, Word> makeWordsFromStrings(
-          final List<String> wordText) {
+      final List<String> wordText) {
     HashMap<String, Word> words = new HashMap<String, Word>();
 
     for (int i = 0; i < wordText.size(); i++) {
@@ -91,10 +92,6 @@ public final class Word implements TrieStorable {
   }
 
   @Override
-  /**
-   * Accessor for word text.
-   * @return the wordText
-   */
   public String getStringText() {
     return wordText;
   }
@@ -149,6 +146,7 @@ public final class Word implements TrieStorable {
    * Returns the bigram freq. of curr word w.r.t to prevWord.
    *
    * @param prevWord
+   *          - The prev word.
    * @return bigram freq int.
    */
   public int getBigramFreq(final String prevWord) {
@@ -167,6 +165,7 @@ public final class Word implements TrieStorable {
    * appeared before current word.
    *
    * @param wordText1
+   *          - The word to update.
    */
   public void updateAdjWordFreq(final String wordText1) {
     if (adjacentWords.containsKey(wordText1.toLowerCase())) {
