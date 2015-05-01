@@ -11,15 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.tbhargav.fileparsers.ExtWordsFileParser;
 import edu.brown.cs.tbhargav.tries.Trie;
 import edu.brown.cs.tbhargav.tries.Word;
+
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -167,7 +167,10 @@ public class Main {
     Spark.post("/suggestions", new ShowResultsHandler());
   }
 
-  // Class to handle GET request (custom handler basically)
+  /**
+   * Class to handle GET request (custom handler basically).
+   * @author tbhargav
+   */
   private static class GetHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
@@ -197,16 +200,16 @@ public class Main {
       String[] arr = sansPunct.split(" ");
       String word = arr[arr.length - 1];
       String prevWord = "";
-      StringBuilder withoutWord = new StringBuilder();
+      StringBuilder wW = new StringBuilder();
       for (int i = 0; i < arr.length - 1; i++) {
         if (!arr[i].trim().equalsIgnoreCase("")) {
-          withoutWord.append(arr[i].trim() + " ");
+          wW.append(arr[i].trim() + " ");
         }
       }
 
-      if (!withoutWord.toString().isEmpty()) {
+      if (!wW.toString().isEmpty()) {
         prevWord =
-            withoutWord.toString().split(" ")[withoutWord.toString().split(" ").length - 1];
+            wW.toString().split(" ")[wW.toString().split(" ").length - 1];
       }
 
       List<Word> suggs = suggGenAndRanker(globalTrie, word, prevWord);
@@ -216,7 +219,7 @@ public class Main {
       StringBuilder sb = new StringBuilder("");
       for (int i = 0; i < suggs.size(); i++) {
         Word w = suggs.get(i);
-        sb.append(withoutWord + w.getStringText());
+        sb.append(wW + w.getStringText());
         if (i == suggs.size() - 1) {
           continue;
         }
@@ -260,21 +263,21 @@ public class Main {
       String[] arr = sansPunct.split(" ");
       String word = arr[arr.length - 1];
       String prevWord = "";
-      StringBuilder withoutWord = new StringBuilder();
+      StringBuilder wWrd = new StringBuilder();
       for (int i = 0; i < arr.length - 1; i++) {
         if (!arr[i].trim().equalsIgnoreCase("")) {
-          withoutWord.append(arr[i].trim() + " ");
+          wWrd.append(arr[i].trim() + " ");
         }
       }
 
-      if (!withoutWord.toString().isEmpty()) {
+      if (!wWrd.toString().isEmpty()) {
         prevWord =
-            withoutWord.toString().split(" ")[withoutWord.toString().split(" ").length - 1];
+            wWrd.toString().split(" ")[wWrd.toString().split(" ").length - 1];
       }
 
       List<Word> suggs = suggGenAndRanker(trie, word, prevWord);
       for (Word w : suggs) {
-        System.out.println(withoutWord.toString() + w.getStringText());
+        System.out.println(wWrd.toString() + w.getStringText());
       }
       System.out.println("");
     }
@@ -382,6 +385,11 @@ public class Main {
     return ranked;
   }
 
+  /**
+   * Strips all punctuation from a string of text.
+   * @param s string of text to parse.
+   * @return string of text with no punctuation.
+   */
   public static String stripPunctuation(final String s) {
     String word = s.toLowerCase().replaceAll("\\P{L}", " ").trim();
     return word;
@@ -399,8 +407,6 @@ public class Main {
       OptionParser optParser = new OptionParser();
       optParser.accepts("gui", "Launches GUI interface of program!");
       optParser.accepts("prefix", "Activates prefix suggestions.");
-      optParser.accepts("led", "Activate Levenshtein edit distance.")
-      .withRequiredArg().ofType(Integer.class);
       optParser.accepts("whitespace", "Activate splitting suggestions.");
       optParser.accepts("smart", "Activates my smart ordering!");
       optParser.accepts("h", "show help").forHelp();

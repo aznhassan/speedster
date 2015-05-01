@@ -8,8 +8,8 @@ import java.util.ArrayList;
 /**
  * Defines a generic Trie data structure.
  *
- * @author tbhargav
- *
+ * @author tbhargav.
+ * @param <E> a trie storable class in which to store the data.
  */
 public final class Trie<E extends TrieStorable> {
   private final TrieNode<E> root;

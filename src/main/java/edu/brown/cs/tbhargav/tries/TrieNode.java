@@ -10,8 +10,7 @@ import java.util.HashMap;
  * This class models a TrieNode.
  *
  * @author tbhargav
- * @param E
- *          -- the type of value to store
+ * @param <E> the type of value to store.
  *
  */
 public final class TrieNode<E> {
