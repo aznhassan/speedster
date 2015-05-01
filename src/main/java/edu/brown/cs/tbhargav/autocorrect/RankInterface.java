@@ -17,26 +17,31 @@ import edu.brown.cs.tbhargav.tries.Word;
  */
 public interface RankInterface {
   /**
+   * <pre>
    * Takes in a list of 'Word's and returns them in order of their ranking
    * (according to criteria unique to the specific algorithm). (List because
    * order matters).
-   *
-   * @param word
-   * @param prevWord
-   * @param words
+   * 
+   * @param word - The word.
+   * @param prevWord - The previous word.
+   * @param words - The words to sort.
    * @return top suggestions
+   * </pre>
    */
   List<Word> rankedSuggestions(String word, String prevWord,
-          Collection<Word> words);
+      Collection<Word> words);
 
   /**
+   * <pre>
    * Checks whether given words are equal (in accordance with specific ranking)
    * or not.
-   *
-   * @param o1
-   * @param o2
-   * @param prevWord
+   * 
+   * @param o1 - The first word.
+   * @param o2 - The second word.
+   * @param prevWord - The previous word.
+   * @param word - The word.
    * @return true or false
+   * </pre>
    */
   boolean areEqual(Word o1, Word o2, String prevWord, String word);
 }

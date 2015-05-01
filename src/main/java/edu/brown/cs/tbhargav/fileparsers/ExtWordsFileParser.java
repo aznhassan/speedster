@@ -25,6 +25,7 @@ public final class ExtWordsFileParser {
    * Constructor, stores file to parse.
    *
    * @param fileToRead
+   *          - The file to read.
    */
   public ExtWordsFileParser(final String fileToRead) {
     fileName = fileToRead;

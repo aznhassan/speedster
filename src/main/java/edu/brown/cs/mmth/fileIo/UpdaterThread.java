@@ -36,16 +36,17 @@ public class UpdaterThread implements Runnable {
       }
     }
   }
-  
-  /** Writes the ID counter to disk.
+
+  /**
+   * Writes the ID counter to disk.
    * @return - Writes the ID counter to disk.
    */
   private boolean writeId() {
     File file = new File("./.id");
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                file), "UTF-8"))) {
+            new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(file), "UTF-8"))) {
       writer.write("" + Main.getId());
     } catch (IOException e) {
       System.out.println("ERROR: " + e.getMessage());
@@ -53,14 +54,15 @@ public class UpdaterThread implements Runnable {
     }
     return true;
   }
-  
-  /** Writes the updated flashcards to disk.
+
+  /**
+   * Writes the updated flashcards to disk.
    * @return - Writes updated flashcard to disk.
    */
   private boolean writeUpdatedFlashCards() {
     Collection<Flashcard> flashcards = FlashCardReader.getUpdatedCards();
     boolean worked = false;
-    for (Flashcard card: flashcards) {
+    for (Flashcard card : flashcards) {
       worked = worked & FlashCardWriter.writeCards(Lists.newArrayList(card));
     }
     return worked;

@@ -21,13 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
-import spark.Route;
-import spark.TemplateViewRoute;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -39,19 +32,28 @@ import edu.brown.cs.mmth.fileIo.NoteWriter;
 import edu.brown.cs.mmth.fileIo.RuleCssMaker;
 import edu.brown.cs.tbhargav.tries.Word;
 
+import spark.ModelAndView;
+import spark.QueryParamsMap;
+import spark.Request;
+import spark.Response;
+import spark.Route;
+import spark.TemplateViewRoute;
+
 /**
+ * <pre>
  * Handles the Ajax requests sent by the front end.
- *
  * @author hsufi
  *
+ </pre>
  */
 public final class ApiHandler {
 
   /**
+   * <pre>
    * Loads the note given by the id and then runs that note on it's own page.
-   *
    * @author hsufi
    *
+   </pre>
    */
   public static class FlashCardView implements TemplateViewRoute {
     @Override
@@ -65,11 +67,12 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Generates a new session with a new session ID. Needs to be provided
    * subject.
-   *
    * @author tbhargav
    *
+   </pre>
    */
   public static class GetNewSession implements TemplateViewRoute {
     @Override
@@ -94,17 +97,18 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Creates a new folder, gives it a unique ID and returns the data to server.
-   *
    * @author tbhargav
+   * </pre>
    */
   public static class CreateFolder implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String subjectName="";
+      String subjectName = "";
       try {
-        subjectName = URLDecoder.decode(qm.value("title"),"UTF-8");
+        subjectName = URLDecoder.decode(qm.value("title"), "UTF-8");
       } catch (UnsupportedEncodingException e1) {
         // TODO: better error handling.
         e1.printStackTrace();
@@ -137,10 +141,11 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Grabs the next flashcard to display to the user based on the data from each
    * flashcard.
-   *
    * @author tbhargav
+   * </pre>
    */
   public static class GetNextFlashCard implements Route {
     @Override
@@ -173,12 +178,10 @@ public final class ApiHandler {
       // Session is over! Indicated by -1.
       if (next == null) {
         variables =
-            ImmutableMap
-                .of("q",
-                    "You are done reviewing!",
-                    "a",
-                    "Yes, you heard it right the first time! Close tab to end session.",
-                    "session_number", sessionID, "card_id", "-1");
+            ImmutableMap.of("q", "You are done reviewing!", "a",
+                "Yes, you heard it right the first time! "
+                    + "Close tab to end session.", "session_number", sessionID,
+                    "card_id", "-1");
       } else {
         variables =
             ImmutableMap.of("q", next.getQuestion(), "a", next.getAnswer(),
@@ -189,10 +192,10 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Loads the note given by the id and then runs that note on it's own page.
-   *
    * @author hsufi
-   *
+   * </pre>
    */
   public static class GetNote implements TemplateViewRoute {
     @Override
@@ -203,7 +206,7 @@ public final class ApiHandler {
       } catch (NumberFormatException e) {
         Map<String, Object> problem =
             ImmutableMap
-                .of("title", "Speedster", "content", "Improper note id");
+            .of("title", "Speedster", "content", "Improper note id");
         return new ModelAndView(problem, "error.ftl");
       }
       String subject = req.params(":folder");
@@ -238,13 +241,12 @@ public final class ApiHandler {
                     + subjectId + ".css");
       } else {
         variables =
-            ImmutableMap.of("title", "Untitled", "note",
-                "Note doesn't exist!", "customCss", "../../customCss/"
-                    + subjectId + ".css");
+            ImmutableMap.of("title", "Untitled", "note", "Note doesn't exist!",
+                "customCss", "../../customCss/" + subjectId + ".css");
       }
-   // Forcing browswer not to cache this page.
-      res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP
-                                                                          // 1.1.
+      // Forcing browswer not to cache this page.
+      res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+      // 1.1.
       res.header("Pragma", "no-cache"); // HTTP 1.0.
       res.header("Expires", "0"); // Proxies.
       return new ModelAndView(variables, "note.ftl");
@@ -252,11 +254,11 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Loads metadata associated with all notes and puts that data into a hidden
    * div.
-   *
    * @author hsufi
-   *
+   * </pre>
    */
   public static class NoteMetaPageHandler implements TemplateViewRoute {
     @Override
@@ -270,8 +272,8 @@ public final class ApiHandler {
         return new ModelAndView(empty, "main.ftl");
       }
       // Forcing browswer not to cache this page.
-      res.header("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP
-                                                                          // 1.1.
+      res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+      // 1.1.
       res.header("Pragma", "no-cache"); // HTTP 1.0.
       res.header("Expires", "0"); // Proxies.
       // Grab the note with this id from the db
@@ -282,9 +284,11 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Loads metadata associated with all notes and puts that data into a hidden
    * div.
    * @author hsufi
+   * </pre>
    */
   public static class NoteMetaHandler implements Route {
     @Override
@@ -298,12 +302,11 @@ public final class ApiHandler {
     }
   }
 
-
   private static String getMetaData(Request req) {
     QueryParamsMap qm = req.queryMap();
     /*
      * [ { "folder_id":id, "folder_name":name, "notes": [{ "note_id":id,
-     * "note_name":name }, { "note_id":id, "note_name":name }] }" ]
+     * "note_name":name }, { "note_id":id, "note_name":name }] }" ] </pre>
      */
     File baseDirectory = new File(Main.getBasePath());
     File[] subjects = baseDirectory.listFiles();
@@ -313,6 +316,7 @@ public final class ApiHandler {
     }
     List<File> subjectList = Arrays.asList(subjects);
     Collections.sort(subjectList, new Comparator<File>() {
+      @Override
       public int compare(File o1, File o2) {
         return o1.getName().compareTo(o2.getName());
       }
@@ -329,6 +333,7 @@ public final class ApiHandler {
       List<Note> noteList = new ArrayList<>();
       noteList.addAll(noteCollection);
       Collections.sort(noteList, new Comparator<Note>() {
+        @Override
         public int compare(Note n1, Note n2) {
           return n1.getName().compareTo(n2.getName());
         }
@@ -354,9 +359,9 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Generates autocorrect suggestions for the given word.
-   * 
-   * @author tbhargav
+   * </pre>
    */
   public static class SuggestionsHandler implements Route {
     @Override
@@ -411,10 +416,11 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Deletes the note with the given ID. Returns boolean with success status.
    * (True if note was deleted, false if not.)
-   *
    * @author tbhargav
+   * </pre>
    */
   public static class DeleteNote implements Route {
     @Override
@@ -437,9 +443,10 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Updates the notes and flashcards with data from front-end.
-   *
    * @author tbhargav
+   * </pre>
    */
   public static class UpdateNotes implements Route {
     @Override
@@ -477,7 +484,7 @@ public final class ApiHandler {
         boolean cardExisted = false;
 
         // TODO: Duplicate being created here maybe.
-        
+
         for (Flashcard card : cards) {
           // If card with same question exists, update answer.
           if (card.getQuestion().equals(currCard.getString("q"))) {
@@ -517,10 +524,11 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Updates the stylesheet of the current subject with the given rules, as well
    * as the rules for the current subject.
-   * 
    * @author hsufi
+   * </pre>
    */
   public static class UpdateRules implements Route {
     @Override
@@ -539,8 +547,10 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Grabs all the rules from every class
    * @author hsufi
+   * </pre>
    */
   public static class GetRules implements Route {
     @Override
@@ -572,9 +582,10 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Grabs all the rules from every class
-   * 
    * @author hsufi
+   * </pre>
    */
   public static class DeleteRule implements Route {
     @Override
@@ -593,11 +604,12 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Grabs all the rules in a given subject.
-   * 
    * @param subject
    *          - The file that points to the subject directory.
    * @return The JSON array of all the rules in the subject.
+   * </pre>
    */
   private static String getRulesInSubject(File subject) {
     StringBuilder bd = new StringBuilder("[");
@@ -609,8 +621,8 @@ public final class ApiHandler {
     for (File rule : rules) {
       try (
           BufferedReader br =
-              new BufferedReader(new InputStreamReader(
-                  new FileInputStream(rule), "UTF-8"))) {
+          new BufferedReader(new InputStreamReader(
+              new FileInputStream(rule), "UTF-8"))) {
         String line = "";
         while ((line = br.readLine()) != null) {
           bd.append(line);
@@ -628,9 +640,10 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Grabs all the rules of a subject
-   * 
    * @author hsufi
+   * </pre>
    */
   public static class GetRule implements Route {
     @Override
@@ -644,10 +657,10 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Deletes the given folder and all the contents.
-   * 
    * @author hsufi
-   *
+   * </pre>
    */
   public static class DeleteSubject implements Route {
     @Override
@@ -675,12 +688,13 @@ public final class ApiHandler {
     }
   }
 
-  /*
+  /**
+   * <pre>
    * Updates the meta-data of the given flashcard in simpler terms tells us
    * whether the user got the flashcard wrong or right and for which session
    * (and which flashcard).
-   * 
    * @author tbhargav
+   * </pre>
    */
   public static class UpdateFlashCard implements Route {
     @Override
@@ -701,7 +715,7 @@ public final class ApiHandler {
 
         // Updating the date of the card to today (its last review).
         currCard.updateLastUse();
-        
+
         // Finding session and removing card if it was correct.
         // Updating card stats as well.
         if (isAnsCorrect) {
@@ -722,10 +736,11 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Handles creating notes per folder when new notes are added by the user on
    * the main page. (One time creator.)
-   *
    * @author tbhargav
+   * </pre>
    */
   public static class NotesCreator implements Route {
     @Override
@@ -745,24 +760,29 @@ public final class ApiHandler {
   }
 
   /**
+   * <pre>
    * Gson object to make things into JSON.
+   * </pre>
    */
   private static final Gson gson = new Gson();
 
   private static int sessionID = 0;
 
   /**
+   * <pre>
    * Private Constructor.
+   * </pre>
    */
   private ApiHandler() {
   }
 
   /**
+   * <pre>
    * Wraps an exception message into an error JSON object.
-   * 
    * @param exceptionMSG
    *          - The exception message to send
    * @return exceptionMSG wrapped in a JSON object with an error field.
+   * </pre>
    */
   private static String makeExceptionJSON(String exceptionMSG) {
     return "{\"error\":" + exceptionMSG + "}";

@@ -31,6 +31,8 @@ public final class Main {
 
   /**
    * Grabs the current id and increments by one.
+   * 
+   * @return - The id (prior incrementation).
    */
   public synchronized static long getAndIncrementId() {
     return id++;
@@ -47,6 +49,8 @@ public final class Main {
 
   /**
    * Grabs the current id.
+   * 
+   * @return - The id.
    */
   public synchronized static long getId() {
     return id;

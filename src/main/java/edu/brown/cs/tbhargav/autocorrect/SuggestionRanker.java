@@ -20,9 +20,11 @@ public final class SuggestionRanker {
   private List<RankInterface> rules;
 
   /**
+   * <pre>
    * List of ordered rules to follow while ranking.
-   *
-   * @param rulesL
+   * 
+   * @param rulesL - List of RankInterfaces.
+   * </pre>
    */
   public SuggestionRanker(final List<RankInterface> rulesL) {
     rules = rulesL;
@@ -48,7 +50,7 @@ public final class SuggestionRanker {
   }
 
   private List<Word> collisionSort(final String word, final String prevWord,
-          final int ruleIndex, final List<Word> toSort1) {
+      final int ruleIndex, final List<Word> toSort1) {
     List<Word> rankedWords = new ArrayList<Word>();
     List<Word> tRanks = new ArrayList<Word>();
     RankInterface rule = rules.get(ruleIndex);
@@ -91,7 +93,7 @@ public final class SuggestionRanker {
           rankedWords.addAll(toSort);
         } else {
           rankedWords.addAll(collisionSort(word, prevWord, ruleIndex + 1,
-                  toSort));
+              toSort));
         }
 
       } else {
@@ -105,17 +107,18 @@ public final class SuggestionRanker {
   }
 
   /**
+   * <pre>
    * Ranks suggestions provided following the set of rules. (in order of the
    * list).
-   *
-   * @param word
-   * @param prevWord
-   * @param suggestions
-   * @param numSuggestions
-   * @return
+   * @param word - The word.
+   * @param prevWord - The previous word.
+   * @param suggestions - The given suggestions.
+   * @param numSuggestions - The number of suggestions.
+   * @return - Returns a list of ranked suggestions.
+   * </pre>
    */
   public List<Word> rankSuggestions(final String word, final String prevWord,
-          final Collection<Word> suggestions, final int numSuggestions) {
+      final Collection<Word> suggestions, final int numSuggestions) {
     ArrayList<Word> rankedWords = new ArrayList<Word>();
     ArrayList<Word> wordsToSort = new ArrayList<Word>();
     wordsToSort.addAll(suggestions);

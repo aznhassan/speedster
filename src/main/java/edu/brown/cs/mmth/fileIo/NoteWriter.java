@@ -11,10 +11,10 @@ import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
-
-import org.json.JSONObject;
 
 /**
  * Given a list of note objects writes them to file.
@@ -29,6 +29,7 @@ public final class NoteWriter {
    * file structure.
    *
    * @param notes
+   *          - The note to write.
    * @return true if operation successful, false if error occurred.
    */
   public static boolean writeNotes(final Collection<Note> notes) {
@@ -46,8 +47,8 @@ public final class NoteWriter {
       String basePath = Main.getBasePath();
 
       String suffixPath =
-          "/" + note.getSubject() + "/N" + note.getId()
-          + "/" + "/N" + note.getId();
+          "/" + note.getSubject() + "/N" + note.getId() + "/" + "/N"
+              + note.getId();
       String finalPath = basePath + suffixPath;
 
       File file = new File(finalPath);
@@ -56,8 +57,8 @@ public final class NoteWriter {
 
       try (
           BufferedWriter br =
-          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-              file), "UTF-8"))) {
+              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                  file), "UTF-8"))) {
         // We will only get a single string to write.
         JSONObject obj = new JSONObject();
         int length = dataToWrite.size();

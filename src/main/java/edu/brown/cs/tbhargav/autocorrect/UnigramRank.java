@@ -20,7 +20,7 @@ public final class UnigramRank implements RankInterface {
 
   @Override
   public List<Word> rankedSuggestions(final String word, final String prevWord,
-          final Collection<Word> words) {
+      final Collection<Word> words) {
     ArrayList<Word> sortedWords = new ArrayList<Word>();
     sortedWords.addAll(words);
     Collections.sort(sortedWords, new UnigramComparator());
@@ -30,7 +30,7 @@ public final class UnigramRank implements RankInterface {
 
   @Override
   public boolean areEqual(final Word o1, final Word o2, final String prevWord,
-          final String word) {
+      final String word) {
     UnigramComparator comp = new UnigramComparator();
     if (comp.compare(o1, o2) == 0) {
       return true;
