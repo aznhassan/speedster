@@ -78,10 +78,16 @@ public final class RuleCssMaker {
       // obj.remove("name");
       // obj.put("name", name);
       boolean containerExists = true;
+      boolean afterExists = true;
       try {
         obj.getJSONObject("container");
       } catch (JSONException e) {
         containerExists = false;
+      }
+      try {
+        obj.getJSONObject("after");
+      } catch (JSONException e) {
+        afterExists = false;
       }
       // Adding the class value to internal JSON objects
       JSONObject trigger = obj.getJSONObject("trigger");
@@ -90,8 +96,11 @@ public final class RuleCssMaker {
       if (triggerRuleName.isEmpty()) {
         continue;
       }
-      JSONObject after = obj.getJSONObject("after");
-      addClassToJsonObject(name, "after", after);
+      JSONObject after = new JSONObject();
+      if (afterExists) {
+        after = obj.getJSONObject("after");
+        addClassToJsonObject(name, "after", after);
+      }
       JSONObject container = new JSONObject();
       if (containerExists) {
         container = obj.getJSONObject("container");
@@ -101,8 +110,10 @@ public final class RuleCssMaker {
       // Reading internal JSON objects.
       obj.remove("trigger");
       obj.put("trigger", trigger);
-      obj.remove("after");
-      obj.put("after", after);
+      if (afterExists) {
+        obj.remove("after");
+        obj.put("after", after);
+      }
       if (containerExists) {
         obj.remove("container");
         obj.put("container", container);
@@ -113,7 +124,9 @@ public final class RuleCssMaker {
         deleteRules = false;
       }
       cssList.add(getCssFromObject(trigger, "trigger", name, folder));
-      cssList.add(getCssFromObject(after, "after", name, folder));
+      if (afterExists) {
+        cssList.add(getCssFromObject(after, "after", name, folder));
+      }
       if (containerExists) {
         cssList.add(getCssFromObject(container, "container", name, folder));
       }
