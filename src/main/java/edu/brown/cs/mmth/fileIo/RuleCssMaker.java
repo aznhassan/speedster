@@ -47,8 +47,8 @@ public final class RuleCssMaker {
    * @throws IOException
    *           - When an error writing to file occurs
    */
-  public static boolean writeJsonToFile(String jsonRules, String excludeRule)
-      throws IOException {
+  public static boolean writeJsonToFile(String jsonRules,
+      String excludeRule) throws IOException {
     if (jsonRules == null) {
       System.err.println("No JSON");
       return false;
@@ -192,8 +192,8 @@ public final class RuleCssMaker {
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8"))) {
+        new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(file), "UTF-8"))) {
       writer.write(rule.toString());
       toReturn = true;
     } catch (IOException e) {
@@ -265,8 +265,8 @@ public final class RuleCssMaker {
     file.getParentFile().mkdirs();
     try (
         BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(file), "UTF-8"))) {
+        new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(file), "UTF-8"))) {
       for (String css : cssList) {
         writer.write(css);
         writer.write("\n");

@@ -28,6 +28,7 @@ public class FlashcardShuffler {
    * recomputed after every 3 cards.
    */
   private int techniqueCounter;
+  private static final int SHUFFLESIZE = 3;
 
   /**
    * Parameterized constructor. Accepts flashcards to shuffle and display in
@@ -52,11 +53,7 @@ public class FlashcardShuffler {
    * @return boolean true if session number is contained, false otherwise.
    */
   public static boolean hasSession(int sessionID) {
-    if (cache.containsKey(sessionID)) {
-      return true;
-    } else {
-      return false;
-    }
+    return cache.containsKey(sessionID);
   }
 
   /**
@@ -119,12 +116,12 @@ public class FlashcardShuffler {
       return null;
     }
     // We recompute rank every 3 cards.
-    if (techniqueCounter % 3 == 0) {
+    if (techniqueCounter % SHUFFLESIZE == 0) {
       calcRankOfCards();
       techniqueCounter++;
       // Returns most difficult/urgent card.
       return rankedCards.get(0);
-    } else if (techniqueCounter % 3 == 1) {
+    } else if (techniqueCounter % SHUFFLESIZE == 1) {
       techniqueCounter++;
       int random = (int) (Math.random() * (rankedCards.size() - 2) + 1);
       // Displays random card but avoids 'hardest' card if possible.
