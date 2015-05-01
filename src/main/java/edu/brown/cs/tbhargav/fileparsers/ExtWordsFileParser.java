@@ -4,8 +4,9 @@
 package edu.brown.cs.tbhargav.fileparsers;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 /**
@@ -66,8 +67,9 @@ public final class ExtWordsFileParser {
    *           closeReader)
    */
   public ArrayList<String> readWords() throws IOException {
-    FileReader fileReader = new FileReader(fileName);
-    br = new BufferedReader(fileReader);
+    FileInputStream fileReader = new FileInputStream(fileName);
+    InputStreamReader ir = new InputStreamReader(fileReader, "UTF-8");
+    br = new BufferedReader(ir);
     String lineInput = br.readLine();
     ArrayList<String> words = new ArrayList<String>();
 

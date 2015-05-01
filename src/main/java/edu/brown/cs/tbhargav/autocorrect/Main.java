@@ -41,134 +41,9 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 public class Main {
 
-  // Instance variables
-  private static boolean gui = false;
-  private static boolean prefix = false;
-  private static boolean led = false;
-  private static boolean whitespace = false;
-  private static boolean smart = false;
-  private static int ledNo = 0;
-  private static Trie<Word> globalTrie = new Trie<Word>();
-  private static Gson gson = new Gson();
-
-  /**
-   * Number of suggestions to generate.
-   */
-  private static final int NUM_SUGG = 5;
-
-  protected Main() {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * <pre>
-   * The main method that launches the CLI/GUI.
-   * @param args - The arguments given to the program.
-   * </pre>
-   */
-  public static void main(final String[] args) {
-    List<String> fileNames = initialCommandParser(args);
-
-    if (fileNames != null && fileNames.size() == 0) {
-      System.out.println("ERROR: No corpus provided.");
-      System.exit(-1);
-    }
-
-    Trie<Word> masterTrie = new Trie<Word>();
-
-    // Loop to read all files and add to one big trie!
-    ExtWordsFileParser fReader = new ExtWordsFileParser(fileNames.get(0));
-    ArrayList<String> textWords = new ArrayList<String>();
-
-    for (String file : fileNames) {
-      fReader.setFileName(file);
-      try {
-        textWords.addAll(fReader.readWords());
-      } catch (IOException e) {
-        fReader.closeReader();
-        System.out.println("ERROR: Invalid/corrupt file.");
-        System.exit(-1);
-      }
-      // Separator between files (can be made
-      // more unique).
-      textWords.add("br");
-    }
-    HashMap<String, Word> dict = Word.makeWordsFromStrings(textWords);
-
-    // Now the master trie has all the words from the corpus.
-    masterTrie.addValues(dict.values());
-    globalTrie = masterTrie;
-
-    // Triggering the GUI or CLI.
-    if (!gui) {
-      try {
-        cliParser(masterTrie);
-      } catch (IOException e) {
-        System.out.println("ERROR: " + e.getMessage());
-      }
-    } else {
-      runSparkServer();
-    }
-
-  }
-
-  /**
-   * Turns on prefix and whitespace suggestions!
-   */
-  public static void turnBasicGenOn() {
-    prefix = true;
-    whitespace = true;
-  }
-
-  /**
-   * <pre>
-   * Creates the global trie using given file names.
-   * @param fileNames - The list of filenames.
-   * </pre>
-   */
-  public static void createTrie(final List<String> fileNames) {
-    turnBasicGenOn();
-    // Loop to read all files and add to one big trie!
-    ExtWordsFileParser fReader = new ExtWordsFileParser(fileNames.get(0));
-    ArrayList<String> textWords = new ArrayList<String>();
-
-    for (String file : fileNames) {
-      fReader.setFileName(file);
-      try {
-        textWords.addAll(fReader.readWords());
-      } catch (IOException e) {
-        fReader.closeReader();
-        System.out.println("ERROR: Invalid/corrupt file.");
-        System.exit(-1);
-      }
-      // Separator between files (can be made
-      // more unique).
-      textWords.add("br");
-    }
-    HashMap<String, Word> dict = Word.makeWordsFromStrings(textWords);
-    globalTrie.addValues(dict.values());
-  }
-
-  /**
-   * Accessor method.
-   *
-   * @return the globalTrie
-   */
-  public static Trie<Word> getGlobalTrie() {
-    return globalTrie;
-  }
-
-  /**
-   * Launches Spark.
-   */
-  private static void runSparkServer() {
-    SparkBase.externalStaticFileLocation("src/main/resources/static");
-    Spark.get("/autocorrect", new GetHandler(), new FreeMarkerEngine());
-    Spark.post("/suggestions", new ShowResultsHandler());
-  }
-
   /**
    * Class to handle GET request (custom handler basically).
+   *
    * @author tbhargav
    */
   private static class GetHandler implements TemplateViewRoute {
@@ -238,8 +113,25 @@ public class Main {
     }
   }
 
+  // Instance variables
+  private static boolean gui = false;
+  private static boolean prefix = false;
+  private static boolean led = false;
+  private static boolean whitespace = false;
+  private static boolean smart = false;
+  private static int ledNo = 0;
+
+  private static Trie<Word> globalTrie = new Trie<Word>();
+
+  private static Gson gson = new Gson();
+
+  /**
+   * Number of suggestions to generate.
+   */
+  private static final int NUM_SUGG = 5;
+
   private static void cliParser(final Trie<Word> trie) throws IOException {
-    InputStreamReader ir = new InputStreamReader(System.in);
+    InputStreamReader ir = new InputStreamReader(System.in, "UTF-8");
     BufferedReader br = new BufferedReader(ir);
     String input = " ";
     System.out.println("Ready");
@@ -283,6 +175,181 @@ public class Main {
     }
     br.close();
 
+  }
+
+  /**
+   * <pre>
+   * Creates the global trie using given file names.
+   * @param fileNames - The list of filenames.
+   * </pre>
+   */
+  public static void createTrie(final List<String> fileNames) {
+    turnBasicGenOn();
+    // Loop to read all files and add to one big trie!
+    ExtWordsFileParser fReader = new ExtWordsFileParser(fileNames.get(0));
+    ArrayList<String> textWords = new ArrayList<String>();
+
+    for (String file : fileNames) {
+      fReader.setFileName(file);
+      try {
+        textWords.addAll(fReader.readWords());
+      } catch (IOException e) {
+        fReader.closeReader();
+        System.out.println("ERROR: Invalid/corrupt file.");
+        System.exit(-1);
+      }
+      // Separator between files (can be made
+      // more unique).
+      textWords.add("br");
+    }
+    HashMap<String, Word> dict = Word.makeWordsFromStrings(textWords);
+    globalTrie.addValues(dict.values());
+  }
+
+  /**
+   * Accessor method.
+   *
+   * @return the globalTrie
+   */
+  public static Trie<Word> getGlobalTrie() {
+    return globalTrie;
+  }
+
+  /**
+   * Interprets and executes initial run command.
+   *
+   * @param args
+   * @return
+   */
+  @SuppressWarnings("unchecked")
+  private static List<String> initialCommandParser(final String[] args) {
+    try {
+      OptionParser optParser = new OptionParser();
+      optParser.accepts("gui", "Launches GUI interface of program!");
+      optParser.accepts("prefix", "Activates prefix suggestions.");
+      optParser.accepts("whitespace", "Activate splitting suggestions.");
+      optParser.accepts("smart", "Activates my smart ordering!");
+      optParser.accepts("h", "show help").forHelp();
+      OptionSet options = optParser.parse(args);
+
+      if (options.has("h")) {
+        optParser.printHelpOn(System.out);
+        System.exit(0);
+      }
+
+      if (options.has("gui")) {
+        gui = true;
+      }
+
+      if (options.has("prefix")) {
+        prefix = true;
+      }
+
+      if (options.has("led")) {
+        led = true;
+        if (options.hasArgument("led")) {
+          int num = (Integer) options.valueOf("led");
+          if (num < 0) {
+            System.out.println("ERROR: Invalid arg for LED.");
+            System.exit(-1);
+          }
+          ledNo = num;
+        } else {
+          System.out.println("ERROR: LED missing int arg.");
+        }
+      }
+
+      if (options.has("whitespace")) {
+        whitespace = true;
+      }
+
+      if (options.has("smart")) {
+        smart = true;
+      }
+
+      List<String> nonOptionArguments =
+          (List<String>) options.nonOptionArguments();
+      return nonOptionArguments;
+
+    } catch (Exception e) {
+      System.out.println("ERROR: Malformed initial command.");
+      System.exit(-1);
+      return null;
+    }
+  }
+
+  /**
+   * <pre>
+   * The main method that launches the CLI/GUI.
+   * @param args - The arguments given to the program.
+   * </pre>
+   */
+  public static void main(final String[] args) {
+    List<String> fileNames = initialCommandParser(args);
+
+    if (fileNames != null && fileNames.size() == 0) {
+      System.out.println("ERROR: No corpus provided.");
+      System.exit(-1);
+    }
+
+    Trie<Word> masterTrie = new Trie<Word>();
+
+    // Loop to read all files and add to one big trie!
+    ExtWordsFileParser fReader = new ExtWordsFileParser(fileNames.get(0));
+
+    ArrayList<String> textWords = new ArrayList<String>();
+
+    for (String file : fileNames) {
+      fReader.setFileName(file);
+      try {
+        textWords.addAll(fReader.readWords());
+      } catch (IOException e) {
+        fReader.closeReader();
+        System.out.println("ERROR: Invalid/corrupt file.");
+        System.exit(-1);
+      }
+      // Separator between files (can be made
+      // more unique).
+      textWords.add("br");
+    }
+    HashMap<String, Word> dict = Word.makeWordsFromStrings(textWords);
+
+    // Now the master trie has all the words from the corpus.
+    masterTrie.addValues(dict.values());
+    globalTrie = masterTrie;
+
+    // Triggering the GUI or CLI.
+    if (!gui) {
+      try {
+        cliParser(masterTrie);
+      } catch (IOException e) {
+        System.out.println("ERROR: " + e.getMessage());
+      }
+    } else {
+      runSparkServer();
+    }
+
+  }
+
+  /**
+   * Launches Spark.
+   */
+  private static void runSparkServer() {
+    SparkBase.externalStaticFileLocation("src/main/resources/static");
+    Spark.get("/autocorrect", new GetHandler(), new FreeMarkerEngine());
+    Spark.post("/suggestions", new ShowResultsHandler());
+  }
+
+  /**
+   * Strips all punctuation from a string of text.
+   *
+   * @param s
+   *          string of text to parse.
+   * @return string of text with no punctuation.
+   */
+  public static String stripPunctuation(final String s) {
+    String word = s.toLowerCase().replaceAll("\\P{L}", " ").trim();
+    return word;
   }
 
   /**
@@ -386,76 +453,15 @@ public class Main {
   }
 
   /**
-   * Strips all punctuation from a string of text.
-   * @param s string of text to parse.
-   * @return string of text with no punctuation.
+   * Turns on prefix and whitespace suggestions!
    */
-  public static String stripPunctuation(final String s) {
-    String word = s.toLowerCase().replaceAll("\\P{L}", " ").trim();
-    return word;
+  public static void turnBasicGenOn() {
+    prefix = true;
+    whitespace = true;
   }
 
-  /**
-   * Interprets and executes initial run command.
-   *
-   * @param args
-   * @return
-   */
-  @SuppressWarnings("unchecked")
-  private static List<String> initialCommandParser(final String[] args) {
-    try {
-      OptionParser optParser = new OptionParser();
-      optParser.accepts("gui", "Launches GUI interface of program!");
-      optParser.accepts("prefix", "Activates prefix suggestions.");
-      optParser.accepts("whitespace", "Activate splitting suggestions.");
-      optParser.accepts("smart", "Activates my smart ordering!");
-      optParser.accepts("h", "show help").forHelp();
-      OptionSet options = optParser.parse(args);
-
-      if (options.has("h")) {
-        optParser.printHelpOn(System.out);
-        System.exit(0);
-      }
-
-      if (options.has("gui")) {
-        gui = true;
-      }
-
-      if (options.has("prefix")) {
-        prefix = true;
-      }
-
-      if (options.has("led")) {
-        led = true;
-        if (options.hasArgument("led")) {
-          int num = (Integer) options.valueOf("led");
-          if (num < 0) {
-            System.out.println("ERROR: Invalid arg for LED.");
-            System.exit(-1);
-          }
-          ledNo = num;
-        } else {
-          System.out.println("ERROR: LED missing int arg.");
-        }
-      }
-
-      if (options.has("whitespace")) {
-        whitespace = true;
-      }
-
-      if (options.has("smart")) {
-        smart = true;
-      }
-
-      List<String> nonOptionArguments =
-          (List<String>) options.nonOptionArguments();
-      return nonOptionArguments;
-
-    } catch (Exception e) {
-      System.out.println("ERROR: Malformed initial command.");
-      System.exit(-1);
-      return null;
-    }
+  protected Main() {
+    throw new UnsupportedOperationException();
   }
 
 }
