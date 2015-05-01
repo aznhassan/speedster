@@ -14,6 +14,7 @@ var SUGGESTION_CELL_HEIGHT = 30;
 var userRules = [];
 
 var NEWLINE = '<br>\u200b';
+var NEWLINE_RECEIVED = '99999999999'; // received from server; delimits newline (impossible for user to submit themselves)
 
 
 /* Config
@@ -386,7 +387,7 @@ function compileUserRule(rule) {
 		
 	console.log(rule.name);
 	console.log(regex);
-	console.log('------------');
+	console.log('--------------------');
 
 	return {
 		'name': rule.name,
@@ -487,7 +488,7 @@ function prepareUserRules(rules) {
     'container': {
       'class': 'largequotebox'
     }
-  }); 
+  });
 
   rules.push({
     'name': 'psuedo-sections',
@@ -519,15 +520,18 @@ function prepareUserRules(rules) {
   // clean each rule by escaping bad characters
   rules.forEach(function(v, i, arr) {
       v.trigger.word = escapeHTML(v.trigger.word);
-      if (v.trigger.endSeq && v.trigger.endSeq != NEWLINE) {
-        v.trigger.endSeq = escapeHTML(v.trigger.endSeq);
+      if (v.trigger.endSeq) {
+        v.trigger.endSeq = (v.trigger.endSeq == NEWLINE_RECEIVED ? NEWLINE : escapeHTML(v.trigger.endSeq));
       }
-      if (v.after && v.after.endSeq && v.after.endSeq != NEWLINE) {
-        v.after.endSeq = escapeHTML(v.after.endSeq);
+      if (v.after && v.after.endSeq) {
+        v.after.endSeq = (v.after.endSeq == NEWLINE_RECEIVED ? NEWLINE : escapeHTML(v.after.endSeq))
       }
   });
 
   userRules = compileUserRules(rules);
+
+  $('#noteArea').focus();
+  stylize(false);
 }
 
 
@@ -569,7 +573,6 @@ $(document).ready(function() {
           var parent = getSelectionParentElement(window.getSelection());
           var elt = document.createTextNode("\u200b");
           parent.parentNode.insertBefore(elt, parent);
-        	
           stylize(true);
       } else {
           stylize(false);

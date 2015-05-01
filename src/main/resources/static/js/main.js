@@ -367,6 +367,7 @@ $(document).ready(function() {
                     var responseObject = JSON.parse(responseJSON);
                     var folder_id = responseObject.id;
                     var folder_name = responseObject.title;
+                    new_folder_div.id = folder_id;
                     header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
                     $(header_span).removeClass('folder_header_span_new');
                     header_span.className = 'folder_header_span';
@@ -508,23 +509,11 @@ $(document).ready(function() {
                 <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
                 '<span style="margin-left:3%">with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', fList[i].folder_id, "") +
-                '<input type="checkbox" name="boxed" value="box" class="box"></input>  Box this rule<br>' +
-                '<input type="checkbox" name="centered" value="center" class="center"></input>   Center this rule<br><br></div><br>' +
+                '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + fList[i].folder_id + '"></input>  Box this rule<br>' +
+                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + fList[i].folder_id + '"></input>   Center this rule<br><br></div><br>' +
                 '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SAVE</div>' + 
                 '</div>' + 
             '</div>'); 
-
-          
-         
-            
-            
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-weight');
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-style');
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'text-decoration');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-weight');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-style');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'text-decoration');
-
             
             
             $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
@@ -558,9 +547,14 @@ $(document).ready(function() {
                 }
             });
 
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-weight');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-style');
+            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'text-decoration');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-weight');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-style');
+            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'text-decoration');
+
             getSubjectRules(style_div, fList[i].folder_id, fList[i].folder_name, "");
-
-
         }
 
 
@@ -600,6 +594,7 @@ $(document).ready(function() {
         var button = $('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
+                
                 if($(this).attr('value') === 'none') {
                     var new_val = $(this).attr('name');
                     $(this).attr('value', new_val);
@@ -608,6 +603,8 @@ $(document).ready(function() {
                     $(this).attr('value', 'none');
                     $(this).css('background-color','inherit');
                 }
+
+                // alert($(this).attr('value'));
             });
         }
     }
@@ -631,10 +628,11 @@ $(document).ready(function() {
             <div class="underlineButton" id="' + style + id + rulename + '_text-decoration" value="none" name="underline">U</div> \
             <select class="font-family" id="' + style + id + rulename + '_font-family">    \
                 <option selected="selected" disabled="disabled">Font Type</option>  \
-                <option value="Arial">Arial</option> \
-                <option value="Helvetica">Helvetica</option> \
-                <option value="Sans Serif">Sans Serif</option> \
-                <option value="Times New Roman">Times New Roman</option> \
+                <option value="Playfair Display">Playfair Display</option> \
+                <option value="Bitter">Bitter</option> \
+                <option value="Open Sans">Open Sans</option> \
+                <option value="Merriweather">Merriweather</option> \
+                <option value="Palatino">Palatino</option>  \
             </select> \
             <select class="font-size" id="' + style + id + rulename + '_font-size" >   \
                 <option selected="selected" disabled="disabled">Font Size</option>  \
@@ -743,14 +741,39 @@ $(document).ready(function() {
                     // }
                 }
 
-                // trying to do Nick's styling requests for container object; - sm15 #TODO
-                if($(this).find('.box')[0].checked) {
+                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                //     delete rule["after"];
+                // } 
+
+                // if(rule["after"]) {
+                //     if(rule["after"]["style"]["font-weight"] === "none") {
+                //         delete rule["after"]["style"]["font-weight"];
+                //     }
+
+                //     if(rule["after"]["style"]["font-style"] === "none") {
+                //         delete rule["after"]["style"]["font-style"];
+                //     }
+
+                //     if(rule["after"]["style"]["text-decoration"] === "none") {
+                //         delete rule["after"]["style"]["text-decoration"]
+                //     }
+
+                // }
+
+
+                // trying to do Nick's styling requests for container object; - sm15 
+                // #TODO: Do the same with rule.after as with rule.container
+                // in other words, don't send an rule.after object if nothing is specified.
+                if($('#box_' + folder_id + rulename)[0].checked) {
                     rule["container"] = {};
                     rule["container"]["style"] = {}
-                    rule["container"]["style"]["background-color"] = "white";
+                    rule["container"]["style"]["background-color"] = "rgba(255, 255, 255, 0.35)";
+                    rule["container"]["style"]["padding"] = "4px";
+                    rule["container"]["style"]["padding-left"] = "7px";
+                    rule["container"]["style"]["padding-right"] = "7px";
                 }
 
-                if($(this).find('.center')[0].checked) {
+                if($('#center_' + folder_id + rulename)[0].checked) {
                     if(!rule["container"]) {
                         rule["container"] = {};
                         rule["container"]["style"] = {}
@@ -760,8 +783,11 @@ $(document).ready(function() {
                     }
                 }
 
-                // alert(rule["name"]);
-                // alert(rule["trigger"]["word"]);
+                if($('#box_' + folder_id + rulename)[0].checked && $('#center_' + folder_id + rulename)[0].checked) {
+                    rule["container"]["style"]["display"] = "table";
+                    rule["container"]["style"]["margin"] = "auto";
+                }
+
                 rulesForThisFolder.push(rule);
                 
                
@@ -782,18 +808,34 @@ $(document).ready(function() {
      */
     function getButtonValue(style_text, style_type, folder_id, rulename) {
         // ex: note2_bold
+        // alert(style_type);
         if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
             return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).attr('value');
-        } else if(style_type === 'font-family' || style_type === 'font-size' || style_type === 'text-align') {
+        } 
+
+        if(style_type === "font-family") {
             if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val()) {
                 return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val();
-            } else if(style_type === 'font-family') {
-                return 'Arial';
             } else {
-                return 'Medium';
+                return 'Open Sans';
+            } 
+        } 
+
+        if(style_type === "font-size") {
+            // alert("FONT SIZEEEE");
+            //alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
+            if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Small") {
+                return '17px';
+            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Medium") {
+                return '22px';
+            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Big"){
+                return '30px';
+            } else {
+                return '17px';
             }
         }
     }
+
 
     /*
      *
@@ -1057,36 +1099,46 @@ Rule:
 
                 // populate start (trigger word) style bar
                 // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-                console.log(rule.trigger["style"]);
-                console.log(rule.after["style"]);
+               
+                console.log(rule["container"]);
                 if(rule.trigger["style"]["font-weight"] == "bold") {
-                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight').value = "bold";
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value','bold');
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
                     
                 } else {
-                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight').value = "none";
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'none');
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
                 }
 
                 if(rule.trigger["style"]["font-style"] == "italic") {
 
-                   document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
+                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
                 } else {
-                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style').value = "none";
+                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'none');
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css({"background-color": "inherit"});
                 }
 
                 if(rule.trigger["style"]["text-decoration"] == "underline") {
-                   document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration').value = "underline";
+                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'underline');
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration').value = "none";
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'none');
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
                 }
 
                 document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
-                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
+
+
+                if(rule["after"]["style"]['font-size'] === "17px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                } else if(rule["after"]["style"]["font-size"] === "22px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                } else {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                }
+
+                // document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
 
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
@@ -1097,14 +1149,14 @@ Rule:
                 setTextStyleToggle('text-after-style-bar', folder_id, rulename_id, 'text-decoration');
 
                 // extend these styles until ...
-                if(rule.trigger.endSeq !== "<br>") {
+                if(rule.trigger.endSeq !== "99999999999") {
                     document.getElementById('trigger-end-sequence_' + folder_id + rulename_id).value  = rule.trigger.endSeq ? rule.trigger.endSeq : "";
                 } else {
                     document.getElementById('newline-trigger_' + folder_id + rulename_id).checked = true;
                 }
 
                 // style text after this rule until
-                if(rule.after.endSeq !== "<br>") {
+                if(rule.after.endSeq !== "99999999999") {
                     document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
                 } else {
                     document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
@@ -1114,31 +1166,38 @@ Rule:
                 var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
 
                 if(rule.after["style"]["font-weight"] == "bold") {
-                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight').value = "bold";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'bold');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight').value = "none";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'none');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
                 }
 
                 if(rule.after["style"]["font-style"] == "italic") {
-                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style').value = "italic";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value','none');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "inherit");
                 }
 
                 if(rule.after["style"]["text-decoration"] == "underline") {
-                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration').value = "underline";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','underline');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration').value = "none";
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','none');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
                 }
 
                 document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size').value = rule["after"]["style"]["font-size"];
+
+                if(rule["after"]["style"]['font-size'] === "17px") {
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                } else if(rule["after"]["style"]["font-size"] === "22px") {
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                } else {
+                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                }
                 
 
                 // box this rule... 
@@ -1152,6 +1211,7 @@ Rule:
                 if(rule["container"] && rule["container"]["style"]["text-align"]) {
                    document.getElementById('center_' + folder_id + rulename_id).checked = true;
                 }
+
             }
 
             getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);

@@ -22,7 +22,7 @@
     display: none;
     overflow: scroll;
     padding-bottom: 5%;
-    /* padding-top: 2%; */
+     padding-top: 3%; 
     margin-top: -5%;
 }
 
@@ -31,6 +31,7 @@
     margin-bottom: 0px;
     font-size:35px;
     margin-left:40%;
+    /*position: fixed;*/
 }
 
 .folder_style_header {
@@ -261,6 +262,7 @@ select {
     float: right;
     margin-right: 3%;
     margin-top: -5%;
+    /*position: fixed;*/
 }
 
 input[type=checkbox] {
@@ -277,15 +279,7 @@ input[type=checkbox] {
     margin-left: 4.5%;
 }
 
-.style_overlay_header {
-    /* background-color:pink; */
-    /* width:100%; */
-    width: inherit;
-    padding-top: 3%;
-    background-color: inherit;
-    /* margin:  10%; */
-    position: fixed;
-}
+
 
 
 

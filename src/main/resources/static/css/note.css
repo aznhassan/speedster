@@ -161,6 +161,7 @@ Custom Classes
 
 .title {
 	font-family: "Bitter", serif;
+	/*font-family: 'Merriweather';*/
     font-weight: 700;
     font-size: 30px;
     letter-spacing: 2px;
@@ -220,18 +221,6 @@ Custom Classes
 	margin: auto;
 	display: table;
 }
-
-
-/*////////////////////////////////////////////////////
-IDs
-////////////////////////////////////////////////////*/
-
-
-
-
-
-
-
 
 
 

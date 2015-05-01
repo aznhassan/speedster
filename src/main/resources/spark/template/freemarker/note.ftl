@@ -8,8 +8,7 @@ the page is written in-->
     <title id="titletag">${title}</title>
     <link rel="stylesheet" href="../../css/note.css">
     
-    <link href='http://fonts.googleapis.com/css?family=Bitter:400,700|Open+Sans:400italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700italic,900italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700,400italic,700italic|Bitter:400,700,400italic|Open+Sans:400italic,700italic,400,700|Merriweather:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="${customCss}">
   </head>
