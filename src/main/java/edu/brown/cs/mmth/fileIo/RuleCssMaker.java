@@ -189,7 +189,10 @@ public final class RuleCssMaker {
         return false;
       }
     }
-    file.getParentFile().mkdirs();
+    boolean filesMade = file.getParentFile().mkdirs();
+    if (!filesMade) {
+      return false;
+    }
     try (
         BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(
@@ -262,7 +265,10 @@ public final class RuleCssMaker {
     Long id = NoteReader.getNoteSubjectId(subject);
     String path = CSSPATH + "/" + id + ".css";
     File file = new File(path);
-    file.getParentFile().mkdirs();
+    boolean filesMade = file.getParentFile().mkdirs();
+    if (!filesMade) {
+      return false;
+    }
     try (
         BufferedWriter writer =
         new BufferedWriter(new OutputStreamWriter(

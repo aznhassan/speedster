@@ -41,11 +41,14 @@ public final class FlashCardWriter {
       File file =
           new File(basePath + "/" + card.getSubject() + "/N" + card.getNoteId()
               + "/f" + card.getId());
-      file.getParentFile().mkdirs();
+      boolean directoriesMade = file.getParentFile().mkdirs();
+      if (!directoriesMade) {
+        return false;
+      }
       try (
           BufferedWriter writer =
-              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
-                  file), "UTF-8"));) {
+          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+              file), "UTF-8"));) {
 
         List<String> dataToWrite = card.getDataToStore();
         int length = dataToWrite.size();

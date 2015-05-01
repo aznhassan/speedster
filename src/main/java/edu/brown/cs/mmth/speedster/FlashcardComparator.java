@@ -3,6 +3,7 @@
  */
 package edu.brown.cs.mmth.speedster;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -11,7 +12,13 @@ import java.util.Comparator;
  * @author tbhargav
  *
  */
-public class FlashcardComparator implements Comparator<Flashcard> {
+public class
+FlashcardComparator implements Comparator<Flashcard>, Serializable {
+
+  /**
+   * Serial id.
+   */
+  private static final long serialVersionUID = 4057440351286748365L;
 
   @Override
   public int compare(Flashcard o1, Flashcard o2) {

@@ -1,11 +1,13 @@
 package edu.brown.cs.mmth.speedster;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -58,8 +60,6 @@ public final class ApiHandler {
   public static class FlashCardView implements TemplateViewRoute {
     @Override
     public ModelAndView handle(final Request req, final Response res) {
-      QueryParamsMap qm = req.queryMap();
-      int id = Integer.parseInt(req.params(":id"));
       // Grab the note with this id from the db
       Map<String, Object> variables = ImmutableMap.of("title", "Flashcards");
       return new ModelAndView(variables, "flashcard.ftl");
@@ -118,18 +118,31 @@ public final class ApiHandler {
 
       // Creating a new folder in memory, along with its ID file.
       File folder = new File(Main.getBasePath() + "/" + subjectName);
-      folder.mkdirs();
+      String data = makeExceptionJSON("Couldn't make folder");
+      Map<String, Object> errorVariables =
+          ImmutableMap.of("title", subjectName, "id", -1, "error", data);
+      String jsonError = GSON.toJson(errorVariables);
+      boolean madeFolders = folder.mkdirs();
+      if (!madeFolders) {
+        return jsonError;
+      }
       // new File(folder, "/rules").mkdir();
-
       boolean success = true;
 
       long id = Main.getAndIncrementId();
       File idFile = new File(Main.getBasePath() + "/" + subjectName + "/id");
       File customCss =
           new File("src/main/resources/static/customCss/" + id + ".css");
-      customCss.getParentFile().mkdirs();
-      try (FileWriter idWriter = new FileWriter(idFile);
-          FileWriter cssWriter = new FileWriter(customCss)) {
+      if (!customCss.getParentFile().mkdirs()) {
+        return jsonError;
+      }
+      try (BufferedWriter idWriter =
+          new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+              idFile), "UTF-8"));
+          BufferedWriter cssWriter =
+              new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+                  customCss), "UTF-8"))
+          ) {
         idWriter.write("" + id);
         cssWriter.write("");
       } catch (IOException e) {
@@ -305,7 +318,6 @@ public final class ApiHandler {
   }
 
   private static String getMetaData(Request req) {
-    QueryParamsMap qm = req.queryMap();
     /*
      * [ { "folder_id":id, "folder_name":name, "notes": [{ "note_id":id,
      * "note_name":name }, { "note_id":id, "note_name":name }] }" ] </pre>
@@ -679,7 +691,10 @@ public final class ApiHandler {
         File customCss =
             new File("src/main/resources/static/customCss/" + subjectId
                 + ".css");
-        customCss.delete();
+        boolean deleted = customCss.delete();
+        if (!deleted) {
+          return makeExceptionJSON("Couldn't delete custom css file");
+        }
         FileUtils.deleteDirectory(file);
       } catch (IOException e) {
         return makeExceptionJSON("Folder couldn't be deleted");

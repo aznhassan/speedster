@@ -56,13 +56,13 @@ public class NoteReader {
             StringBuilder json = new StringBuilder();
             try (
                 BufferedReader br =
-                    new BufferedReader(new InputStreamReader(
-                        new FileInputStream(fileEntry), "UTF-8"))) {
+                new BufferedReader(new InputStreamReader(
+                    new FileInputStream(fileEntry), "UTF-8"))) {
               String line;
               while ((line = br.readLine()) != null) {
                 json.append(line);
               }
-            } catch (Exception e) {
+            } catch (IOException e) {
               return null;
             }
             // Converting retrieved data into note object.
@@ -112,8 +112,8 @@ public class NoteReader {
     }
     try (
         BufferedReader br =
-            new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                "UTF-8"))) {
+        new BufferedReader(new InputStreamReader(new FileInputStream(file),
+            "UTF-8"))) {
       String id = br.readLine();
       Long toReturn = -1L;
       try {
