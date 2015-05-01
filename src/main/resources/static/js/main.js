@@ -662,7 +662,7 @@ $(document).ready(function() {
                 rules: JSON.stringify(rulesForThisFolder)
             };
 
-            console.log("RULES SENT:  " + postParam.rules);
+            // console.log("RULES SENT:  " + postParam.rules);
             
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
@@ -741,9 +741,9 @@ $(document).ready(function() {
                     // }
                 }
 
-                if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
-                    delete rule["after"];
-                } 
+                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                //     delete rule["after"];
+                // } 
 
                 // if(rule["after"]) {
                 //     if(rule["after"]["style"]["font-weight"] === "none") {
@@ -761,10 +761,10 @@ $(document).ready(function() {
                 // }
 
 
-                // trying to do Nick's styling requests for container object; - sm15 
+                // trying to do Nick's styling requests for container object; 
                 // #TODO: Do the same with rule.after as with rule.container
                 // in other words, don't send an rule.after object if nothing is specified.
-                if($('#box_' + folder_id + rulename)[0].checked) {
+                if(document.getElementById('box_' + folder_id + rulename).checked === true) {
                     rule["container"] = {};
                     rule["container"]["style"] = {}
                     rule["container"]["style"]["background-color"] = "rgba(255, 255, 255, 0.35)";
@@ -773,20 +773,22 @@ $(document).ready(function() {
                     rule["container"]["style"]["padding-right"] = "7px";
                 }
 
-                if($('#center_' + folder_id + rulename)[0].checked) {
-                    if(!rule["container"]) {
-                        rule["container"] = {};
-                        rule["container"]["style"] = {}
+                if(document.getElementById('center_' + folder_id + rulename).checked === true) {
+                    if(rule["container"]) {
                         rule["container"]["style"]["text-align"] = "center";
                     } else {
+                        rule["container"] = {};
+                        rule["container"]["style"] = {}
                         rule["container"]["style"]["text-align"] = "center";
                     }
                 }
 
-                if($('#box_' + folder_id + rulename)[0].checked && $('#center_' + folder_id + rulename)[0].checked) {
+                if(document.getElementById('box_' + folder_id + rulename).checked && document.getElementById('center_' + folder_id + rulename).checked) {
                     rule["container"]["style"]["display"] = "table";
                     rule["container"]["style"]["margin"] = "auto";
                 }
+
+                console.log(rule);
 
                 rulesForThisFolder.push(rule);
                 
@@ -1205,7 +1207,7 @@ Rule:
                 
 
                 // box this rule... 
-                alert(rule["container"]);
+                // alert(rule["container"]);
                 if(rule["container"] && rule["container"]["style"]["background-color"]) {
                     $(document.getElementById('box_' + folder_id + rulename_id))[0].checked = true;
                 }
