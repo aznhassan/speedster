@@ -44,7 +44,7 @@ public final class RuleCssMaker {
    * @throws IOException
    *           - When an error writing to file occurs
    */
-  public static boolean writeJsonToFile(String jsonRules, String discludeRule)
+  public static boolean writeJsonToFile(String jsonRules, String excludeRule)
       throws IOException {
     if (jsonRules == null) {
       System.err.println("No JSON");
@@ -53,6 +53,11 @@ public final class RuleCssMaker {
     List<String> cssList = new ArrayList<>();
     boolean worked = false;
     JSONArray rules = new JSONArray(jsonRules);
+    for(int i = 0; i < rules.length(); i++) {
+      System.out.println(rules.getJSONObject(i));
+      System.out.println("__________________________________________________\n\n");
+    }
+    System.out.println(excludeRule);
     String folder = "";
     int length = rules.length();
     boolean deleteRules = true;
@@ -66,8 +71,11 @@ public final class RuleCssMaker {
       }
 
       folder = obj.getString("associated_folder_name");
+
       String name = obj.getString("name");
-      if (name.isEmpty() || name.equals(discludeRule)) {
+      System.out.println("NAME === "  +  name);
+      if (name.isEmpty() || name.equals(excludeRule)) {
+        System.out.println("EXCLUDED");
         continue;
       }
       name = name.toLowerCase().replace(" ", "_");

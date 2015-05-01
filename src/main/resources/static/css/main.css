@@ -70,6 +70,8 @@ p {
 .main_note_div {
 	display: none;
 	padding-left: 12%;
+	padding-right: 12%;
+	width: 100%;
 }
 
 .note_name_div, .new_note_name_div {
@@ -81,8 +83,13 @@ p {
 	display: block;
 	margin-top: 0.7%;
 	margin-bottom: 0.7%;
-	margin-left: 4%;
-	width: 300%;
+	/*margin-left: 4%;*/
+	width: 100%;
+	margin-right: 5%;
+}
+
+.new_note_name_div {
+	margin-left: 10%;
 }
 
 .note_name_div:hover {
@@ -234,7 +241,6 @@ input[type=text] .note_title_input {
 	background: inherit;
 	outline: none;
 	color:rgba(0,0,0,0.8);
-	margin-left: 1.5%;
 }
 
 ::-webkit-input-placeholder {

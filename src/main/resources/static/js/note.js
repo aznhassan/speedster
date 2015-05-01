@@ -454,7 +454,7 @@ function prepareUserRules(rules) {
     'trigger': {
       'word': '"',
       'endSeq': '"',
-      'style': 'quotes'
+      'class': 'quotes'
     }
   });
 
@@ -463,14 +463,14 @@ function prepareUserRules(rules) {
     'trigger': {
       'word': '[',
       'endSeq': ']',
-      'style': 'equationcaption'
+      'class': 'equationcaption'
     },
     'after': {
       'endSeq': '<br>\u200b',
-      'style': 'equation'
+      'class': 'equation'
     },
     'container': {
-      'style': 'equationbox'
+      'class': 'equationbox'
     }
   });
 
@@ -478,14 +478,14 @@ function prepareUserRules(rules) {
     'name': 'large quotes',
     'trigger': {
       'word': "``",
-      'style': 'largequote'
+      'class': 'largequote'
     },
     'after': {
       'endSeq': '<br>\u200b',
-      'style': 'largequoteafter'
+      'class': 'largequoteafter'
     },
     'container': {
-      'style': 'largequotebox'
+      'class': 'largequotebox'
     }
   }); 
 
@@ -493,7 +493,7 @@ function prepareUserRules(rules) {
     'name': 'psuedo-sections',
     'trigger': {
       'word': '|',
-      'style': 'section',
+      'class': 'section',
       'endSeq': '<br>\u200b'
     }
   });
@@ -502,15 +502,15 @@ function prepareUserRules(rules) {
     'name': 'tab note',
     'trigger': {
       'word': '$',
-      'style': 'section',
+      'class': 'section',
       'endSeq': '<br>\u200b'
     },
     'after': {
       'endSeq': '<br>\u200b',
-      'style': 'noteafter'
+      'class': 'noteafter'
     },
     'container': {
-      'style': 'box'
+      'class': 'box'
     }
   });
 
@@ -533,7 +533,7 @@ function prepareUserRules(rules) {
 
 $(document).ready(function() {
 
-	document.body.style.backgroundColor = "#A1E869"; //"#FF8085";
+	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085";
 
   var urlparts = window.location.pathname.split('/');
   var params = {'subject': decodeURIComponent(urlparts[2])}
