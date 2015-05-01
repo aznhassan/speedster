@@ -1126,14 +1126,16 @@ Rule:
 
                 document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
 
-
-                if(rule["after"]["style"]['font-size'] === "17px") {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
-                } else if(rule["after"]["style"]["font-size"] === "22px") {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
-                } else {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                if(rule["after"]) {
+                    if(rule["after"]["style"]['font-size'] === "17px") {
+                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                    } else if(rule["after"]["style"]["font-size"] === "22px") {
+                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                    } else {
+                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                    }
                 }
+                
 
                 // document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
 
@@ -1153,7 +1155,7 @@ Rule:
                 }
 
                 // style text after this rule until
-                if(rule.after.endSeq !== "99999999999") {
+                if(rule.after && rule.after.endSeq !== "99999999999") {
                     document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
                 } else {
                     document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
@@ -1162,7 +1164,7 @@ Rule:
                 // with these styles...
                 var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
 
-                if(rule.after["style"]["font-weight"] == "bold") {
+                if(rule.after && rule.after["style"]["font-weight"] == "bold") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'bold');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1170,7 +1172,7 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
                 }
 
-                if(rule.after["style"]["font-style"] == "italic") {
+                if(rule.after && rule.after["style"]["font-style"] == "italic") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1178,7 +1180,7 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "inherit");
                 }
 
-                if(rule.after["style"]["text-decoration"] == "underline") {
+                if(rule.after && rule.after["style"]["text-decoration"] == "underline") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','underline');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1186,15 +1188,20 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
                 }
 
-                document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
-
-                if(rule["after"]["style"]['font-size'] === "17px") {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
-                } else if(rule["after"]["style"]["font-size"] === "22px") {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
-                } else {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                if(rule["after"]) {
+                    document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
                 }
+                
+                if(rule["after"]) {
+                    if(rule["after"]["style"]['font-size'] === "17px") {
+                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                    } else if(rule["after"]["style"]["font-size"] === "22px") {
+                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                    } else {
+                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                    }
+                }
+                
                 
 
                 // box this rule... 
