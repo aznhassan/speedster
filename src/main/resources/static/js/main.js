@@ -741,9 +741,9 @@ $(document).ready(function() {
                     // }
                 }
 
-                // if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
-                //     delete rule["after"];
-                // } 
+                if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+                    delete rule["after"];
+                } 
 
                 // if(rule["after"]) {
                 //     if(rule["after"]["style"]["font-weight"] === "none") {
