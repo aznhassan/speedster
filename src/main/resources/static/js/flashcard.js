@@ -26,7 +26,7 @@ $(document).ready(function() {
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
       }, function() {
-          $(this).removeClass('flip-front');
+          // $(this).removeClass('flip-front');
           //$('.flashcard_div_back').removeClass('flip-back');
       });
 
