@@ -1406,15 +1406,16 @@ Rule:
 
                 if(rule["trigger"]["style"] && rule["trigger"]["style"]["font-family"]) {
                     document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
-
                 }
+
+
                 
-                if(rule["after"] && rule["after"]["style"]) {
-                    if(rule["after"]["style"]['font-size'] === "17px") {
+                if(rule["trigger"] && rule["trigger"]["style"]) {
+                    if(rule["trigger"]["style"]['font-size'] === "17px") {
                         $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
-                    } else if(rule["after"]["style"]["font-size"] === "22px") {
+                    } else if(rule["trigger"]["style"]["font-size"] === "22px") {
                         $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
-                    } else {
+                    } else if(rule["trigger"]["style"]["font-size"] === "30px") {
                         $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
                     }
                 }
@@ -1482,7 +1483,7 @@ Rule:
                         $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
                     } else if(rule["after"]["style"]["font-size"] === "22px") {
                         $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
-                    } else {
+                    } else if(rule["after"]["style"]["font-size"] === "30px") {
                         $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
                     }
                 }
