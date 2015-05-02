@@ -16,10 +16,11 @@ Standard HTML Tags
 
 html, body {
     height: 99%;
+    /* background-color: #FF0000; */
 }
 
 body {
-    background-color: #00E5DB;
+    background-color: #EA850D;
 }
 
 input {
