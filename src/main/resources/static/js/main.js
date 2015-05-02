@@ -1,6 +1,19 @@
-/** Main class will handle loading the metadata associated with each folder 
- * and note to display clickable titles on the main page.
- * associated with main.ftl fiel
+/** 
+ * Main file for the program's dynamic UI interactions
+ * @author sm15
+
+ * main.js handles:
+   - Loading the metadata on the main notes page
+   - Functionality to add new folders and new notes on the main page
+   - Functionality to delete notes and folders
+   - Links to appropriate flashcard page
+   - Links to the note pages of all notes
+   - Style menu overlay where users can define custom rules by folder
+
+ * Style overlay functionality overview:
+   - Lets users add new styles ny folder
+   - Can delete existing styles
+   - Each new style form features optional additional styling for text after the rule trigger word.
  */
 
 
@@ -136,7 +149,7 @@ $(document).ready(function() {
                 $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
                 main_note_div.appendChild(notes_div);
                 $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
-                    window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
+                    window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
                 });
 
                 // $(notes_div).find('.delete_icon')[0].style.float = 'right';
@@ -212,7 +225,7 @@ $(document).ready(function() {
         folderDiv.appendChild(flashcardIcon);
         $(flashcardIcon).attr('contenteditable', 'false');
         $(flashcardIcon).click(function(event) {
-          window.location.href = '/getNewSession/' + encodeURIComponent(folderName);
+          window.open('/getNewSession/' + encodeURIComponent(folderName), '_blank');
          //   $.get('/getNewSession/' + encodeURIComponent(folderName), function() {});
         });
     }
@@ -258,7 +271,7 @@ $(document).ready(function() {
                         $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
                         
                         $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
-                            window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
+                            window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
                         });
 
                         // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
@@ -321,7 +334,7 @@ $(document).ready(function() {
 		            $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
                     
                     $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
-                        window.location.href = '/getNote/' + event.data.name + "/" +  this.id;
+                        window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
                     });
 
                     // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
