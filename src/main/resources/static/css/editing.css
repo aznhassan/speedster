@@ -28,10 +28,14 @@
 
 #rule-header {
     text-align: center;
-    margin-bottom: 0px;
+    margin-bottom: 15%;
+    padding-top: 3%;
+    margin-top: -5%;
     font-size:35px;
-    margin-left:40%;
-    /*position: fixed;*/
+    /* margin-left: 35%; */
+    width: 80%;
+    position: fixed;
+    background-color: white;
 }
 
 .folder_style_header {
@@ -255,14 +259,14 @@ select {
 
 .close-button {
     margin-bottom:3%;
-    margin-left:38.8%;
+    margin-left: 90%;
     font-size: medium;
     font-family: sans-serif;
     line-height:medium;
     float: right;
     margin-right: 3%;
-    margin-top: -5%;
-    /*position: fixed;*/
+    margin-top: 15%;
+    position: fixed;
 }
 
 input[type=checkbox] {

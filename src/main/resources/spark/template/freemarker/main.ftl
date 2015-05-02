@@ -42,7 +42,7 @@
      </div>
      <div id="main-div"></div><br>
      <div class="button_div">
-        <div id="add_section_button">NEW SECTION</div>
+        <div id="add_section_button">NEW SUBJECT</div>
         <div id="edit_style_button">EDIT STYLES</div>
 
      </div><br><br><br><br><br><br><br><br><br>
