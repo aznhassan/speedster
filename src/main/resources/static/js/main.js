@@ -96,7 +96,7 @@ $(document).ready(function() {
             });
 
             
-           main_note_div = document.createElement('main_note_div');
+            main_note_div = document.createElement('main_note_div');
             main_note_div.className = 'main_note_div';
             folder_div.appendChild(main_note_div);
         
@@ -649,10 +649,10 @@ $(document).ready(function() {
                 '  Additional Styles</span><br>' +
                 '<div class="extra_styles_div" id="extra_styles_div_' + fList[i].folder_id + '"><span>Extend these styles until</span><br>'  
                 + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-trigger"></input>  Newline<br><br>' + 
+                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + fList[i].folder_id + '"></input>  Newline<br><br>' + 
                 'Style text after this rule until<br>'
-                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folderID + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-text-after"></input>  Newline<br>' + 
+                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
+                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + fList[i].folder_id + '"></input>  Newline<br>' + 
                 '<span style="margin-left:3%">with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', fList[i].folder_id, "") +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + fList[i].folder_id + '"></input>  Box this rule<br>' +
@@ -660,8 +660,24 @@ $(document).ready(function() {
                 '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SAVE</div>' + 
                 '</div>' + 
             '</div>'); 
+
+            $('#newline-trigger_' + fList[i].folder_id).bind('click', {id: fList[i].folder_id }, function(event) {
+                if(this.checked) {
+                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = true;
+                } else {
+                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = false;
+                }
+            });
+
+            $('#newline-text-after_' + fList[i].folder_id).bind('click', {id: fList[i].folder_id }, function(event) {
+                if(this.checked) {
+                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
+                } else {
+                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
+                }
+            });
             
-            
+
             $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
                 $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
@@ -836,108 +852,164 @@ $(document).ready(function() {
     function getRulesList(styleDiv, folder_id, folder_name, rulename) {
         var rulesForThisFolder = [];
         $(styleDiv).find('.rule_div').each(function(i) {
-                var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
-                if(!document.getElementById('rulename_' + folder_id + name)) { 
-                    name = "";
-                } 
-                rulename = name;
-                
-                var rule = 
-                {   
-                    "associated_folder_id": folder_id,
-                    "associated_folder_name": folder_name,
-                    "name": document.getElementById('rulename_' + folder_id + name).value,
-                    "trigger":
+            var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
+            if(!document.getElementById('rulename_' + folder_id + name)) { 
+                name = "";
+            } 
+            rulename = name;
+            
+            var rule = 
+            {   
+                "associated_folder_id": folder_id,
+                "associated_folder_name": folder_name,
+                "name": document.getElementById('rulename_' + folder_id + name).value,
+                "trigger":
+                {
+                    "word": document.getElementById('rulestart_' + folder_id + name).value,
+                    "endSeq": getTriggerEndSequence(this, folder_id, name),
+                    "style": 
                     {
-                        "word": document.getElementById('rulestart_' + folder_id + name).value,
-                        "endSeq": getTriggerEndSequence(this, folder_id, name),
-                        "style": 
-                        {
-                            "font-weight": getButtonValue('start-style-bar', 'font-weight', folder_id, name),
-                            "font-style": getButtonValue('start-style-bar', 'font-style', folder_id, name),
-                            "text-decoration": getButtonValue('start-style-bar', 'text-decoration', folder_id, name),
-                            "font-family": getButtonValue('start-style-bar', 'font-family', folder_id, name),
-                            "font-size": getButtonValue('start-style-bar', 'font-size', folder_id, name),
-                        }
-                    },
+                        "font-weight": getButtonValue('start-style-bar', 'font-weight', folder_id, name),
+                        "font-style": getButtonValue('start-style-bar', 'font-style', folder_id, name),
+                        "text-decoration": getButtonValue('start-style-bar', 'text-decoration', folder_id, name),
+                        "font-family": getButtonValue('start-style-bar', 'font-family', folder_id, name),
+                        "font-size": getButtonValue('start-style-bar', 'font-size', folder_id, name),
+                    }
+                },
 
-                    "after": 
+                "after": 
+                {
+                    "endSeq": getAfterEndSequence(this, folder_id, name),
+                    "style": 
                     {
-                        "endSeq": getAfterEndSequence(this, folder_id, name),
-                        "style": 
-                        {
-                            "font-weight": getButtonValue('text-after-style-bar', 'font-weight', folder_id, name),
-                            "font-style": getButtonValue('text-after-style-bar', 'font-style', folder_id, name),
-                            "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', folder_id, name),
-                            "font-family": getButtonValue('text-after-style-bar', 'font-family', folder_id, name),
-                            "font-size": getButtonValue('text-after-style-bar', 'font-size', folder_id, name),
-                        }
-                    },
+                        "font-weight": getButtonValue('text-after-style-bar', 'font-weight', folder_id, name),
+                        "font-style": getButtonValue('text-after-style-bar', 'font-style', folder_id, name),
+                        "text-decoration": getButtonValue('text-after-style-bar', 'text-decoration', folder_id, name),
+                        "font-family": getButtonValue('text-after-style-bar', 'font-family', folder_id, name),
+                        "font-size": getButtonValue('text-after-style-bar', 'font-size', folder_id, name),
+                    }
+                },
 
-                    // "container": 
-                    // {
-                    //     "style":
-                    //     {
-                    //         "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
-                    //         "text-align": $(this).find(".center")[0].checked ? "center" : "left"
-                    //     }
-                    // }
-                }
-
-                if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
-                    delete rule["after"];
-                } 
-
-                // if(rule["after"]) {
-                //     if(rule["after"]["style"]["font-weight"] === "none") {
-                //         delete rule["after"]["style"]["font-weight"];
+                // "container": 
+                // {
+                //     "style":
+                //     {
+                //         "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
+                //         "text-align": $(this).find(".center")[0].checked ? "center" : "left"
                 //     }
-
-                //     if(rule["after"]["style"]["font-style"] === "none") {
-                //         delete rule["after"]["style"]["font-style"];
-                //     }
-
-                //     if(rule["after"]["style"]["text-decoration"] === "none") {
-                //         delete rule["after"]["style"]["text-decoration"]
-                //     }
-
                 // }
+            }
 
+            
+            clearIrrelevantStyles(rule);
 
-                // trying to do Nick's styling requests for container object; 
-                // #TODO: Do the same with rule.after as with rule.container
-                // in other words, don't send an rule.after object if nothing is specified.
-                if(document.getElementById('box_' + folder_id + rulename).checked === true) {
+            // trying to do Nick's styling requests for container object; 
+            // #TODO: Do the same with rule.after as with rule.container
+            // in other words, don't send an rule.after object if nothing is specified.
+            if(document.getElementById('box_' + folder_id + rulename).checked === true) {
+                rule["container"] = {};
+                rule["container"]["style"] = {}
+                rule["container"]["style"]["background-color"] = "rgba(255, 255, 255, 0.35)";
+                rule["container"]["style"]["padding"] = "4px";
+                rule["container"]["style"]["padding-left"] = "7px";
+                rule["container"]["style"]["padding-right"] = "7px";
+            }
+
+            if(document.getElementById('center_' + folder_id + rulename).checked === true) {
+                if(rule["container"]) {
+                    rule["container"]["style"]["text-align"] = "center";
+                } else {
                     rule["container"] = {};
                     rule["container"]["style"] = {}
-                    rule["container"]["style"]["background-color"] = "rgba(255, 255, 255, 0.35)";
-                    rule["container"]["style"]["padding"] = "4px";
-                    rule["container"]["style"]["padding-left"] = "7px";
-                    rule["container"]["style"]["padding-right"] = "7px";
+                    rule["container"]["style"]["text-align"] = "center";
                 }
+            }
 
-                if(document.getElementById('center_' + folder_id + rulename).checked === true) {
-                    if(rule["container"]) {
-                        rule["container"]["style"]["text-align"] = "center";
-                    } else {
-                        rule["container"] = {};
-                        rule["container"]["style"] = {}
-                        rule["container"]["style"]["text-align"] = "center";
-                    }
-                }
+            if(document.getElementById('box_' + folder_id + rulename).checked && document.getElementById('center_' + folder_id + rulename).checked) {
+                rule["container"]["style"]["display"] = "table";
+                rule["container"]["style"]["margin"] = "auto";
+            }
 
-                if(document.getElementById('box_' + folder_id + rulename).checked && document.getElementById('center_' + folder_id + rulename).checked) {
-                    rule["container"]["style"]["display"] = "table";
-                    rule["container"]["style"]["margin"] = "auto";
-                }
+            // console.log(rule);
 
-                // console.log(rule);
+            rulesForThisFolder.push(rule);
+            
+        });
+        return rulesForThisFolder;
+    }
 
-                rulesForThisFolder.push(rule);
-                
-            });
-            return rulesForThisFolder;
+
+
+    /** delete irrelevant styles from trigger.style
+    */
+    function clearIrrelevantStyles(rule) {
+        // clean up rule.trigger.style
+        if(rule["trigger"]["style"]["font-weight"] === "none") {
+            delete rule["trigger"]["style"]["font-weight"];
         }
+
+        if(rule["trigger"]["style"]["font-style"] === "none") {
+            delete rule["trigger"]["style"]["font-style"];
+        }
+
+        if(rule["trigger"]["style"]["text-decoration"] === "none") {
+            delete rule["trigger"]["style"]["text-decoration"];
+        }
+
+        if(rule["trigger"]["style"]["font-family"] === null) {
+            delete rule["trigger"]["style"]["font-family"];
+        }
+
+        if(rule["trigger"]["style"]["font-size"] === null) {
+            delete rule["trigger"]["style"]["font-size"];
+        }
+
+        if(!rule["trigger"]["style"]["font-weight"] &&
+            !rule["trigger"]["style"]["font-style"] &&
+            !rule["trigger"]["style"]["text-decoration"] &&
+            !rule["trigger"]["style"]["font-family"] &&
+            !rule["trigger"]["style"]["font-size"]) {
+            delete rule["trigger"]["style"];
+        }
+
+        // rule.after and rule.after.style
+
+        if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
+            delete rule["after"];
+        } 
+
+        if(rule["after"]) {
+            if(rule["after"]["style"]["font-weight"] === "none") {
+                delete rule["after"]["style"]["font-weight"];
+            }
+
+            if(rule["after"]["style"]["font-style"] === "none") {
+                delete rule["after"]["style"]["font-style"];
+            }
+
+            if(rule["after"]["style"]["text-decoration"] === "none") {
+                delete rule["after"]["style"]["text-decoration"];
+            }
+
+            if(rule["after"]["style"]["font-family"] === null) {
+                delete rule["after"]["style"]["font-family"];
+            }
+
+            if(rule["after"]["style"]["font-size"] === null) {
+                delete rule["after"]["style"]["font-size"];
+            }
+
+        }
+
+         if(rule["after"] && 
+            !rule["after"]["style"]["font-weight"] &&
+            !rule["after"]["style"]["font-style"] &&
+            !rule["after"]["style"]["text-decoration"] &&
+            !rule["after"]["style"]["font-family"] &&
+            !rule["after"]["style"]["font-size"]) {
+            delete rule["after"]["style"];
+        }
+    }
 
     /**
      * get the value for the styling toolbar buttons according to their unique id
@@ -959,7 +1031,7 @@ $(document).ready(function() {
             if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val()) {
                 return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val();
             } else {
-                return 'Open Sans';
+                return null;
             } 
         } 
 
@@ -973,7 +1045,7 @@ $(document).ready(function() {
             } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Big"){
                 return '30px';
             } else {
-                return '17px';
+                return null;
             }
         }
     }
@@ -1184,6 +1256,25 @@ Rule:
             '</div><br id="line_break_' + folder_id + rulename_id +'">');
             
             
+
+            $('#newline-trigger_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
+                if(this.checked) {
+                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+                } else {
+                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+                }
+            });
+
+
+            $('#newline-text-after_' + folder_id + rulename_id).bind('click', {id:folder_id, name: rulename_id}, function(event) {
+                if(this.checked) {
+                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+                } else  {
+                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+                }
+            });
+
+
             
              $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', {id: folder_id, name: rulename_id}, function(event) {
                 $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
@@ -1243,7 +1334,7 @@ Rule:
                 // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
                
                 console.log(rule["container"]);
-                if(rule.trigger["style"]["font-weight"] == "bold") {
+                if(rule.trigger["style"] && rule.trigger["style"]["font-weight"] === "bold") {
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value','bold');
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
                     
@@ -1252,7 +1343,7 @@ Rule:
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
                 }
 
-                if(rule.trigger["style"]["font-style"] == "italic") {
+                if(rule.trigger["style"] && rule.trigger["style"]["font-style"] === "italic") {
 
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
@@ -1261,7 +1352,7 @@ Rule:
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css({"background-color": "inherit"});
                 }
 
-                if(rule.trigger["style"]["text-decoration"] == "underline") {
+                if(rule.trigger["style"] && rule.trigger["style"]["text-decoration"] === "underline") {
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'underline');
                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1269,9 +1360,12 @@ Rule:
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
                 }
 
-                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
+                if(rule["trigger"]["style"] && rule["trigger"]["style"]["font-family"]) {
+                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
 
-                if(rule["after"]) {
+                }
+                
+                if(rule["after"] && rule["after"]["style"]) {
                     if(rule["after"]["style"]['font-size'] === "17px") {
                         $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
                     } else if(rule["after"]["style"]["font-size"] === "22px") {
@@ -1297,6 +1391,7 @@ Rule:
                     document.getElementById('trigger-end-sequence_' + folder_id + rulename_id).value  = rule.trigger.endSeq ? rule.trigger.endSeq : "";
                 } else {
                     document.getElementById('newline-trigger_' + folder_id + rulename_id).checked = true;
+                    $('#trigger-end-sequence_' + folder_id + rulename_id)[0].disabled = true;
                 }
 
                 // style text after this rule until
@@ -1304,12 +1399,13 @@ Rule:
                     document.getElementById('text-after-end-sequence_' + folder_id + rulename_id).value = rule.after.endSeq ? rule.after.endSeq : "";
                 } else if(rule.after && rule.after.endSeq === "99999999999") {
                     document.getElementById('newline-text-after_' + folder_id + rulename_id).checked = true;
+                    $('#text-after-end-sequence_' + folder_id + rulename_id)[0].disabled = true;
                 }
 
                 // with these styles...
                 var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
 
-                if(rule.after && rule.after["style"]["font-weight"] == "bold") {
+                if(rule.after && rule.after["style"] && rule.after["style"]["font-weight"] == "bold") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'bold');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1317,7 +1413,7 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
                 }
 
-                if(rule.after && rule.after["style"]["font-style"] == "italic") {
+                if(rule.after && rule.after["style"] && rule.after["style"]["font-style"] == "italic") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1325,7 +1421,7 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "inherit");
                 }
 
-                if(rule.after && rule.after["style"]["text-decoration"] == "underline") {
+                if(rule.after && rule.after["style"] && rule.after["style"]["text-decoration"] == "underline") {
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','underline');
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
                 } else {
@@ -1333,11 +1429,11 @@ Rule:
                     $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
                 }
 
-                if(rule["after"]) {
+                if(rule["after"] && rule.after["style"] && rule["after"]["style"]["font-family"]) {
                     document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
                 }
                 
-                if(rule["after"]) {
+                if(rule["after"] && rule.after["style"] && rule["after"]["style"]["font-size"]) {
                     if(rule["after"]["style"]['font-size'] === "17px") {
                         $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
                     } else if(rule["after"]["style"]["font-size"] === "22px") {
