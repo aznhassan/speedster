@@ -20,7 +20,7 @@ Project Authors (in reverse alphabetical order):
 * Nick McKenna 
 * Hassan Sufi <hsufi>
 
-Project Status: Fully functional, no known bugs, with proper documentation and test suite. 
+Project Status: Fully functional, no known bugs, 0 checkstyle errors, with proper documentation and test suite. 
 
 How to build the program: mvn package
 
@@ -33,7 +33,6 @@ GUI by default opens at: http://localhost:4567/notes
 How to run the tests: 
 
 * mvn package will run all of the JUnit tests.
-
 
  _________________________________________
 / Findbugs you are far too faint of heart \
