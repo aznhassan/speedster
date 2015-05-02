@@ -14,91 +14,80 @@
    - Lets users add new styles ny folder
    - Can delete existing styles
    - Each new style form features optional additional styling for text after the rule trigger word.
- */
+   */
 
 
- 
+
 
 $(document).ready(function() {
 
     // variables/DOM elements needed
-    // var editStyleButton = document.getElementById("");
-    var folder_num_counter = 0;
-    var prevEditingHTML = null;
-
-    // window.glob 
-
-    
-/* JSON format for received folders from the server
-
-{
-    "folder_id":id,
-    "folder_name":name,
-    "notes": [{
-                "note_id":id,
-                "note_name":name
-              },
-              {
-                "note_id":id,
-                "note_name":name
-              }]
-}
-
-
-
-*/
-     var fList = [];
-
-     folder_num_counter = fList.length;
+    var prevEditingHTML = null;             // prev HTML of the style overlay
+    var foldersList = [];                   // global list of existing folders
 
     /**
      * Handles getting all metadata for folders and within them notes
-     * adding them to the DOM as a list to be displayed/
-     */
-    function getAllMetadata() {
-        var getParams = {
+     * adding them to the DOM as a list to be displayed
+     * The JSON format for any folder object in the folder list:
 
+        {
+            "folder_id":id,
+            "folder_name":name,
+            "notes": [{
+                        "note_id":id,
+                        "note_name":name
+                      },
+                      {
+                        "note_id":id,
+                        "note_name":name
+                      }]
         }
 
-        $.get("/notes", getParams, function(responseJSON) {
+        */
+        (function getAllMetadata() {
+            $.get("/notes", function(responseJSON) {
             // var responseObject = JSON.parse(responseJSON);
             
             // assuming server returns 'List<JSONStrings> folders'.
             // var folders = responseObject.folder;
-            var folders = fList;
+            var folders = foldersList;
             var json = $(".data");
             var jsonArray = JSON.parse(json.text());
-            fList = jsonArray;
+            foldersList = jsonArray;
             displayTitles(jsonArray);
         });
-    }
+        })();
 
-
-    getAllMetadata();
 
 
     /**
-     * Display note and folder titles on the DOM
+     * Handles creating the DOM elements for displaying
+     * folder and note titles on the main page
      */
-     function displayTitles(folderList) {
-        
+    function displayTitles(folderList) {
+
+        // go over the list of folders
         for(var i = 0; i < folderList.length; i++) {
+
+            // create the folder name div
             var folder_div = document.createElement("div");
             folder_div.className = "folder_name_div";
             folder_div.id = folderList[i].folder_id;
-  
             $(folder_div).attr('data-folder',folderList[i]);
+
+            // header span to hold folder title
             var header_span = document.createElement('div');
             header_span.className = 'folder_header_span';
             header_span.innerHTML = '<span class="title">' + folderList[i].folder_name + '</span>';
-
             $(folder_div).html(header_span);
+
+            // append the + icon, delete icon and flashcard icon
             createCircleDiv(folder_div, header_span);
-          
-            $(header_span).append('<div class="delete_icon" id="delete_icon_' + fList[i].folder_id + '"></div>');
+            $(header_span).append('<div class="delete_icon" id="delete_icon_' + foldersList[i].folder_id + '"></div>');
             createFlashcardDiv(header_span, folderList[i].folder_name);
             $(header_span).append('<br>');
 
+            // set icon visibililty on hover
             $(header_span).hover(function() {
                 $(this).find('.delete_icon')[0].style.visibility = 'visible';
                 $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
@@ -108,53 +97,62 @@ $(document).ready(function() {
                 $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
             });
 
-            
+            // create a main div for each folder to hold it's note titles
             main_note_div = document.createElement('main_note_div');
             main_note_div.className = 'main_note_div';
             folder_div.appendChild(main_note_div);
-        
-            
 
-            
-            $(folder_div).find('.delete_icon').bind('click', {div: folder_div, name: fList[i].folder_name, id: fList[i].folder_id}, function(event) {
+            // bind click handler to delete icon
+            // sends post request to delete the folder.
+            var deleteParam = {
+                div: folder_div, 
+                name: foldersList[i].folder_name, 
+                id: foldersList[i].folder_id
+            };
+
+            $(folder_div).find('.delete_icon').bind('click', deleteParam, function(event) {
                 var postParam = {
                     folder: event.data.name
                 }
                 
-                
                 $.post('/deleteFolder', postParam, function(responseJSON) {
-                    // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
-                    // appropriately.
-                    // window.location.href = '/notes';
                     $(event.data.div).remove();
 
-                    // #TODO: remove folder from edit style menu as well!
-                    // edit: request for the updated folder list from server and update the global varible 'fList'
+                    // get an updated list of folders from the server and update the jS global list.
                     $.get('/moreNotes', postParam, function(responseJSON) {
-                        var responseObject = JSON.parse(responseJSON);
-                        fList = responseObject;
+                        foldersList = JSON.parse(responseJSON);
                     });
-
                 });
             });
-            
 
-
-
+            // iterate over the notes for this folder and add them to the DOM
             for(var j = 0; j < folderList[i].notes.length; j++) {
+
+                // create divs for the note titles 
                 var notes_div = document.createElement("div");
                 notes_div.className = "note_name_div";
                 notes_div.id = folderList[i].notes[j].note_id;
                 notes_div.innerHTML = '<span class="note_name">' + folderList[i].notes[j].note_name + '</span>';
+
+                // add delete icon
                 $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
                 main_note_div.appendChild(notes_div);
+
+                // bind click handler that redirects clicking the note name div to the note itself
+                // the note opens in a separate tab.
                 $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
                     window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
                 });
 
-                // $(notes_div).find('.delete_icon')[0].style.float = 'right';
+                var deleteParam = {
+                    main_div: main_note_div, 
+                    div: notes_div, 
+                    id: folderList[i].notes[j].note_id, 
+                    folder: folderList[i].folder_name
+                }
 
-                $(notes_div).find('.delete_icon').bind('click', {main_div: main_note_div, div: notes_div, id: folderList[i].notes[j].note_id, folder: folderList[i].folder_name}, function(event) {
+                // bind click handler for note deletion
+                $(notes_div).find('.delete_icon').bind('click', deleteParam, function(event) {
                     event.preventDefault();
                     event.stopPropagation();
                     var postParam = {
@@ -162,10 +160,8 @@ $(document).ready(function() {
                         subject: event.data.folder
                     }
 
-                    // #TODO response is a boolean indicating successful deletion, 
-                    // handle it.
+                    // sends post request to server to delete the note and updates the DOM
                     $.post('/deleteNote', postParam, function(responseJSON) {
-                        // window.location.href = '/notes';
                         $(event.data.div).remove();
                         if(event.data.main_div.innerHTML === "") {
                             $(event.data.main_div).slideUp('fast');
@@ -180,43 +176,37 @@ $(document).ready(function() {
                 });
             }
 
+            // the list of notes is collapsed display by default.
             if(main_note_div) {
                 $(main_note_div)[0].style.display='none';
             }
             
-
+            // notes list can be toggled into display by clicking the folder title
             $(folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
                 if(event.data.notes.innerHTML !== "") {
                     $(event.data.notes).slideToggle(175);
                 }
             });
 
-
-
             $('#main-div').append(folder_div);
-
         }
-     }
+    }
 
-     /**
-      * Helper function to create the 'add section + sign button'
-      */
-     function createCircleDiv(folderDiv, header_span) {
+    /**
+     * Helper function to create the 'add section + sign button'
+     */
+    function createCircleDiv(folderDiv, header_span) {
         var circle = document.createElement("div");
         circle.className = "circle_image";
-        // circle.innerText = '+';
         header_span.appendChild(circle);
-        // $(circle).attr('contenteditable','false');
         $(circle).click(function(event) {
             createNewNote(folderDiv);
-            
-            // #TODO: send info about the new note to server.
         });
-     }
+    }
 
 
      /**
-      * Helper function to create flashcard button
+      * Helper function to create flashcard 'REVIEW' button
       */
     function createFlashcardDiv(folderDiv, folderName) {
         var flashcardIcon = document.createElement('div');
@@ -225,93 +215,40 @@ $(document).ready(function() {
         folderDiv.appendChild(flashcardIcon);
         $(flashcardIcon).attr('contenteditable', 'false');
         $(flashcardIcon).click(function(event) {
-          window.open('/getNewSession/' + encodeURIComponent(folderName), '_blank');
-         //   $.get('/getNewSession/' + encodeURIComponent(folderName), function() {});
+            window.open('/getNewSession/' + encodeURIComponent(folderName), '_blank');
         });
     }
 
 
 
-     /**
-      * Add a new editable note title div when a user adds one,
-      */
-     function createNewNote(folderDiv, header_span) {
+    /**
+     * Adds an input field when user clicks the '+' icon on a folder
+     * Once the server creates the note and the request is completed
+     * The input field turns into a non-editable div title
+     * The title can be changed by going into the note and changing the note title
+     */
+    function createNewNote(folderDiv, header_span) {
+
+        // create new note
         var new_note_div = document.createElement("div");
         new_note_div.className = "new_note_name_div";
-        // $(new_note_div).attr('contenteditable','true');
         $(new_note_div).html('<input type="text" class="note_title note_title_input" placeholder="NOTE NAME" maxlength="30"></input>');
         $(new_note_div).find('.note_title').attr('contenteditable','true');
         $(new_note_div).attr('folder', $(folderDiv).find('.title')[0].innerText);
         new_note_div.id = -1;
         
-        // new_note_div.innerHTML = "NEW  NOTE";
+        // append to the folder's main note div
         $(new_note_div).append('<div class="delete_icon" id="delete_icon_' + -1 + '"></div>');
         folderDiv.appendChild(new_note_div);
 
+        // triggers the saving action bound to focusput on enter key press.
         $(new_note_div).find('.note_title').keyup(function(event) {
             if(event.keyCode === 13 || event.which === 13) {
-                 if(this.value !== "") {
-                    var postParam = {
-                        folder_id :folderDiv.id,
-                        folder_name : $(folderDiv).find('.title')[0].innerText,
-                        note_id : -1,
-                        note_name : this.value
-                    };
-
-                    // post request to save note
-                    // #TODO: response also contains boolean indicating successful addition, deal with it
-                    $.post('/newNote', postParam, function(responseJSON) {
-                        // parse response for note data to display
-                        var responseObject = JSON.parse(responseJSON);
-
-                        $(new_note_div).removeClass('new_note_name_div');
-                        $(new_note_div).html('<span class="note_name">' + postParam.note_name + '</span>');
-                        $(new_note_div).addClass('note_name_div');
-                        new_note_div.id = responseObject.note_id;
-                        $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
-                        
-                        $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
-                            window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
-                        });
-
-                        // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
-
-                        $(new_note_div).find('.delete_icon').bind('click', {folder_div: folderDiv, div: new_note_div, folder: postParam.folder_name}, function(event) {
-                            event.stopPropagation();
-                            event.preventDefault();
-                            var postParam = {
-                                note_id: this.id,
-                                subject: event.data.folder
-                            }
-
-                            // #TODO response is a boolean indicating successful deletion, 
-                            // handle it.
-                            $.post('/deleteNote', postParam, function(responseJSON) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                                // window.location.href = '/notes';
-                                $(event.data.div).remove();
-                                if($(event.data.folder_div).find('.main_note_div')[0].innerHTML === "") {
-                                    $(event.data.folder_div).find('.main_note_div').slideUp('fast');
-                                }
-
-                            });
-                        });
-
-                        $(new_note_div).hover(function() {
-                            $(this).find('.delete_icon').css({'visibility':'visible'}); 
-                        },function() {
-                            $(this).find('.delete_icon').css({'visibility':'hidden'}); 
-                        });
-
-                        $(folderDiv).find('.main_note_div').append(new_note_div);
-                    });
-                
-                }
+               $(new_note_div).find('.note_title').trigger('focusout');
             }
         });
-        
 
+        // saves note if user focuses out of the note name input
         $(new_note_div).find('.note_title').focusout(function() {
             if(this.value !== "") {
                 var postParam = {
@@ -321,24 +258,22 @@ $(document).ready(function() {
                     note_name : this.value
                 };
 
-                // post request to save note
-                // #TODO: response also contains boolean indicating successful addition, deal with it
+                // post request to save the note
                 $.post('/newNote', postParam, function(responseJSON) {
-                    // parse response for note data to display
-		            var responseObject = JSON.parse(responseJSON);
-
+                    var responseObject = JSON.parse(responseJSON);
+                    // convert the text input to an actual div with the delete icon
                     $(new_note_div).removeClass('new_note_name_div');
                     $(new_note_div).html('<span class="note_name">' + postParam.note_name + '</span>');
                     $(new_note_div).addClass('note_name_div');
                     new_note_div.id = responseObject.note_id;
-		            $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
+                    $(new_note_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + new_note_div.id + '"></div>');
                     
+                    // bind click handler to redirect to the note page.
                     $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
                         window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
                     });
 
-                    // $(new_note_div).find('.delete_icon')[0].style.float = 'right';
-
+                    // binds click handler to the delete icon
                     $(new_note_div).find('.delete_icon').bind('click', {folder_div: folderDiv, div: new_note_div, folder: postParam.folder_name}, function(event) {
                         event.stopPropagation();
                         event.preventDefault();
@@ -347,12 +282,10 @@ $(document).ready(function() {
                             subject: event.data.folder
                         }
 
-                        // #TODO response is a boolean indicating successful deletion, 
-                        // handle it.
+                        // post request for note deletion
                         $.post('/deleteNote', postParam, function(responseJSON) {
                             event.preventDefault();
                             event.stopPropagation();
-                            // window.location.href = '/notes';
                             $(event.data.div).remove();
                             if($(event.data.folder_div).find('.main_note_div')[0].innerHTML === "") {
                                 $(event.data.folder_div).find('.main_note_div').slideUp('fast');
@@ -361,19 +294,19 @@ $(document).ready(function() {
                         });
                     });
 
+                    // set hover handler to see the delete icon
                     $(new_note_div).hover(function() {
                         $(this).find('.delete_icon').css({'visibility':'visible'}); 
                     },function() {
                         $(this).find('.delete_icon').css({'visibility':'hidden'}); 
                     });
-
+                    /// add the div to the note div of the folder.
                     $(folderDiv).find('.main_note_div').append(new_note_div);
                 });
-                
+
             }
 
         }); 
-        
     }
 
 
@@ -392,7 +325,7 @@ $(document).ready(function() {
     This folder contains a temporary id
 
     (This will be sent as stringified JSON)
-*/
+    */
 
 
 /* Format to pass back newly created notes to the server
@@ -411,13 +344,13 @@ $(document).ready(function() {
     The server will assign it it's note id and also change
     the folder id if needed.
 
-*/
+    */
     
 
      /**
       * click handler for the add new section button
       */
-    function addSectionClick() {
+      function addSectionClick() {
         var new_folder_div = document.createElement("div");
         var header_span = document.createElement('div');
         header_span.className = 'folder_header_span_new';
@@ -434,92 +367,7 @@ $(document).ready(function() {
 
         $(new_folder_div).find('.title').keyup(function(event) {
             if(event.keyCode === 13 || event.which === 13) {
-                 if(this.value !== "") {
-                    var folder_data = {
-                        "folder_id": -1,
-                        "title": this.value
-                    };
-
-                    $.get('/newFolder', folder_data, function(responseJSON) {
-                        var responseObject = JSON.parse(responseJSON);
-                        var folder_id = responseObject.id;
-                        var folder_name = responseObject.title;
-                        new_folder_div.id = folder_id;
-                        header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
-                        $(header_span).removeClass('folder_header_span_new');
-                        header_span.className = 'folder_header_span';
-                        $(new_folder_div).html(header_span);
-                        createCircleDiv(new_folder_div, header_span);
-                      
-                        $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
-                        createFlashcardDiv(header_span, folder_name);
-                        $(header_span).append('<br>');
-
-                        $(header_span).hover(function() {
-                            $(this).find('.delete_icon')[0].style.visibility = 'visible';
-                            $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
-
-                        }, function() {
-                            $(this).find('.delete_icon')[0].style.visibility = 'hidden';
-                            $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
-                        });
-
-                        $(new_folder_div).removeClass('new_folder_name_div');
-                        $(new_folder_div).addClass('folder_name_div');
-
-                        var main_note_div = document.createElement('div');
-                        main_note_div.className = 'main_note_div';
-                        new_folder_div.appendChild(main_note_div);
-
-                         $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
-                            
-                            if(event.data.notes.innerHTML !== "") {
-                                $(event.data.notes).slideToggle(175);
-                            }
-                        });
-
-
-                        $(new_folder_div).find('.delete_icon').bind('click', {div: new_folder_div, name: folder_name, id: folder_id}, function(event) {
-                            var postParam = {
-                                folder: event.data.name
-                            }
-                    
-                    
-                            $.post('/deleteFolder', postParam, function(responseJSON) {
-                                // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
-                                // appropriately.
-                                // window.location.href = '/notes';
-                                $(event.data.div).remove();
-
-                                // #TODO: remove folder from edit style menu as well!
-                                // edit: request for the updated folder list from server and update the global varible 'fList'
-                                $.get('/moreNotes', postParam, function(responseJSON) {
-                                    var responseObject = JSON.parse(responseJSON);
-                                    fList = responseObject;
-                                });
-
-                            });
-                        });
-
-                         var getParams = {};
-
-                         $.get('/moreNotes', getParams, function(responseJSON) {
-                            var responseObject= JSON.parse(responseJSON);
-                            fList = responseObject;
-                         });
-
-                         
-
-                        // #TODO: Add a corresonding folder thing to the style overlay,
-                        // edit: request for an updated folder list from the server and reassign the variable 'fList'
-
-                    });
-                }
-            }
-        })
-
-        $(new_folder_div).find('.title').focusout(function() {
-            if(this.value !== "") {
+               if(this.value !== "") {
                 var folder_data = {
                     "folder_id": -1,
                     "title": this.value
@@ -535,7 +383,7 @@ $(document).ready(function() {
                     header_span.className = 'folder_header_span';
                     $(new_folder_div).html(header_span);
                     createCircleDiv(new_folder_div, header_span);
-                  
+
                     $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
                     createFlashcardDiv(header_span, folder_name);
                     $(header_span).append('<br>');
@@ -556,8 +404,8 @@ $(document).ready(function() {
                     main_note_div.className = 'main_note_div';
                     new_folder_div.appendChild(main_note_div);
 
-                     $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
-                        
+                    $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
+
                         if(event.data.notes.innerHTML !== "") {
                             $(event.data.notes).slideToggle(175);
                         }
@@ -568,43 +416,128 @@ $(document).ready(function() {
                         var postParam = {
                             folder: event.data.name
                         }
-                
-                
+
+
                         $.post('/deleteFolder', postParam, function(responseJSON) {
+                                // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
+                                // appropriately.
+                                // window.location.href = '/notes';
+                                $(event.data.div).remove();
+
+                                // #TODO: remove folder from edit style menu as well!
+                                // edit: request for the updated folder list from server and update the global varible 'foldersList'
+                                $.get('/moreNotes', postParam, function(responseJSON) {
+                                    var responseObject = JSON.parse(responseJSON);
+                                    foldersList = responseObject;
+                                });
+
+                            });
+                    });
+
+var getParams = {};
+
+$.get('/moreNotes', getParams, function(responseJSON) {
+    var responseObject= JSON.parse(responseJSON);
+    foldersList = responseObject;
+});
+
+
+
+                        // #TODO: Add a corresonding folder thing to the style overlay,
+                        // edit: request for an updated folder list from the server and reassign the variable 'foldersList'
+
+                    });
+}
+}
+})
+
+$(new_folder_div).find('.title').focusout(function() {
+    if(this.value !== "") {
+        var folder_data = {
+            "folder_id": -1,
+            "title": this.value
+        };
+
+        $.get('/newFolder', folder_data, function(responseJSON) {
+            var responseObject = JSON.parse(responseJSON);
+            var folder_id = responseObject.id;
+            var folder_name = responseObject.title;
+            new_folder_div.id = folder_id;
+            header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
+            $(header_span).removeClass('folder_header_span_new');
+            header_span.className = 'folder_header_span';
+            $(new_folder_div).html(header_span);
+            createCircleDiv(new_folder_div, header_span);
+
+            $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
+            createFlashcardDiv(header_span, folder_name);
+            $(header_span).append('<br>');
+
+            $(header_span).hover(function() {
+                $(this).find('.delete_icon')[0].style.visibility = 'visible';
+                $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
+
+            }, function() {
+                $(this).find('.delete_icon')[0].style.visibility = 'hidden';
+                $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
+            });
+
+            $(new_folder_div).removeClass('new_folder_name_div');
+            $(new_folder_div).addClass('folder_name_div');
+
+            var main_note_div = document.createElement('div');
+            main_note_div.className = 'main_note_div';
+            new_folder_div.appendChild(main_note_div);
+
+            $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
+
+                if(event.data.notes.innerHTML !== "") {
+                    $(event.data.notes).slideToggle(175);
+                }
+            });
+
+
+            $(new_folder_div).find('.delete_icon').bind('click', {div: new_folder_div, name: folder_name, id: folder_id}, function(event) {
+                var postParam = {
+                    folder: event.data.name
+                }
+                
+                
+                $.post('/deleteFolder', postParam, function(responseJSON) {
                             // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
                             // appropriately.
                             // window.location.href = '/notes';
                             $(event.data.div).remove();
 
                             // #TODO: remove folder from edit style menu as well!
-                            // edit: request for the updated folder list from server and update the global varible 'fList'
+                            // edit: request for the updated folder list from server and update the global varible 'foldersList'
                             $.get('/moreNotes', postParam, function(responseJSON) {
                                 var responseObject = JSON.parse(responseJSON);
-                                fList = responseObject;
+                                foldersList = responseObject;
                             });
 
                         });
-                    });
+            });
 
-                     var getParams = {};
+var getParams = {};
 
-                     $.get('/moreNotes', getParams, function(responseJSON) {
-                        var responseObject= JSON.parse(responseJSON);
-                        fList = responseObject;
-                     });
+$.get('/moreNotes', getParams, function(responseJSON) {
+    var responseObject= JSON.parse(responseJSON);
+    foldersList = responseObject;
+});
 
-                     
+
 
                     // #TODO: Add a corresonding folder thing to the style overlay,
-                    // edit: request for an updated folder list from the server and reassign the variable 'fList'
+                    // edit: request for an updated folder list from the server and reassign the variable 'foldersList'
 
                 });
-            }
-        });
-       
-        $('#main-div').append(new_folder_div);
+}
+});
 
-    }
+$('#main-div').append(new_folder_div);
+
+}
 
     // attach handler to the button
     $('#add_section_button').click(function(event) {
@@ -629,76 +562,76 @@ $(document).ready(function() {
      * creates all HTML of the edit styles overlay
      * 
      */
-    function createEditStyleDivs() {
+     function createEditStyleDivs() {
         // for each existing folder
 
-        for(var i = 0; i < fList.length; i++) {
+        for(var i = 0; i < foldersList.length; i++) {
             // create a style div
             var style_div = document.createElement('div');
             $('.example_content')[0].appendChild(style_div);
             style_div.className = 'style_div';
-            style_div.id = fList[i].folder_id;
+            style_div.id = foldersList[i].folder_id;
             
 
             // for each folder's style div, create a toolbar per style text to be edited
 
             /* $(style_div).html('<h2 class="folder_style_header">' +  
-                fList[i].folder_name +   
-                '</h2>' + createStyleToolbar('note', fList[i].folder_id) + 
-                createStyleToolbar('q', fList[i].folder_id) + createStyleToolbar('section', fList[i].folder_id)); */
-            
-            $(style_div).html('<span class="folder_style_header">' +   
-            
-            '<span class="circle collapse-main arrow-right" id="collapse-main_' + fList[i].folder_id + '"></span>' + '<span>' + '       ' + 
-            fList[i].folder_name  + '</span>' + 
-            '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
-                '<span class="new-style-header-to-add"> New Style <span class="circle_image" id="style-circle"></span></span>' + 
-                '<div class="rule_div" id="rule_div_' + fList[i].folder_id + '">' +
-                'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '" maxlength="20"></input><br>    \
-                should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String" maxlength="15"></input><br>  \
-                and have these styles: <br>' + 
-                createStyleToolbar('start-style-bar', fList[i].folder_id, "") + 
-                '<span class="extra_styles_title" id="extra_styles_title_' + fList[i].folder_id + '"><span class="circle additional-style-collapse arrow-right"><span class="arrow-down"></span></span>' +
-                '  Additional Styles</span><br>' +
-                '<div class="extra_styles_div" id="extra_styles_div_' + fList[i].folder_id + '"><span>Extend these styles until</span><br>'  
-                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + fList[i].folder_id + '"></input>  Newline<br><br>' + 
-                'Style text after this rule until<br>'
-                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + fList[i].folder_id + '"></input>  Newline<br>' + 
-                '<span style="margin-left:3%" id="span_to_toggle_' + fList[i].folder_id + '">with these styles</span> <br>' 
-                + createStyleToolbar('text-after-style-bar', fList[i].folder_id, "") +
-                '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + fList[i].folder_id + '"></input>  Box this rule<br>' +
-                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + fList[i].folder_id + '"></input>   Center this rule<br><br></div><br>' +
-                '<div class="submit-button" id="submit_' + fList[i].folder_id + '">SAVE</div>' + 
-                '</div>' + 
-            '</div>'); 
+                foldersList[i].folder_name +   
+                '</h2>' + createStyleToolbar('note', foldersList[i].folder_id) + 
+                createStyleToolbar('q', foldersList[i].folder_id) + createStyleToolbar('section', foldersList[i].folder_id)); */
 
-            $('#newline-trigger_' + fList[i].folder_id).bind('click', {id: fList[i].folder_id }, function(event) {
-                if(this.checked) {
-                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = true;
-                } else {
-                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = false;
-                }
-            });
+$(style_div).html('<span class="folder_style_header">' +   
 
-            $('#newline-text-after_' + fList[i].folder_id).bind('click', {id: fList[i].folder_id }, function(event) {
-                if(this.checked) {
-                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
-                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
+    '<span class="circle collapse-main arrow-right" id="collapse-main_' + foldersList[i].folder_id + '"></span>' + '<span>' + '       ' + 
+    foldersList[i].folder_name  + '</span>' + 
+    '<div class="inner_style_div" id="inner_style_div_' + foldersList[i].folder_id + '">' + 
+    '<span class="new-style-header-to-add"> New Style <span class="circle_image" id="style-circle"></span></span>' + 
+    '<div class="rule_div" id="rule_div_' + foldersList[i].folder_id + '">' +
+    'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + foldersList[i].folder_id + '" maxlength="20"></input><br>    \
+    should start with <input type="text" class="rulestart" id="rulestart_' + foldersList[i].folder_id + '" placeholder="Character String" maxlength="15"></input><br>  \
+    and have these styles: <br>' + 
+    createStyleToolbar('start-style-bar', foldersList[i].folder_id, "") + 
+    '<span class="extra_styles_title" id="extra_styles_title_' + foldersList[i].folder_id + '"><span class="circle additional-style-collapse arrow-right"><span class="arrow-down"></span></span>' +
+    '  Additional Styles</span><br>' +
+    '<div class="extra_styles_div" id="extra_styles_div_' + foldersList[i].folder_id + '"><span>Extend these styles until</span><br>'  
+    + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + foldersList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
+    <input type="checkbox" class="newline-trigger" id="newline-trigger_' + foldersList[i].folder_id + '"></input>  Newline<br><br>' + 
+    'Style text after this rule until<br>'
+    + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + foldersList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
+    <input type="checkbox" class="newline-text-after" id="newline-text-after_' + foldersList[i].folder_id + '"></input>  Newline<br>' + 
+    '<span style="margin-left:3%" id="span_to_toggle_' + foldersList[i].folder_id + '">with these styles</span> <br>' 
+    + createStyleToolbar('text-after-style-bar', foldersList[i].folder_id, "") +
+    '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + foldersList[i].folder_id + '"></input>  Box this rule<br>' +
+    '<input type="checkbox" name="centered" value="center" class="center" id="center_' + foldersList[i].folder_id + '"></input>   Center this rule<br><br></div><br>' +
+    '<div class="submit-button" id="submit_' + foldersList[i].folder_id + '">SAVE</div>' + 
+    '</div>' + 
+    '</div>'); 
 
-                } else {
-                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
-                    if($('#text-after-end-sequence_' + event.data.id)[0].value === "") {
-                        $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
-                        $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
-                    }
-                }
-            });
+$('#newline-trigger_' + foldersList[i].folder_id).bind('click', {id: foldersList[i].folder_id }, function(event) {
+    if(this.checked) {
+        $('#trigger-end-sequence_' + event.data.id)[0].disabled = true;
+    } else {
+        $('#trigger-end-sequence_' + event.data.id)[0].disabled = false;
+    }
+});
 
-            $('#text-after-end-sequence_' + fList[i].folder_id).bind('keyup', {id: fList[i].folder_id}, function(event) {
-                if(this.value !== "" || $('#newline-text-after_' + event.data.id)[0].checked) {
+$('#newline-text-after_' + foldersList[i].folder_id).bind('click', {id: foldersList[i].folder_id }, function(event) {
+    if(this.checked) {
+        $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
+        $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
+        $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
+
+    } else {
+        $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
+        if($('#text-after-end-sequence_' + event.data.id)[0].value === "") {
+            $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
+            $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
+        }
+    }
+});
+
+$('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: foldersList[i].folder_id}, function(event) {
+    if(this.value !== "" || $('#newline-text-after_' + event.data.id)[0].checked) {
                     // disable everything below it
                     $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
                     $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
@@ -710,11 +643,11 @@ $(document).ready(function() {
             });
 
             // disable everything below the text-after-end-sequence (style text after this rule)
-           $('#toolbar_text-after-style-bar' + fList[i].folder_id)[0].style.visibility = "hidden";
-           $('#span_to_toggle_' + fList[i].folder_id)[0].style.visibility = "hidden";
+            $('#toolbar_text-after-style-bar' + foldersList[i].folder_id)[0].style.visibility = "hidden";
+            $('#span_to_toggle_' + foldersList[i].folder_id)[0].style.visibility = "hidden";
             
 
-            $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
+            $(style_div).find('.additional-style-collapse').bind('click', {id:foldersList[i].folder_id}, function(event) {
                 $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
                     $(this).removeClass('arrow-right');
@@ -725,15 +658,15 @@ $(document).ready(function() {
                     $(this).addClass('arrow-right');
                 }
             });
-           
-            $(style_div).find('#style-circle').bind('click', {id: fList[i].folder_id}, function(event) {
+
+            $(style_div).find('#style-circle').bind('click', {id: foldersList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
                 var divToCollapse = document.getElementById('rule_div_' + folderID);
                 $(divToCollapse).slideToggle(175);
                 
             });
 
-            $(style_div).find('.collapse-main').bind('click', {id: fList[i].folder_id}, function(event) {
+            $(style_div).find('.collapse-main').bind('click', {id: foldersList[i].folder_id}, function(event) {
                 $('#inner_style_div_' + event.data.id).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
                     $(this).removeClass('arrow-right');
@@ -745,14 +678,14 @@ $(document).ready(function() {
                 }
             });
 
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-weight');
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'font-style');
-            setTextStyleToggle('text-after-style-bar', fList[i].folder_id, "", 'text-decoration');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-weight');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'font-style');
-            setTextStyleToggle('start-style-bar', fList[i].folder_id, "", 'text-decoration');
+            setTextStyleToggle('text-after-style-bar', foldersList[i].folder_id, "", 'font-weight');
+            setTextStyleToggle('text-after-style-bar', foldersList[i].folder_id, "", 'font-style');
+            setTextStyleToggle('text-after-style-bar', foldersList[i].folder_id, "", 'text-decoration');
+            setTextStyleToggle('start-style-bar', foldersList[i].folder_id, "", 'font-weight');
+            setTextStyleToggle('start-style-bar', foldersList[i].folder_id, "", 'font-style');
+            setTextStyleToggle('start-style-bar', foldersList[i].folder_id, "", 'text-decoration');
 
-            getSubjectRules(style_div, fList[i].folder_id, fList[i].folder_name, "");
+            getSubjectRules(style_div, foldersList[i].folder_id, foldersList[i].folder_name, "");
         }
 
 
@@ -761,9 +694,9 @@ $(document).ready(function() {
         var rules = [];
         $.get('/getRules', getParams, function(responseJSON) {
             console.log("RULES RECIEVED:   " + responseJSON);
-             rules = JSON.parse(responseJSON);
+            rules = JSON.parse(responseJSON);
 
-             createExistingStyleRules(rules);
+            createExistingStyleRules(rules);
 
         });
 
@@ -792,7 +725,7 @@ $(document).ready(function() {
         var button = $('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
-                
+
                 if($(this).attr('value') === 'none') {
                     var new_val = $(this).attr('name');
                     $(this).attr('value', new_val);
@@ -816,28 +749,28 @@ $(document).ready(function() {
      * or, for custom styles
      * ---- >     start-style-bar'id'
 
-     ex: createStyleToolbar('text-after-style-bar', fList[i].folder_id)
+     ex: createStyleToolbar('text-after-style-bar', foldersList[i].folder_id)
      id of bold button:   text-after-style-bar'folder_id'_font-weight
      */
-    function createStyleToolbar(style, id, rulename) {
+     function createStyleToolbar(style, id, rulename) {
         return '<div class="style-toolbar" id="toolbar_' + style + id + rulename + '">  \
-            <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-            <div class="italicButton" id="' +  style + id + rulename + '_font-style" value="none" name="italic">i</div> \
-            <div class="underlineButton" id="' + style + id + rulename + '_text-decoration" value="none" name="underline">U</div> \
-            <select class="font-family" id="' + style + id + rulename + '_font-family">    \
-                <option selected="selected" disabled="disabled">Font Type</option>  \
-                <option value="Playfair Display">Playfair Display</option> \
-                <option value="Bitter">Bitter</option> \
-                <option value="Open Sans">Open Sans</option> \
-                <option value="Merriweather">Merriweather</option> \
-                <option value="Palatino">Palatino</option>  \
-            </select> \
-            <select class="font-size" id="' + style + id + rulename + '_font-size" >   \
-                <option selected="selected" disabled="disabled">Font Size</option>  \
-                <option value="Small">Small</option>    \
-                <option value="Medium">Medium</option>  \
-                <option value="Big">Big</option>    \
-            </select> \
+        <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
+        <div class="italicButton" id="' +  style + id + rulename + '_font-style" value="none" name="italic">i</div> \
+        <div class="underlineButton" id="' + style + id + rulename + '_text-decoration" value="none" name="underline">U</div> \
+        <select class="font-family" id="' + style + id + rulename + '_font-family">    \
+        <option selected="selected" disabled="disabled">Font Type</option>  \
+        <option value="Playfair Display">Playfair Display</option> \
+        <option value="Bitter">Bitter</option> \
+        <option value="Open Sans">Open Sans</option> \
+        <option value="Merriweather">Merriweather</option> \
+        <option value="Palatino">Palatino</option>  \
+        </select> \
+        <select class="font-size" id="' + style + id + rulename + '_font-size" >   \
+        <option selected="selected" disabled="disabled">Font Size</option>  \
+        <option value="Small">Small</option>    \
+        <option value="Medium">Medium</option>  \
+        <option value="Big">Big</option>    \
+        </select> \
         </div><br><br>';
 
     }
@@ -850,9 +783,9 @@ $(document).ready(function() {
      * folderID and folderName is well... id and name of the folder
      
      */
-    function getSubjectRules(styleDiv, folderID, folderName, rulename) {
+     function getSubjectRules(styleDiv, folderID, folderName, rulename) {
         $('#submit_' + folderID + rulename).bind('click', {id: folderID, name: folderName, div: styleDiv, rule: rulename}, function(event) {
-            
+
 
             var rulesForThisFolder = getRulesList(event.data.div, event.data.id, event.data.name, event.data.rule);
 
@@ -880,12 +813,12 @@ $(document).ready(function() {
             });
             
         });
-    }
+}
 
     /** rules list of the folder given
      *
      */
-    function getRulesList(styleDiv, folder_id, folder_name, rulename) {
+     function getRulesList(styleDiv, folder_id, folder_name, rulename) {
         var rulesForThisFolder = [];
         $(styleDiv).find('.rule_div').each(function(i) {
             var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
@@ -971,8 +904,8 @@ $(document).ready(function() {
             rulesForThisFolder.push(rule);
             
         });
-        return rulesForThisFolder;
-    }
+return rulesForThisFolder;
+}
 
 
 
@@ -1006,7 +939,7 @@ $(document).ready(function() {
             !rule["trigger"]["style"]["font-family"] &&
             !rule["trigger"]["style"]["font-size"]) {
             delete rule["trigger"]["style"];
-        }
+    }
 
         // rule.after and rule.after.style
 
@@ -1037,15 +970,15 @@ $(document).ready(function() {
 
         }
 
-         if(rule["after"] && 
+        if(rule["after"] && 
             !rule["after"]["style"]["font-weight"] &&
             !rule["after"]["style"]["font-style"] &&
             !rule["after"]["style"]["text-decoration"] &&
             !rule["after"]["style"]["font-family"] &&
             !rule["after"]["style"]["font-size"]) {
             delete rule["after"]["style"];
-        }
     }
+}
 
     /**
      * get the value for the styling toolbar buttons according to their unique id
@@ -1056,7 +989,7 @@ $(document).ready(function() {
      style_type = 'font-weight'
      folder_id = folder id ...
      */
-    function getButtonValue(style_text, style_type, folder_id, rulename) {
+     function getButtonValue(style_text, style_type, folder_id, rulename) {
         // ex: note2_bold
         // alert(style_type);
         if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
@@ -1090,7 +1023,7 @@ $(document).ready(function() {
     /*
      *
      */
-    function getTriggerEndSequence(inner_div, folderID, rulename) {
+     function getTriggerEndSequence(inner_div, folderID, rulename) {
 
         return $(inner_div).find('.newline-trigger')[0].checked ? "99999999999" : document.getElementById('trigger-end-sequence_' + folderID + rulename).value;
     }
@@ -1098,11 +1031,11 @@ $(document).ready(function() {
     /*
      *
      */
-    function getAfterEndSequence(inner_div, folderID) {
+     function getAfterEndSequence(inner_div, folderID) {
         return $(inner_div).find(".newline-text-after")[0].checked ? "99999999999" : $(inner_div).find('.text-after-end-sequence')[0].value;
     }
 
-   
+
 /* 
 
 Rule:
@@ -1171,21 +1104,21 @@ Rules can take the following forms based on what is defined:
         "text-align": --
     }
 
-*/
+    */
 
 
     $('.close-button').click(function() {
         closeStyleMenu();
     });
-     
+
 
     /**
      * Click handler for the save styles button
      * #TODO: DO we need this ?
      */
-    function closeStyleMenu() {
+     function closeStyleMenu() {
         // var updated_styles = styleChangesToSave();
-      
+
         // clear the style editing overlay
         prevEditingHTML = $('.example_content').html();
         $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="close-button"></span>';
@@ -1254,7 +1187,7 @@ Rule:
             
      *
      */
-    function createExistingStyleRules(rules) {
+     function createExistingStyleRules(rules) {
         for(var i = 0; i < rules.length; i++) {
             var rule = rules[i];
 
@@ -1264,11 +1197,11 @@ Rule:
             var folder_id = rule.associated_folder_id;
             var folder_name = rule.associated_folder_name;
             var inner_div = document.getElementById('inner_style_div_' + folder_id);
-    
+
             $(inner_div).prepend('<span class="circle arrow-right existing-styles-collapse" id="existing-styles-collapse_' + folder_id + rulename_id + '"></span>' +
                 '<span class="new-style-header" id="new-style-header_' +folder_id +rulename_id+'">' + rulename + '</span>' + 
                 '<span class="delete_icon delete_icon_styles" id="delete_icon_' + folder_id + rulename_id + '"></span>' +
-            '<div class="rule_div" id="rule_div_' + folder_id + rulename_id + '">' +
+                '<div class="rule_div" id="rule_div_' + folder_id + rulename_id + '">' +
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + folder_id + rulename_id + '" maxlength="20"></input><br>    \
                 should start with <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename_id + '" placeholder="Character String" maxlength="15"></input><br>  \
                 and have these styles: <br>' + 
@@ -1289,36 +1222,36 @@ Rule:
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + folder_id + rulename_id+ '"></input>  Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center" id="center_' + folder_id + rulename_id + '"></input>   Center this rule<br><br></div>' +
                 '<div class="submit-button" id="submit_' + folder_id + rulename_id + '">SAVE</div>' + 
-            '</div><br id="line_break_' + folder_id + rulename_id +'">');
-            
-            
-
-            $('#newline-trigger_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
-                if(this.checked) {
-                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
-                } else {
-                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
-                }
-            });
+                '</div><br id="line_break_' + folder_id + rulename_id +'">');
 
 
-            $('#newline-text-after_' + folder_id + rulename_id).bind('click', {id:folder_id, name: rulename_id }, function(event) {
-                if(this.checked) {
-                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
-                    $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
 
-                } else {
-                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
-                    if($('#text-after-end-sequence_' + event.data.id + event.data.name)[0].value === "") {
-                        $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-                        $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-                    }
-                }
-            });
+$('#newline-trigger_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
+    if(this.checked) {
+        $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+    } else {
+        $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+    }
+});
 
-            $('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: folder_id, name: rulename_id}, function(event) {
-                if(this.value !== "" || $('#newline-text-after_' + event.data.id + event.data.name)[0].checked) {
+
+$('#newline-text-after_' + folder_id + rulename_id).bind('click', {id:folder_id, name: rulename_id }, function(event) {
+    if(this.checked) {
+        $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+        $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
+        $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+
+    } else {
+        $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+        if($('#text-after-end-sequence_' + event.data.id + event.data.name)[0].value === "") {
+            $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+            $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+        }
+    }
+});
+
+$('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: folder_id, name: rulename_id}, function(event) {
+    if(this.value !== "" || $('#newline-text-after_' + event.data.id + event.data.name)[0].checked) {
                     // disable everything below it
                     $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
                     $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
@@ -1329,55 +1262,55 @@ Rule:
                 }
             });
 
-            
 
 
-            
-             $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', {id: folder_id, name: rulename_id}, function(event) {
-                $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
-                if($(this).hasClass('arrow-right')) {
-                    $(this).removeClass('arrow-right');
-                    $(this).addClass('arrow-down');
-                } else {
-                    $(this).removeClass('arrow-down');
-                    $(this).addClass('arrow-right');
-                }
-            });
 
-            $('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
-                $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
-                if($(this).hasClass('arrow-right')) {
-                    $(this).removeClass('arrow-right');
-                    $(this).addClass('arrow-down');
-                } else {
-                    $(this).removeClass('arrow-down');
-                    $(this).addClass('arrow-right');
-                }
-            });
 
-            $('#delete_icon_' + folder_id + rulename_id).bind('click', {id:folder_id, folder: folder_name, rule:rulename_id}, function(event) {
-                var list = getRulesList(document.getElementById(event.data.id), event.data.id, event.data.folder, event.data.rule);
-                var deleted_rule_name = $('#new-style-header_' + event.data.id + event.data.rule)[0].innerText;
-               
+$('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', {id: folder_id, name: rulename_id}, function(event) {
+    $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
+    if($(this).hasClass('arrow-right')) {
+        $(this).removeClass('arrow-right');
+        $(this).addClass('arrow-down');
+    } else {
+        $(this).removeClass('arrow-down');
+        $(this).addClass('arrow-right');
+    }
+});
 
-                var postParam = {
-                    rules_list : JSON.stringify(list),
-                    deleted_rule: deleted_rule_name,
-                    subject: event.data.folder
-                }
+$('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
+    $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
+    if($(this).hasClass('arrow-right')) {
+        $(this).removeClass('arrow-right');
+        $(this).addClass('arrow-down');
+    } else {
+        $(this).removeClass('arrow-down');
+        $(this).addClass('arrow-right');
+    }
+});
 
-                $.post('/deleteRule', postParam, function(responseJSON) {
-                    $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
-                    $('#new-style-header_' + event.data.id + event.data.rule).remove();
-                    $('#delete_icon_' + event.data.id + event.data.rule).remove();
-                    $('#rule_div_' + event.data.id + event.data.rule).remove();
-                    $('#line_break_' + event.data.id + event.data.rule).remove();
-                });
-            });
+$('#delete_icon_' + folder_id + rulename_id).bind('click', {id:folder_id, folder: folder_name, rule:rulename_id}, function(event) {
+    var list = getRulesList(document.getElementById(event.data.id), event.data.id, event.data.folder, event.data.rule);
+    var deleted_rule_name = $('#new-style-header_' + event.data.id + event.data.rule)[0].innerText;
 
-            var ruleform = $(inner_div).find('#rule_div_' + folder_id + rulename_id);
 
-            if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
+    var postParam = {
+        rules_list : JSON.stringify(list),
+        deleted_rule: deleted_rule_name,
+        subject: event.data.folder
+    }
+
+    $.post('/deleteRule', postParam, function(responseJSON) {
+        $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
+        $('#new-style-header_' + event.data.id + event.data.rule).remove();
+        $('#delete_icon_' + event.data.id + event.data.rule).remove();
+        $('#rule_div_' + event.data.id + event.data.rule).remove();
+        $('#line_break_' + event.data.id + event.data.rule).remove();
+    });
+});
+
+var ruleform = $(inner_div).find('#rule_div_' + folder_id + rulename_id);
+
+if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
 
 
                 // populate rulename
@@ -1389,7 +1322,7 @@ Rule:
 
                 // populate start (trigger word) style bar
                 // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-               
+
                 console.log(rule["container"]);
                 if(rule.trigger["style"] && rule.trigger["style"]["font-weight"] === "bold") {
                     $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value','bold');
@@ -1402,37 +1335,37 @@ Rule:
 
                 if(rule.trigger["style"] && rule.trigger["style"]["font-style"] === "italic") {
 
-                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
-                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
-                } else {
-                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'none');
-                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css({"background-color": "inherit"});
-                }
+                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
+                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
+             } else {
+                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'none');
+                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css({"background-color": "inherit"});
+             }
 
-                if(rule.trigger["style"] && rule.trigger["style"]["text-decoration"] === "underline") {
-                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'underline');
-                   $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
-                } else {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'none');
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
-                }
+             if(rule.trigger["style"] && rule.trigger["style"]["text-decoration"] === "underline") {
+                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'underline');
+                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
+             } else {
+                $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'none');
+                $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
+            }
 
-                if(rule["trigger"]["style"] && rule["trigger"]["style"]["font-family"]) {
-                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
-                }
+            if(rule["trigger"]["style"] && rule["trigger"]["style"]["font-family"]) {
+                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
+            }
 
 
-                
-                if(rule["trigger"] && rule["trigger"]["style"]) {
-                    if(rule["trigger"]["style"]['font-size'] === "17px") {
-                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
-                    } else if(rule["trigger"]["style"]["font-size"] === "22px") {
-                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
-                    } else if(rule["trigger"]["style"]["font-size"] === "30px") {
-                        $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
-                    }
+
+            if(rule["trigger"] && rule["trigger"]["style"]) {
+                if(rule["trigger"]["style"]['font-size'] === "17px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                } else if(rule["trigger"]["style"]["font-size"] === "22px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                } else if(rule["trigger"]["style"]["font-size"] === "30px") {
+                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
                 }
-                
+            }
+
 
                 // document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
 
@@ -1510,25 +1443,25 @@ Rule:
                 }
 
                 // center this rule ...
-              
+
                 if(rule["container"] && rule["container"]["style"]["text-align"]) {
-                   $(document.getElementById('center_' + folder_id + rulename_id))[0].checked = true;
-                }
+                 $(document.getElementById('center_' + folder_id + rulename_id))[0].checked = true;
+             }
 
                     // disable everything below the text-after-end-sequence (style text after this rule)
-                if($('#text-after-end-sequence_' + folder_id + rulename_id)[0].value === "" &&
-                    $('#newline-text-after_' + folder_id + rulename_id)[0].checked === false) {
-                     $('#toolbar_text-after-style-bar' + folder_id + rulename_id)[0].style.visibility = "hidden";
-                     $('#span_to_toggle_' + folder_id + rulename_id)[0].style.visibility = "hidden";
-                }
-          
+                    if($('#text-after-end-sequence_' + folder_id + rulename_id)[0].value === "" &&
+                        $('#newline-text-after_' + folder_id + rulename_id)[0].checked === false) {
+                       $('#toolbar_text-after-style-bar' + folder_id + rulename_id)[0].style.visibility = "hidden";
+                   $('#span_to_toggle_' + folder_id + rulename_id)[0].style.visibility = "hidden";
+               }
 
-            }
 
-            getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
-         
-        }
-    }
+           }
+
+           getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
+
+       }
+   }
 });
 
 
