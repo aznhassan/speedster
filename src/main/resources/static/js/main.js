@@ -653,7 +653,7 @@ $(document).ready(function() {
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + fList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
                 <input type="checkbox" class="newline-text-after" id="newline-text-after_' + fList[i].folder_id + '"></input>  Newline<br>' + 
-                '<span style="margin-left:3%">with these styles</span> <br>' 
+                '<span style="margin-left:3%" id="span_to_toggle_' + fList[i].folder_id + '">with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', fList[i].folder_id, "") +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + fList[i].folder_id + '"></input>  Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center" id="center_' + fList[i].folder_id + '"></input>   Center this rule<br><br></div><br>' +
@@ -672,10 +672,33 @@ $(document).ready(function() {
             $('#newline-text-after_' + fList[i].folder_id).bind('click', {id: fList[i].folder_id }, function(event) {
                 if(this.checked) {
                     $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
+                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
+                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
+
                 } else {
                     $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
+                    if($('#text-after-end-sequence_' + event.data.id)[0].value === "") {
+                        $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
+                        $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
+                    }
                 }
             });
+
+            $('#text-after-end-sequence_' + fList[i].folder_id).bind('keyup', {id: fList[i].folder_id}, function(event) {
+                if(this.value !== "" || $('#newline-text-after_' + event.data.id)[0].checked) {
+                    // disable everything below it
+                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
+                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
+
+                } else if(this.value === "" && $('#newline-text-after_' + event.data.id)[0].checked === false) {
+                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
+                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
+                }
+            });
+
+            // disable everything below the text-after-end-sequence (style text after this rule)
+           $('#toolbar_text-after-style-bar' + fList[i].folder_id)[0].style.visibility = "hidden";
+           $('#span_to_toggle_' + fList[i].folder_id)[0].style.visibility = "hidden";
             
 
             $(style_div).find('.additional-style-collapse').bind('click', {id:fList[i].folder_id}, function(event) {
