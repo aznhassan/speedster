@@ -36,7 +36,7 @@
      <div class="example_overlay" id="overlay"></div>
      <div class="example_content">
         <span id="rule-header">STYLE RULES</span>
-        <span class="circle close-button">X</span>
+        <span class="close-button"></span>
 
 
      </div>

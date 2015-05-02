@@ -262,16 +262,25 @@ select {
 .close-button {
     /* margin-bottom:3%; */
     /* margin-left: 90%; */
-    font-size: medium;
-    font-family: sans-serif;
+    background-image:url('close-button.svg');
+    /* background-color: purple; */
+    background-position: center;
+    background-size: 35px 35px;
+    background-repeat: no-repeat;
+    /* border-radius: 20px; */
+    cursor: pointer;
+    height: 35px;
+    width: 35px;
+    /*font-size: medium;*/
+    /*font-family: sans-serif;*/
     margin-right: 3%;
-    font-weight: bolder;
+    /*font-weight: bolder;*/
     padding-left: 0.1%;
     margin-left: 76%;
     line-height:medium;
-    float: right;
-    /* margin-right: 3%; */
-    margin-top: -2.5%;
+    /* float: right; */
+    margin-right: 5%;
+    margin-top: -3%;
     position: fixed;
 }
 

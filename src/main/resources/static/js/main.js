@@ -639,7 +639,7 @@ $(document).ready(function() {
             '<span class="circle collapse-main arrow-right" id="collapse-main_' + fList[i].folder_id + '"></span>' + '<span>' + '       ' + 
             fList[i].folder_name  + '</span>' + 
             '<div class="inner_style_div" id="inner_style_div_' + fList[i].folder_id + '">' + 
-                '<span class="new-style-header-to-add"> New Style <span class="circle" id="style-circle">+</span></span>' + 
+                '<span class="new-style-header-to-add"> New Style <span class="circle_image" id="style-circle"></span></span>' + 
                 '<div class="rule_div" id="rule_div_' + fList[i].folder_id + '">' +
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + fList[i].folder_id + '" maxlength="20"></input><br>    \
                 should start with <input type="text" class="rulestart" id="rulestart_' + fList[i].folder_id + '" placeholder="Character String" maxlength="15"></input><br>  \
@@ -850,7 +850,7 @@ $(document).ready(function() {
             console.log("RULES SENT:  " + postParam.rules);
             
             $.post('/updateCSS', postParam, function(responseJSON) {
-                $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
+                $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="close-button"></span>';
                 $('.example_overlay')[0].style.display = "table";
                 $('.example_content')[0].style.display = "table-cell";
 
@@ -1175,7 +1175,7 @@ Rules can take the following forms based on what is defined:
       
         // clear the style editing overlay
         prevEditingHTML = $('.example_content').html();
-        $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="circle close-button">X</span>';
+        $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="close-button"></span>';
         $('.example_overlay')[0].style.display = "none";
         $('.example_content')[0].style.display = "none";
         $('.close-button').click(function() {
