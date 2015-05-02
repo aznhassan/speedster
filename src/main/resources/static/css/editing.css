@@ -185,6 +185,8 @@ select {
     width: 20px;
     font-size: 18px;
     line-height: 18px;
+    padding-left: 0.1%;
+    padding-bottom: 1.5%;
 }
 
 #style-circle .arrow-up {
@@ -258,14 +260,18 @@ select {
 }
 
 .close-button {
-    margin-bottom:3%;
-    margin-left: 90%;
+    /* margin-bottom:3%; */
+    /* margin-left: 90%; */
     font-size: medium;
     font-family: sans-serif;
+    margin-right: 3%;
+    font-weight: bolder;
+    padding-left: 0.1%;
+    margin-left: 76%;
     line-height:medium;
     float: right;
-    margin-right: 3%;
-    margin-top: 15%;
+    /* margin-right: 3%; */
+    margin-top: -2.5%;
     position: fixed;
 }
 
