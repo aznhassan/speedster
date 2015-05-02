@@ -14,7 +14,12 @@
    - Lets users add new styles ny folder
    - Can delete existing styles
    - Each new style form features optional additional styling for text after the rule trigger word.
-   */
+
+ * Request handlers:
+
+    # TODO
+
+ */
 
 
 
@@ -43,20 +48,20 @@ $(document).ready(function() {
                       }]
         }
 
-        */
-        (function getAllMetadata() {
-            $.get("/notes", function(responseJSON) {
-            // var responseObject = JSON.parse(responseJSON);
-            
-            // assuming server returns 'List<JSONStrings> folders'.
-            // var folders = responseObject.folder;
-            var folders = foldersList;
-            var json = $(".data");
-            var jsonArray = JSON.parse(json.text());
-            foldersList = jsonArray;
-            displayTitles(jsonArray);
-        });
-        })();
+    */
+    (function getAllMetadata() {
+        $.get("/notes", function(responseJSON) {
+        // var responseObject = JSON.parse(responseJSON);
+        
+        // assuming server returns 'List<JSONStrings> folders'.
+        // var folders = responseObject.folder;
+        var folders = foldersList;
+        var json = $(".data");
+        var jsonArray = JSON.parse(json.text());
+        foldersList = jsonArray;
+        displayTitles(jsonArray);
+    });
+    })();
 
 
 
@@ -309,71 +314,44 @@ $(document).ready(function() {
         }); 
     }
 
-
-
-/* Format to pass back newly created folders to server
-    [{
-        "folder_id":id,
-        "title": this.innerText
-    },
-
-    {
-        "folder_id":id,
-        "title":this.innerText
-    }]      
-
-    This folder contains a temporary id
-
-    (This will be sent as stringified JSON)
-    */
-
-
-/* Format to pass back newly created notes to the server
-    [{
-        "associated_folder_id": folder_id,
-        "title": this.innerText
-    },
-    {
-        "associated_folder_id":f_id,
-        "title":this.innerText
-    }]
-    
-    (This will be sent as stringified JSON)
-
-
-    The server will assign it it's note id and also change
-    the folder id if needed.
-
-    */
-    
-
-     /**
-      * click handler for the add new section button
-      */
-      function addSectionClick() {
+    /**
+     * Click handler for the 'NEW SUBJECT' button
+     * Adds an input box for the user to type a folder name
+     * Saves the folder on focusout or enter key press and updates folder list
+     * also updates the DOM with the new folder.
+     */
+    function addSectionClick() {
+        // create a new folder div
         var new_folder_div = document.createElement("div");
         var header_span = document.createElement('div');
         header_span.className = 'folder_header_span_new';
-        // $(header_span).attr('contenteditable', 'true');
         $(new_folder_div).html(header_span);
         new_folder_div.className = "new_folder_name_div";
-        
         header_span.innerHTML = '<input class="title title_note" maxlength="30" placeholder="NEW FOLDER" maxlength="30" autofocus="true"></input>';
 
+        // add enter key handler to triggger the focus out event to
+        // save the folder
         $(new_folder_div).find('.title').focus();
-        // alert($(header_span).find('.title_note').is(":focus"));
-
-        // $(new_folder_div).find('.title').attr('contenteditable', 'true');
-
         $(new_folder_div).find('.title').keyup(function(event) {
             if(event.keyCode === 13 || event.which === 13) {
-               if(this.value !== "") {
+                $(new_folder_div).find('.title').trigger('focusout');
+            }
+        });
+
+        // add focusout handler to save the input box to save the folder and
+        // update the DOM to reflect the changes.
+        $(new_folder_div).find('.title').focusout(function() {
+            if(this.value !== "") {
                 var folder_data = {
                     "folder_id": -1,
                     "title": this.value
                 };
 
+                // sends get request with folder name and recieves updates
+                // from the server.
                 $.get('/newFolder', folder_data, function(responseJSON) {
+
+                    // create a title div for the folder name.
                     var responseObject = JSON.parse(responseJSON);
                     var folder_id = responseObject.id;
                     var folder_name = responseObject.title;
@@ -382,12 +360,14 @@ $(document).ready(function() {
                     $(header_span).removeClass('folder_header_span_new');
                     header_span.className = 'folder_header_span';
                     $(new_folder_div).html(header_span);
-                    createCircleDiv(new_folder_div, header_span);
 
+                    // add the icons to the div
+                    createCircleDiv(new_folder_div, header_span);
                     $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
                     createFlashcardDiv(header_span, folder_name);
                     $(header_span).append('<br>');
 
+                    // add hover handler to toggle visibility of the icons.
                     $(header_span).hover(function() {
                         $(this).find('.delete_icon')[0].style.visibility = 'visible';
                         $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
@@ -400,146 +380,50 @@ $(document).ready(function() {
                     $(new_folder_div).removeClass('new_folder_name_div');
                     $(new_folder_div).addClass('folder_name_div');
 
+                    // add the note div to the folder.
                     var main_note_div = document.createElement('div');
                     main_note_div.className = 'main_note_div';
                     new_folder_div.appendChild(main_note_div);
 
+                    // toggle the display of the note div
                     $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
-
                         if(event.data.notes.innerHTML !== "") {
                             $(event.data.notes).slideToggle(175);
                         }
                     });
 
-
+                    // binds a click handler to the delete icon
                     $(new_folder_div).find('.delete_icon').bind('click', {div: new_folder_div, name: folder_name, id: folder_id}, function(event) {
                         var postParam = {
                             folder: event.data.name
                         }
-
-
+                
+                        // updates the server about the deleted folder
                         $.post('/deleteFolder', postParam, function(responseJSON) {
-                                // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
-                                // appropriately.
-                                // window.location.href = '/notes';
-                                $(event.data.div).remove();
-
-                                // #TODO: remove folder from edit style menu as well!
-                                // edit: request for the updated folder list from server and update the global varible 'foldersList'
-                                $.get('/moreNotes', postParam, function(responseJSON) {
-                                    var responseObject = JSON.parse(responseJSON);
-                                    foldersList = responseObject;
-                                });
-
-                            });
-                    });
-
-var getParams = {};
-
-$.get('/moreNotes', getParams, function(responseJSON) {
-    var responseObject= JSON.parse(responseJSON);
-    foldersList = responseObject;
-});
-
-
-
-                        // #TODO: Add a corresonding folder thing to the style overlay,
-                        // edit: request for an updated folder list from the server and reassign the variable 'foldersList'
-
-                    });
-}
-}
-})
-
-$(new_folder_div).find('.title').focusout(function() {
-    if(this.value !== "") {
-        var folder_data = {
-            "folder_id": -1,
-            "title": this.value
-        };
-
-        $.get('/newFolder', folder_data, function(responseJSON) {
-            var responseObject = JSON.parse(responseJSON);
-            var folder_id = responseObject.id;
-            var folder_name = responseObject.title;
-            new_folder_div.id = folder_id;
-            header_span.innerHTML = '<span class="title">' + folder_name + '<span>'; 
-            $(header_span).removeClass('folder_header_span_new');
-            header_span.className = 'folder_header_span';
-            $(new_folder_div).html(header_span);
-            createCircleDiv(new_folder_div, header_span);
-
-            $(header_span).append('<div class="delete_icon" id="delete_icon_' + folder_id + '"></div>');
-            createFlashcardDiv(header_span, folder_name);
-            $(header_span).append('<br>');
-
-            $(header_span).hover(function() {
-                $(this).find('.delete_icon')[0].style.visibility = 'visible';
-                $(this).find('.flashcard_icon')[0].style.visibility = 'visible';
-
-            }, function() {
-                $(this).find('.delete_icon')[0].style.visibility = 'hidden';
-                $(this).find('.flashcard_icon')[0].style.visibility = 'hidden';
-            });
-
-            $(new_folder_div).removeClass('new_folder_name_div');
-            $(new_folder_div).addClass('folder_name_div');
-
-            var main_note_div = document.createElement('div');
-            main_note_div.className = 'main_note_div';
-            new_folder_div.appendChild(main_note_div);
-
-            $(new_folder_div).find('.title').bind('click', {notes: main_note_div}, function(event) {
-
-                if(event.data.notes.innerHTML !== "") {
-                    $(event.data.notes).slideToggle(175);
-                }
-            });
-
-
-            $(new_folder_div).find('.delete_icon').bind('click', {div: new_folder_div, name: folder_name, id: folder_id}, function(event) {
-                var postParam = {
-                    folder: event.data.name
-                }
-                
-                
-                $.post('/deleteFolder', postParam, function(responseJSON) {
-                            // #TODO: returns boolean for successful deletion of folders, check for that and dsiplay to user
-                            // appropriately.
-                            // window.location.href = '/notes';
                             $(event.data.div).remove();
 
-                            // #TODO: remove folder from edit style menu as well!
-                            // edit: request for the updated folder list from server and update the global varible 'foldersList'
+                            // requests for an updated list of folders.
                             $.get('/moreNotes', postParam, function(responseJSON) {
                                 var responseObject = JSON.parse(responseJSON);
                                 foldersList = responseObject;
                             });
 
                         });
-            });
+                    });
 
-var getParams = {};
-
-$.get('/moreNotes', getParams, function(responseJSON) {
-    var responseObject= JSON.parse(responseJSON);
-    foldersList = responseObject;
-});
-
-
-
-                    // #TODO: Add a corresonding folder thing to the style overlay,
-                    // edit: request for an updated folder list from the server and reassign the variable 'foldersList'
-
+                    // updates for the folder list.
+                    $.get('/moreNotes', function(responseJSON) {
+                        var responseObject= JSON.parse(responseJSON);
+                        foldersList = responseObject;
+                    });
                 });
-}
-});
+            }
+        });
+       
+        $('#main-div').append(new_folder_div);
+    }
 
-$('#main-div').append(new_folder_div);
-
-}
-
-    // attach handler to the button
+    // attach click handler to 'NEW SUBJECT' button
     $('#add_section_button').click(function(event) {
         addSectionClick();
     });
