@@ -583,6 +583,7 @@ $(document).ready(function() {
         var getParams = {};
         var rules = [];
         $.get('/getRules', getParams, function(responseJSON) {
+            console.log("RULES RECIEVED: " + responseJSON);
             rules = JSON.parse(responseJSON);
             createExistingStyleRules(rules);
         });
@@ -673,6 +674,8 @@ $(document).ready(function() {
             var postParam = {
                 rules: JSON.stringify(rulesForThisFolder)
             };
+
+            console.log("RULES SENT: " + postParam.rules);
 
             // post request to update the CSS stylsheets.
             $.post('/updateCSS', postParam, function(responseJSON) {
@@ -935,33 +938,30 @@ $(document).ready(function() {
         });
     }
 
-    /**
-     * Trying to populate a custom style menu with existing style rules
-     * Input --> List of 'rule objects where each object is in the exact format I sent them back to the server'
-
-     * random notes:
-     <select class="font-family" id="' + style + id + '_font-family">
-     <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
-            
-     *
+     /**
+     * Create the DOM for all existing rules sent by the server.
+     * @param list of rules.
      */
-     function createExistingStyleRules(rules) {
+    function createExistingStyleRules(rules) {
         for(var i = 0; i < rules.length; i++) {
             var rule = rules[i];
-
             var rulename = rule.name;
             var rulename_id = rulename.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
-            
             var folder_id = rule.associated_folder_id;
             var folder_name = rule.associated_folder_name;
             var inner_div = document.getElementById('inner_style_div_' + folder_id);
+            var eventParam = {
+                id: folder_id,
+                name: rulename_id
+            }
 
             $(inner_div).prepend('<span class="circle arrow-right existing-styles-collapse" id="existing-styles-collapse_' + folder_id + rulename_id + '"></span>' +
                 '<span class="new-style-header" id="new-style-header_' +folder_id +rulename_id+'">' + rulename + '</span>' + 
                 '<span class="delete_icon delete_icon_styles" id="delete_icon_' + folder_id + rulename_id + '"></span>' +
                 '<div class="rule_div" id="rule_div_' + folder_id + rulename_id + '">' +
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + folder_id + rulename_id + '" maxlength="20"></input><br>    \
-                should start with <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename_id + '" placeholder="Character String" maxlength="15"></input><br>  \
+                should start with \
+                <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename_id + '" placeholder="Character String" maxlength="15"></input><br>  \
                 and have these styles: <br>' + 
                 createStyleToolbar('start-style-bar', folder_id, rulename_id) + 
                 '<span class="extra_styles_title" id="extra_styles_title_' + folder_id + rulename_id + '">' + 
@@ -977,40 +977,41 @@ $(document).ready(function() {
                 <input type="checkbox" class="newline-text-after" id="newline-text-after_' + folder_id + rulename_id + '"></input>  Newline<br>' + 
                 '<span id="span_to_toggle_' + folder_id + rulename_id + '">with these styles </span><br>' 
                 + createStyleToolbar('text-after-style-bar', folder_id, rulename_id) +
-                '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + folder_id + rulename_id+ '"></input>  Box this rule<br>' +
-                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + folder_id + rulename_id + '"></input>   Center this rule<br><br></div>' +
+                '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + folder_id + rulename_id+ '"></input> \
+                Box this rule<br>' +
+                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + folder_id + rulename_id + '"></input> \
+                Center this rule<br><br></div>' +
                 '<div class="submit-button" id="submit_' + folder_id + rulename_id + '">SAVE</div>' + 
                 '</div><br id="line_break_' + folder_id + rulename_id +'">');
+            
+            // bind click handler to the newline button for trigger endSeq.
+            $('#newline-trigger_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
+                if(this.checked) {
+                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+                } else {
+                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+                }
+            });
 
+            // bind click handler to the newline checkbox for the rule.after endSeq.
+            $('#newline-text-after_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
+                if(this.checked) {
+                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+                    $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
+                    $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
 
+                } else {
+                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+                    if($('#text-after-end-sequence_' + event.data.id + event.data.name)[0].value === "") {
+                        $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                        $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                    }
+                }
+            });
 
-$('#newline-trigger_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
-    if(this.checked) {
-        $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
-    } else {
-        $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
-    }
-});
-
-
-$('#newline-text-after_' + folder_id + rulename_id).bind('click', {id:folder_id, name: rulename_id }, function(event) {
-    if(this.checked) {
-        $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
-        $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
-        $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
-
-    } else {
-        $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
-        if($('#text-after-end-sequence_' + event.data.id + event.data.name)[0].value === "") {
-            $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-            $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-        }
-    }
-});
-
-$('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: folder_id, name: rulename_id}, function(event) {
-    if(this.value !== "" || $('#newline-text-after_' + event.data.id + event.data.name)[0].checked) {
-                    // disable everything below it
+            // keyup handler to the rule.after.endSeq text box.
+            $('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: folder_id, name: rulename_id}, function(event) {
+                if(this.value !== "" || $('#newline-text-after_' + event.data.id + event.data.name)[0].checked) {
                     $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
                     $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
 
@@ -1020,56 +1021,62 @@ $('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: fold
                 }
             });
 
+            // click handler to the collapse icon
+            $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', eventParam, function(event) {
+                $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
+                if($(this).hasClass('arrow-right')) {
+                    $(this).removeClass('arrow-right');
+                    $(this).addClass('arrow-down');
+                } else {
+                    $(this).removeClass('arrow-down');
+                    $(this).addClass('arrow-right');
+                }
+            });
 
+            // click handler to the the collapse button on the folder collapse.
+            $('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
+                $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
+                if($(this).hasClass('arrow-right')) {
+                    $(this).removeClass('arrow-right');
+                    $(this).addClass('arrow-down');
+                } else {
+                    $(this).removeClass('arrow-down');
+                    $(this).addClass('arrow-right');
+                }
+            });
 
+            var clickParam = {
+                id: folder_id,
+                folder: folder_name,
+                rule: rulename_id
+            };
 
+            // click handler to the delete icon for the rule
+            $('#delete_icon_' + folder_id + rulename_id).bind('click', clickParam, function(event) {
+                var list = getRulesList(document.getElementById(event.data.id), event.data.id, event.data.folder, event.data.rule);
+                var deleted_rule_name = $('#new-style-header_' + event.data.id + event.data.rule)[0].innerText;
 
-$('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', {id: folder_id, name: rulename_id}, function(event) {
-    $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
-    if($(this).hasClass('arrow-right')) {
-        $(this).removeClass('arrow-right');
-        $(this).addClass('arrow-down');
-    } else {
-        $(this).removeClass('arrow-down');
-        $(this).addClass('arrow-right');
-    }
-});
+                var postParam = {
+                    rules_list : JSON.stringify(list),
+                    deleted_rule: deleted_rule_name,
+                    subject: event.data.folder
+                }
 
-$('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', {id: folder_id, name: rulename_id}, function(event) {
-    $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
-    if($(this).hasClass('arrow-right')) {
-        $(this).removeClass('arrow-right');
-        $(this).addClass('arrow-down');
-    } else {
-        $(this).removeClass('arrow-down');
-        $(this).addClass('arrow-right');
-    }
-});
+                // sends post request to the server to update about the deleted rule
+                // and clears the DOM
+                $.post('/deleteRule', postParam, function(responseJSON) {
+                    $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
+                    $('#new-style-header_' + event.data.id + event.data.rule).remove();
+                    $('#delete_icon_' + event.data.id + event.data.rule).remove();
+                    $('#rule_div_' + event.data.id + event.data.rule).remove();
+                    $('#line_break_' + event.data.id + event.data.rule).remove();
+                });
+            });
+            
+            // create the rule form for this rule.
+            var ruleform = $(inner_div).find('#rule_div_' + folder_id + rulename_id);
 
-$('#delete_icon_' + folder_id + rulename_id).bind('click', {id:folder_id, folder: folder_name, rule:rulename_id}, function(event) {
-    var list = getRulesList(document.getElementById(event.data.id), event.data.id, event.data.folder, event.data.rule);
-    var deleted_rule_name = $('#new-style-header_' + event.data.id + event.data.rule)[0].innerText;
-
-
-    var postParam = {
-        rules_list : JSON.stringify(list),
-        deleted_rule: deleted_rule_name,
-        subject: event.data.folder
-    }
-
-    $.post('/deleteRule', postParam, function(responseJSON) {
-        $('#existing-styles-collapse_' + event.data.id + event.data.rule).remove();
-        $('#new-style-header_' + event.data.id + event.data.rule).remove();
-        $('#delete_icon_' + event.data.id + event.data.rule).remove();
-        $('#rule_div_' + event.data.id + event.data.rule).remove();
-        $('#line_break_' + event.data.id + event.data.rule).remove();
-    });
-});
-
-var ruleform = $(inner_div).find('#rule_div_' + folder_id + rulename_id);
-
-if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
-
+            if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
 
                 // populate rulename
                 document.getElementById('rulename_' + folder_id + rulename_id).value = rulename ? rulename: "";
@@ -1079,54 +1086,54 @@ if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
                 var start_style_bar = document.getElementById('#start-style-bar' + folder_id + rulename_id);
 
                 // populate start (trigger word) style bar
-                // <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
+                var triggerBoldBar = $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight'));
+                var triggerItalicBar =  $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style'));
+                var triggerUnderlineBar =  $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration'));
 
-                console.log(rule["container"]);
                 if(rule.trigger["style"] && rule.trigger["style"]["font-weight"] === "bold") {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value','bold');
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css('background-color','rgba(0,0,0,0.3)');
+                    triggerBoldBar.attr('value','bold');
+                    triggerBoldBar.css('background-color','rgba(0,0,0,0.3)');
                     
                 } else {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'none');
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
+                    triggerBoldBar.attr('value', 'none');
+                    triggerBoldBar.css({"background-color": "inherit"});
                 }
 
                 if(rule.trigger["style"] && rule.trigger["style"]["font-style"] === "italic") {
-
-                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
-                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css('background-color','rgba(0,0,0,0.3)');
-             } else {
-                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'none');
-                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-style')).css({"background-color": "inherit"});
-             }
-
-             if(rule.trigger["style"] && rule.trigger["style"]["text-decoration"] === "underline") {
-                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'underline');
-                 $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
-             } else {
-                $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value', 'none');
-                $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
-            }
-
-            if(rule["trigger"]["style"] && rule["trigger"]["style"]["font-family"]) {
-                document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
-            }
-
-
-
-            if(rule["trigger"] && rule["trigger"]["style"]) {
-                if(rule["trigger"]["style"]['font-size'] === "17px") {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
-                } else if(rule["trigger"]["style"]["font-size"] === "22px") {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
-                } else if(rule["trigger"]["style"]["font-size"] === "30px") {
-                    $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                    triggerItalicBar.attr('value', 'italic');
+                    triggerItalicBar.css('background-color','rgba(0,0,0,0.3)');
+                } else {
+                    triggerItalicBar.attr('value', 'none');
+                    triggerItalicBar.css({"background-color": "inherit"});
                 }
-            }
+
+                if(rule.trigger["style"] && rule.trigger["style"]["text-decoration"] === "underline") {
+                    triggerUnderlineBar.attr('value', 'underline');
+                    triggerUnderlineBar.css("background-color", "rgba(0,0,0,0.3)");
+                } else {
+                    triggerUnderlineBar.attr('value', 'none');
+                    triggerUnderlineBar.css({"background-color": "inherit"});
+                }
+
+                // set font family
+                if(rule["trigger"]["style"] && rule["trigger"]["style"]["font-family"]) {
+                    document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-family').value = rule["trigger"]["style"]["font-family"];
+                }
 
 
-                // document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size').value = rule["trigger"]["style"]["font-size"];
+                var fontSizeBar = $(document.getElementById('start-style-bar' + folder_id + rulename_id + '_font-size'));
 
+                if(rule["trigger"] && rule["trigger"]["style"]) {
+                    if(rule["trigger"]["style"]['font-size'] === "17px") {
+                        fontSizeBar.val("Small");
+                    } else if(rule["trigger"]["style"]["font-size"] === "22px") {
+                        fontSizeBar.val("Medium");
+                    } else if(rule["trigger"]["style"]["font-size"] === "30px") {
+                        fontSizeBar.val("Big");
+                    }
+                }
+
+                // sets up toggling for the B, I, U buttons
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-weight');
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'font-style');
                 setTextStyleToggle('start-style-bar', folder_id, rulename_id, 'text-decoration');
@@ -1153,75 +1160,70 @@ if(document.getElementById('rulename_' + folder_id + rulename_id) !== null) {
 
                 // with these styles...
                 var after_style_toolbar = document.getElementById('text-after-style-bar' + folder_id + rulename_id);
+                var afterBoldBar = $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight'));
+                var afterItalicBar = $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style'));
+                var afterUnderlineBar = $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration'));
 
                 if(rule.after && rule.after["style"] && rule.after["style"]["font-weight"] == "bold") {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'bold');
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css("background-color", "rgba(0,0,0,0.3)");
+                    afterBoldBar.attr('value', 'bold');
+                    afterBoldBar.css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).attr('value', 'none');
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-weight')).css({"background-color": "inherit"});
+                    afterBoldBar.attr('value', 'none');
+                    afterBoldBar.css({"background-color": "inherit"});
                 }
 
                 if(rule.after && rule.after["style"] && rule.after["style"]["font-style"] == "italic") {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value', 'italic');
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "rgba(0,0,0,0.3)");
+                    afterItalicBar.attr('value', 'italic');
+                    afterItalicBar.css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).attr('value','none');
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-style')).css("background-color", "inherit");
+                    afterItalicBar.attr('value','none');
+                    afterItalicBar.css("background-color", "inherit");
                 }
 
                 if(rule.after && rule.after["style"] && rule.after["style"]["text-decoration"] == "underline") {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','underline');
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css("background-color", "rgba(0,0,0,0.3)");
+                    afterUnderlineBar.attr('value','underline');
+                    afterUnderlineBar.css("background-color", "rgba(0,0,0,0.3)");
                 } else {
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).attr('value','none');
-                    $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_text-decoration')).css({"background-color": "inherit"});
+                    afterUnderlineBar.attr('value','none');
+                    afterUnderlineBar.css({"background-color": "inherit"});
                 }
-
+                // set font family for rule.after
                 if(rule["after"] && rule.after["style"] && rule["after"]["style"]["font-family"]) {
                     document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-family').value = rule["after"]["style"]["font-family"];
                 }
                 
+                // font size for rule.after
+                var afterFontSize = $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size'));
                 if(rule["after"] && rule.after["style"] && rule["after"]["style"]["font-size"]) {
                     if(rule["after"]["style"]['font-size'] === "17px") {
-                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Small");
+                        afterFontSize.val("Small");
                     } else if(rule["after"]["style"]["font-size"] === "22px") {
-                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Medium");
+                        afterFontSize.val("Medium");
                     } else if(rule["after"]["style"]["font-size"] === "30px") {
-                        $(document.getElementById('text-after-style-bar' + folder_id + rulename_id + '_font-size')).val("Big");
+                        afterFontSize.val("Big");
                     }
                 }
                 
-                
-
-                // box this rule... 
-                // alert(rule["container"]);
+                // box the rule
                 if(rule["container"] && rule["container"]["style"]["background-color"]) {
                     $(document.getElementById('box_' + folder_id + rulename_id))[0].checked = true;
                 }
 
                 // center this rule ...
-
                 if(rule["container"] && rule["container"]["style"]["text-align"]) {
-                 $(document.getElementById('center_' + folder_id + rulename_id))[0].checked = true;
-             }
+                    $(document.getElementById('center_' + folder_id + rulename_id))[0].checked = true;
+                }
 
-                    // disable everything below the text-after-end-sequence (style text after this rule)
-                    if($('#text-after-end-sequence_' + folder_id + rulename_id)[0].value === "" &&
-                        $('#newline-text-after_' + folder_id + rulename_id)[0].checked === false) {
-                       $('#toolbar_text-after-style-bar' + folder_id + rulename_id)[0].style.visibility = "hidden";
-                   $('#span_to_toggle_' + folder_id + rulename_id)[0].style.visibility = "hidden";
-               }
+                // hide text after style bar until endSeq is specified.
+                if($('#text-after-end-sequence_' + folder_id + rulename_id)[0].value === "" &&
+                    $('#newline-text-after_' + folder_id + rulename_id)[0].checked === false) {
+                    $('#toolbar_text-after-style-bar' + folder_id + rulename_id)[0].style.visibility = "hidden";
+                    $('#span_to_toggle_' + folder_id + rulename_id)[0].style.visibility = "hidden";
+                }
+            }
 
-
-           }
-
-           getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
-
-       }
-   }
+            // binds click handler to 'SAVE' button to save the styles.
+            getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
+        }
+    }
 });
-
-
-
-
