@@ -1,0 +1,42 @@
+Rule:
+{
+    "associated_folder_id": event.data.id,
+    "associated_folder_name": event.data.name,
+    "name": "string"
+    "trigger":
+      {
+        "word": "string",
+        "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
+        "style": 
+        {
+            "font-weight":"bold",
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
+        }
+      }
+
+      "after":
+      {
+        "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
+        "style": 
+        {
+            "font-weight":"bold",
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
+        }
+      }
+
+      "container":
+      {
+        "style": 
+        {
+            
+        }
+      }
+}
