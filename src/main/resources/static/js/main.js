@@ -784,8 +784,11 @@ $(document).ready(function() {
 
 
 
-    /** delete irrelevant styles from trigger.style
-    */
+    /**
+     * Given a rule object, clear out unneccassary styles
+     * that a user may not have defined.
+     * @param rule object
+     */
     function clearIrrelevantStyles(rule) {
         // clean up rule.trigger.style
         if(rule["trigger"]["style"]["font-weight"] === "none") {
@@ -814,10 +817,9 @@ $(document).ready(function() {
             !rule["trigger"]["style"]["font-family"] &&
             !rule["trigger"]["style"]["font-size"]) {
             delete rule["trigger"]["style"];
-    }
+        }
 
         // rule.after and rule.after.style
-
         if(rule["after"]["endSeq"] === "" && rule["after"]["endSeq"] !== "99999999999") {
             delete rule["after"];
         } 
@@ -842,7 +844,6 @@ $(document).ready(function() {
             if(rule["after"]["style"]["font-size"] === null) {
                 delete rule["after"]["style"]["font-size"];
             }
-
         }
 
         if(rule["after"] && 
@@ -852,8 +853,9 @@ $(document).ready(function() {
             !rule["after"]["style"]["font-family"] &&
             !rule["after"]["style"]["font-size"]) {
             delete rule["after"]["style"];
+        }
     }
-}
+
 
     /**
      * get the value for the styling toolbar buttons according to their unique id
