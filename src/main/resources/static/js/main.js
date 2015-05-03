@@ -859,36 +859,33 @@ $(document).ready(function() {
 
     /**
      * get the value for the styling toolbar buttons according to their unique id
-     * on clicking the save style button, so we can updates for each style
-
-     ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
-     style_text = 'text-after-style-bar'
-     style_type = 'font-weight'
-     folder_id = folder id ...
+     * on clicking the save style button, so that the rule object can be filled in.
+     * @param style bar name
+     * @param style type (font weight, style or text decoration)
+     * @param id of the folder 
+     * @param rule name
+     * @return value based on the DOM element being considered.
      */
-     function getButtonValue(style_text, style_type, folder_id, rulename) {
-        // ex: note2_bold
-        // alert(style_type);
+    function getButtonValue(style_text, style_type, folder_id, rulename) {
+        var domElement = $(document.getElementById(style_text + folder_id + rulename + '_' + style_type));
         if(style_type === 'font-style' || style_type === 'font-weight' || style_type === 'text-decoration') {
-            return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).attr('value');
+            return domElement.attr('value');
         } 
 
         if(style_type === "font-family") {
-            if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val()) {
-                return $(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val();
+            if(domElement.val()) {
+                return domElement.val();
             } else {
                 return null;
             } 
         } 
 
         if(style_type === "font-size") {
-            // alert("FONT SIZEEEE");
-            //alert($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val());
-            if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Small") {
+            if(domElement.val() === "Small") {
                 return '17px';
-            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Medium") {
+            } else if(domElement.val() === "Medium") {
                 return '22px';
-            } else if($(document.getElementById(style_text + folder_id + rulename + '_' + style_type)).val() === "Big"){
+            } else if(domElement.val() === "Big"){
                 return '30px';
             } else {
                 return null;
@@ -896,107 +893,39 @@ $(document).ready(function() {
         }
     }
 
-
-    /*
-     *
+    /**
+     * get the end seq specified for the rule.trigger object
+     * @param inner style div
+     * @param folder id
+     * @param rule name
+     * @return 'string of 11 characters of newline' else given text box value/
      */
-     function getTriggerEndSequence(inner_div, folderID, rulename) {
-
-        return $(inner_div).find('.newline-trigger')[0].checked ? "99999999999" : document.getElementById('trigger-end-sequence_' + folderID + rulename).value;
+    function getTriggerEndSequence(inner_div, folderID, rulename) {
+        return $(inner_div).find('.newline-trigger')[0].checked ? "99999999999" : 
+            document.getElementById('trigger-end-sequence_' + folderID + rulename).value;
     }
 
-    /*
-     *
+    /**
+     * get the end seq specified for the rule.after object
+     * @param inner style div
+     * @param folder id
+     * @return 'string of 11 characters of newline' else given text box value/
      */
-     function getAfterEndSequence(inner_div, folderID) {
-        return $(inner_div).find(".newline-text-after")[0].checked ? "99999999999" : $(inner_div).find('.text-after-end-sequence')[0].value;
+    function getAfterEndSequence(inner_div, folderID) {
+        return $(inner_div).find(".newline-text-after")[0].checked ? "99999999999" : 
+            $(inner_div).find('.text-after-end-sequence')[0].value;
     }
 
-
-/* 
-
-Rule:
-{
-  "associated_folder_id": event.data.id,
-  "associated_folder_name": event.data.name,
-  "name": "string"
-  "trigger":
-  {
-    "word": "string",
-    "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
-    "style": 
-    {
-        "font-weight":"bold",
-        "font-style": "italic",
-        "text-decoration":"underline",
-        "font-family": "Times New Roman",
-        "font-size": "small/medium/big"
-
-    }
-  }
-
-  "after":
-  {
-    "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
-    "style": 
-    {
-        "font-weight":"bold",
-        "font-style": "italic",
-        "text-decoration":"underline",
-        "font-family": "Times New Roman",
-        "font-size": "small/medium/big"
-
-    }
-  }
-
-  "container":
-  {
-    "style": 
-    {
-        
-    }
-  }
-}
-
-
-
-Rules can take the following forms based on what is defined:
-
-<style1> trigger.word </style1>
-<style1> trigger.word (stuff) trigger.endSeq </style1>
-<style1> trigger.word </style1> <style2> (stuff) after.endSeq </style2>
-<style1> trigger.word (stuff) trigger.endSeq </style1> <style2> (stuff) after.endSeq </style2>
-
-... any of the above but inside of a div (if container and container.style are defined). The div can center things/box things/do whatever css can do.
-
-*/
-
-/*  if(no box is checked -- no style object)
-    
-    if 'boxed' is checked -- style {
-        "background-color": --
-    }
-
-    if 'center' is checked -- style {
-        "text-align": --
-    }
-
-    */
-
-
+    // bind click handler to close icon of the style overlay.
     $('.close-button').click(function() {
         closeStyleMenu();
     });
 
-
     /**
-     * Click handler for the save styles button
-     * #TODO: DO we need this ?
+     * Click handler for close button on the styling overlay
+     * Clears the overlay DOM until the next request.
      */
-     function closeStyleMenu() {
-        // var updated_styles = styleChangesToSave();
-
-        // clear the style editing overlay
+    function closeStyleMenu() {
         prevEditingHTML = $('.example_content').html();
         $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="close-button"></span>';
         $('.example_overlay')[0].style.display = "none";
@@ -1004,55 +933,7 @@ Rules can take the following forms based on what is defined:
         $('.close-button').click(function() {
             closeStyleMenu();
         });
-
     }
-
-
-/* 
-
-Rule:
-{
-    "associated_folder_id": event.data.id,
-    "associated_folder_name": event.data.name,
-    "name": "string"
-    "trigger":
-      {
-        "word": "string",
-        "endSeq": "thing typed in box if they typed something", "<br>\u200b" if they checked newline
-        "style": 
-        {
-            "font-weight":"bold",
-            "font-style": "italic",
-            "text-decoration":"underline",
-            "font-family": "Times New Roman",
-            "font-size": "small/medium/big"
-
-        }
-      }
-
-      "after":
-      {
-        "endSeq": "thing they typed in the style text after box" or "<br>\u200b" if they checked newline
-        "style": 
-        {
-            "font-weight":"bold",
-            "font-style": "italic",
-            "text-decoration":"underline",
-            "font-family": "Times New Roman",
-            "font-size": "small/medium/big"
-
-        }
-      }
-
-      "container":
-      {
-        "style": 
-        {
-            
-        }
-      }
-}
-
 
     /**
      * Trying to populate a custom style menu with existing style rules
