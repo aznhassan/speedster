@@ -1,5 +1,5 @@
 .example_overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100%;
@@ -16,6 +16,7 @@
     position:absolute;
     margin-left: 10%;
     margin-right:auto;
+    position: fixed;
     /* margin-bottom: 50%; */
     background-color: white;
     z-index: 11; /* 1px higher than the overlay layer */

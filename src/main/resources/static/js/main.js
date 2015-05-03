@@ -436,101 +436,97 @@ $(document).ready(function() {
         createEditStyleDivs();
     });
 
-/************************************
- ************************************
- * STYLE EDITING OVERLAY STUFF ******
- ************************************
- ************************************/
+    /************************************
+     ************************************
+     * STYLE EDITING OVERLAY STUFF ******
+     ************************************
+     ************************************/
 
     /**
-     * creates all HTML of the edit styles overlay
+     * Creates DOM for the rule editing overlay.
      * 
      */
      function createEditStyleDivs() {
         // for each existing folder
-
         for(var i = 0; i < foldersList.length; i++) {
             // create a style div
             var style_div = document.createElement('div');
+            var id = foldersList[i].folder_id;
             $('.example_content')[0].appendChild(style_div);
             style_div.className = 'style_div';
-            style_div.id = foldersList[i].folder_id;
+            style_div.id = id;
+
+            // HTML for a new style blank form.
+            $(style_div).html('<span class="folder_style_header">' +   
+                '<span class="circle collapse-main arrow-right" id="collapse-main_' + id + '"></span>' + '<span>' + '       ' + 
+                foldersList[i].folder_name  + '</span>' + 
+                '<div class="inner_style_div" id="inner_style_div_' + id + '">' + 
+                '<span class="new-style-header-to-add"> New Style <span class="circle_image" id="style-circle"></span></span>' + 
+                '<div class="rule_div" id="rule_div_' + id + '">' +
+                'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + id + '" maxlength="20"></input><br>    \
+                should start with \
+                <input type="text" class="rulestart" id="rulestart_' + id + '" placeholder="Character String" maxlength="15"></input><br>  \
+                and have these styles: <br>' + 
+                createStyleToolbar('start-style-bar', id, "") + 
+                '<span class="extra_styles_title" id="extra_styles_title_' + id + '">   \
+                <span class="circle additional-style-collapse arrow-right"><span class="arrow-down"></span></span>' +
+                '  Additional Styles</span><br>' +
+                '<div class="extra_styles_div" id="extra_styles_div_' + id + '"><span>Extend these styles until</span><br>'  
+                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR \
+                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + id + '"></input>  Newline<br><br>' + 
+                'Style text after this rule until<br>'
+                + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR \
+                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + id + '"></input>  Newline<br>' + 
+                '<span style="margin-left:3%" id="span_to_toggle_' + id + '">with these styles</span> <br>' 
+                + createStyleToolbar('text-after-style-bar', id, "") +
+                '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + id + '"></input>  Box this rule<br>' +
+                '<input type="checkbox" name="centered" value="center" class="center" id="center_' + id + '"></input>  \
+                Center this rule<br><br></div><br>' +
+                '<div class="submit-button" id="submit_' + id + '">SAVE</div>' + 
+                '</div>' + 
+                '</div>'); 
             
+            // click handler for the newline options, disables the input box if newline box is checked
+            $('#newline-trigger_' + id).bind('click', {id: foldersList[i].folder_id }, function(event) {
+                if(this.checked) {
+                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = true;
+                } else {
+                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = false;
+                }
+            });
 
-            // for each folder's style div, create a toolbar per style text to be edited
+            //click handler for disabling text after input if newline box is checked
+            $('#newline-text-after_' + id).bind('click', {id: foldersList[i].folder_id }, function(event) {
+                if(this.checked) {
+                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
+                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
+                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
+                } else {
+                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
+                    if($('#text-after-end-sequence_' + event.data.id)[0].value === "") {
+                        $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
+                        $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
+                    }
+                }
+            });
 
-            /* $(style_div).html('<h2 class="folder_style_header">' +  
-                foldersList[i].folder_name +   
-                '</h2>' + createStyleToolbar('note', foldersList[i].folder_id) + 
-                createStyleToolbar('q', foldersList[i].folder_id) + createStyleToolbar('section', foldersList[i].folder_id)); */
-
-$(style_div).html('<span class="folder_style_header">' +   
-
-    '<span class="circle collapse-main arrow-right" id="collapse-main_' + foldersList[i].folder_id + '"></span>' + '<span>' + '       ' + 
-    foldersList[i].folder_name  + '</span>' + 
-    '<div class="inner_style_div" id="inner_style_div_' + foldersList[i].folder_id + '">' + 
-    '<span class="new-style-header-to-add"> New Style <span class="circle_image" id="style-circle"></span></span>' + 
-    '<div class="rule_div" id="rule_div_' + foldersList[i].folder_id + '">' +
-    'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + foldersList[i].folder_id + '" maxlength="20"></input><br>    \
-    should start with <input type="text" class="rulestart" id="rulestart_' + foldersList[i].folder_id + '" placeholder="Character String" maxlength="15"></input><br>  \
-    and have these styles: <br>' + 
-    createStyleToolbar('start-style-bar', foldersList[i].folder_id, "") + 
-    '<span class="extra_styles_title" id="extra_styles_title_' + foldersList[i].folder_id + '"><span class="circle additional-style-collapse arrow-right"><span class="arrow-down"></span></span>' +
-    '  Additional Styles</span><br>' +
-    '<div class="extra_styles_div" id="extra_styles_div_' + foldersList[i].folder_id + '"><span>Extend these styles until</span><br>'  
-    + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + foldersList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-    <input type="checkbox" class="newline-trigger" id="newline-trigger_' + foldersList[i].folder_id + '"></input>  Newline<br><br>' + 
-    'Style text after this rule until<br>'
-    + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + foldersList[i].folder_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-    <input type="checkbox" class="newline-text-after" id="newline-text-after_' + foldersList[i].folder_id + '"></input>  Newline<br>' + 
-    '<span style="margin-left:3%" id="span_to_toggle_' + foldersList[i].folder_id + '">with these styles</span> <br>' 
-    + createStyleToolbar('text-after-style-bar', foldersList[i].folder_id, "") +
-    '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + foldersList[i].folder_id + '"></input>  Box this rule<br>' +
-    '<input type="checkbox" name="centered" value="center" class="center" id="center_' + foldersList[i].folder_id + '"></input>   Center this rule<br><br></div><br>' +
-    '<div class="submit-button" id="submit_' + foldersList[i].folder_id + '">SAVE</div>' + 
-    '</div>' + 
-    '</div>'); 
-
-$('#newline-trigger_' + foldersList[i].folder_id).bind('click', {id: foldersList[i].folder_id }, function(event) {
-    if(this.checked) {
-        $('#trigger-end-sequence_' + event.data.id)[0].disabled = true;
-    } else {
-        $('#trigger-end-sequence_' + event.data.id)[0].disabled = false;
-    }
-});
-
-$('#newline-text-after_' + foldersList[i].folder_id).bind('click', {id: foldersList[i].folder_id }, function(event) {
-    if(this.checked) {
-        $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
-        $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
-        $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
-
-    } else {
-        $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
-        if($('#text-after-end-sequence_' + event.data.id)[0].value === "") {
-            $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
-            $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
-        }
-    }
-});
-
-$('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: foldersList[i].folder_id}, function(event) {
-    if(this.value !== "" || $('#newline-text-after_' + event.data.id)[0].checked) {
+            // toggles visibility of the styling menu after the text-after endSeq input
+            // the endSeq cannot be styled unless there is an endSeq specified by the user.
+            $('#text-after-end-sequence_' + id).bind('keyup', {id: foldersList[i].folder_id}, function(event) {
+                if(this.value !== "" || $('#newline-text-after_' + event.data.id)[0].checked) {
                     // disable everything below it
                     $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
                     $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
-
                 } else if(this.value === "" && $('#newline-text-after_' + event.data.id)[0].checked === false) {
                     $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
                     $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
                 }
             });
 
-            // disable everything below the text-after-end-sequence (style text after this rule)
-            $('#toolbar_text-after-style-bar' + foldersList[i].folder_id)[0].style.visibility = "hidden";
-            $('#span_to_toggle_' + foldersList[i].folder_id)[0].style.visibility = "hidden";
+            // hide styling menu below the text-after endSeq by default
+            $('#span_to_toggle_' + id)[0].style.visibility = "hidden";
             
-
+            // bind click handler to the 'Additional styles' collapsible arrow
             $(style_div).find('.additional-style-collapse').bind('click', {id:foldersList[i].folder_id}, function(event) {
                 $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
@@ -543,13 +539,14 @@ $('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: fol
                 }
             });
 
+            // bind click handler to toggle the form for entering a new rule.
             $(style_div).find('#style-circle').bind('click', {id: foldersList[i].folder_id}, function(event) {
                 var folderID = event.data.id;
                 var divToCollapse = document.getElementById('rule_div_' + folderID);
                 $(divToCollapse).slideToggle(175);
-                
             });
 
+            // bind click handler to the main folder collapse arrow to toggle that folder's style menu display
             $(style_div).find('.collapse-main').bind('click', {id: foldersList[i].folder_id}, function(event) {
                 $('#inner_style_div_' + event.data.id).slideToggle(175);
                 if($(this).hasClass('arrow-right')) {
@@ -562,6 +559,7 @@ $('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: fol
                 }
             });
 
+            // sets toggling for the B, I, U icons on the menu bars.
             setTextStyleToggle('text-after-style-bar', foldersList[i].folder_id, "", 'font-weight');
             setTextStyleToggle('text-after-style-bar', foldersList[i].folder_id, "", 'font-style');
             setTextStyleToggle('text-after-style-bar', foldersList[i].folder_id, "", 'text-decoration');
@@ -569,34 +567,18 @@ $('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: fol
             setTextStyleToggle('start-style-bar', foldersList[i].folder_id, "", 'font-style');
             setTextStyleToggle('start-style-bar', foldersList[i].folder_id, "", 'text-decoration');
 
+            // will bind a click handler to the 'SAVE' button that grabs all existing rules of the folder to send to the server.
             getSubjectRules(style_div, foldersList[i].folder_id, foldersList[i].folder_name, "");
         }
 
-
-        // get the existing style rules from the server here!!
+        // Get request to get all existing rules from the server
+        // the callback parses them and creates all neccessary DOM elements.
         var getParams = {};
         var rules = [];
         $.get('/getRules', getParams, function(responseJSON) {
-            console.log("RULES RECIEVED:   " + responseJSON);
             rules = JSON.parse(responseJSON);
-
             createExistingStyleRules(rules);
-
         });
-
-        
-
-        // add in button div
-        var button_div = document.createElement('div');
-        button_div.className = "style_button_div";
-        $('.example_content')[0].appendChild(document.createElement('br'));
-        $('.example_content')[0].appendChild(document.createElement('br'));
-        $('.example_content')[0].appendChild(document.createElement('br'));
-
-
-        $('.example_content')[0].appendChild(button_div);
-
-        
     }
 
     // eg: style_text == 'note', style_type = 'bold' ... 
@@ -697,7 +679,7 @@ $('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: fol
             });
             
         });
-}
+    }
 
     /** rules list of the folder given
      *
@@ -788,8 +770,8 @@ $('#text-after-end-sequence_' + foldersList[i].folder_id).bind('keyup', {id: fol
             rulesForThisFolder.push(rule);
             
         });
-return rulesForThisFolder;
-}
+        return rulesForThisFolder;
+    }
 
 
 
