@@ -68,28 +68,29 @@ $(document).ready(function() {
     /**
      * Handles creating the DOM elements for displaying
      * folder and note titles on the main page
+
      */
-    function displayTitles(folderList) {
+    function displayTitles() {
 
         // go over the list of folders
-        for(var i = 0; i < folderList.length; i++) {
+        for(var i = 0; i < foldersList.length; i++) {
 
             // create the folder name div
             var folder_div = document.createElement("div");
             folder_div.className = "folder_name_div";
-            folder_div.id = folderList[i].folder_id;
-            $(folder_div).attr('data-folder',folderList[i]);
+            folder_div.id = foldersList[i].folder_id;
+            $(folder_div).attr('data-folder',foldersList[i]);
 
             // header span to hold folder title
             var header_span = document.createElement('div');
             header_span.className = 'folder_header_span';
-            header_span.innerHTML = '<span class="title">' + folderList[i].folder_name + '</span>';
+            header_span.innerHTML = '<span class="title">' + foldersList[i].folder_name + '</span>';
             $(folder_div).html(header_span);
 
             // append the + icon, delete icon and flashcard icon
             createCircleDiv(folder_div, header_span);
             $(header_span).append('<div class="delete_icon" id="delete_icon_' + foldersList[i].folder_id + '"></div>');
-            createFlashcardDiv(header_span, folderList[i].folder_name);
+            createFlashcardDiv(header_span, foldersList[i].folder_name);
             $(header_span).append('<br>');
 
             // set icon visibililty on hover
@@ -131,13 +132,13 @@ $(document).ready(function() {
             });
 
             // iterate over the notes for this folder and add them to the DOM
-            for(var j = 0; j < folderList[i].notes.length; j++) {
+            for(var j = 0; j < foldersList[i].notes.length; j++) {
 
                 // create divs for the note titles 
                 var notes_div = document.createElement("div");
                 notes_div.className = "note_name_div";
-                notes_div.id = folderList[i].notes[j].note_id;
-                notes_div.innerHTML = '<span class="note_name">' + folderList[i].notes[j].note_name + '</span>';
+                notes_div.id = foldersList[i].notes[j].note_id;
+                notes_div.innerHTML = '<span class="note_name">' + foldersList[i].notes[j].note_name + '</span>';
 
                 // add delete icon
                 $(notes_div).append('<div class="delete_icon delete_icon_notes" id="delete_icon_' + notes_div.id + '"></div>');
@@ -145,15 +146,15 @@ $(document).ready(function() {
 
                 // bind click handler that redirects clicking the note name div to the note itself
                 // the note opens in a separate tab.
-                $(notes_div).bind('click', {name: folderList[i].folder_name}, function(event) {
+                $(notes_div).bind('click', {name: foldersList[i].folder_name}, function(event) {
                     window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
                 });
 
                 var deleteParam = {
                     main_div: main_note_div, 
                     div: notes_div, 
-                    id: folderList[i].notes[j].note_id, 
-                    folder: folderList[i].folder_name
+                    id: foldersList[i].notes[j].note_id, 
+                    folder: foldersList[i].folder_name
                 }
 
                 // bind click handler for note deletion
@@ -199,6 +200,8 @@ $(document).ready(function() {
 
     /**
      * Helper function to create the 'add section + sign button'
+     * @param main div of the folder
+     * @param header holding the folder title
      */
     function createCircleDiv(folderDiv, header_span) {
         var circle = document.createElement("div");
@@ -212,6 +215,8 @@ $(document).ready(function() {
 
      /**
       * Helper function to create flashcard 'REVIEW' button
+      * @param main div of the folder name
+      * @param name of the folder.
       */
     function createFlashcardDiv(folderDiv, folderName) {
         var flashcardIcon = document.createElement('div');
@@ -231,6 +236,8 @@ $(document).ready(function() {
      * Once the server creates the note and the request is completed
      * The input field turns into a non-editable div title
      * The title can be changed by going into the note and changing the note title
+     * @param main div of the folder title
+     * @param header span that holds the title of the folder
      */
     function createNewNote(folderDiv, header_span) {
 
@@ -581,17 +588,20 @@ $(document).ready(function() {
         });
     }
 
-    // eg: style_text == 'note', style_type = 'bold' ... 
-    // search for id --> 'note' + 'folder_id' + '_' + 'bold'
-    // to be used for B, I, U   .... text styles
-    // sets up the toggling of values for the B, I, U styles (or any others that can have only two states)
-    // ex: id of bold button:   text-after-style-bar'folder_id'_font-weight
-    // toggle(text-after-style-bar, folder id, font-weight)
+    /**
+     * Sets up toggling the values of B, I, U! 
+     * Gets the DOM element id's and toggles display and value
+     * using a click handler.
+     * @param style bar name
+     * @param folder id
+     * @param name of the rule
+     * @param font style type (bold, italics or underline)
+     * @return - void
+     */
     function setTextStyleToggle(style_text, folder_id, rulename, style_type) {
         var button = $('#' + style_text + folder_id + rulename + '_' + style_type);
         if(style_type === 'font-weight' || style_type === 'font-style' || style_type === 'text-decoration') {
             button.click(function(event) {
-
                 if($(this).attr('value') === 'none') {
                     var new_val = $(this).attr('name');
                     $(this).attr('value', new_val);
@@ -600,25 +610,22 @@ $(document).ready(function() {
                     $(this).attr('value', 'none');
                     $(this).css('background-color','inherit');
                 }
-
-                // alert($(this).attr('value'));
             });
         }
     }
 
      /**
-     * given a rule to style, and the folder id, this creates the toolbar
-     * for that folder and that rule with unique ids that include the folder id
-     * and the rule word itself.
-     * ex: createStyleToolbar('note', 2)
-     * or, createStyleToolbar('q', 3);
-     * or, for custom styles
-     * ---- >     start-style-bar'id'
-
-     ex: createStyleToolbar('text-after-style-bar', foldersList[i].folder_id)
-     id of bold button:   text-after-style-bar'folder_id'_font-weight
-     */
-     function createStyleToolbar(style, id, rulename) {
+      * given a rule to style, and the folder id, this creates the toolbar
+      * for that folder and that rule with unique ids that include the folder id
+      * and the rule word itself.
+      * ex: createStyleToolbar('text-after-style-bar', foldersList[i].folder_id)
+        id of bold button:   text-after-style-bar'folder_id'_font-weight
+      * @param - style bar name
+      * @param - id of the folder
+      * @param name of the rule
+      * @return HTML for the style bar
+      */
+    function createStyleToolbar(style, id, rulename) {
         return '<div class="style-toolbar" id="toolbar_' + style + id + rulename + '">  \
         <div class="boldButton" id="' + style + id + rulename + '_font-weight" value="none" name="bold">B</div> \
         <div class="italicButton" id="' +  style + id + rulename + '_font-style" value="none" name="italic">i</div> \
@@ -638,37 +645,44 @@ $(document).ready(function() {
         <option value="Big">Big</option>    \
         </select> \
         </div><br><br>';
-
     }
 
 
 
     /**
-     * Trying to grab all rule objects of a given folder/subject
-     * styleDiv is the style div of that folder.
-     * folderID and folderName is well... id and name of the folder
-     
+     * Binds a click handler to the 'SAVE' button for rules
+     * Callback gets all rules in that folder to send updated
+     * information to the server
+     * @param: styling div of the folder
+     * @param id of the folder
+     * @param name of the folder
+     * @param name of the rule
      */
      function getSubjectRules(styleDiv, folderID, folderName, rulename) {
-        $('#submit_' + folderID + rulename).bind('click', {id: folderID, name: folderName, div: styleDiv, rule: rulename}, function(event) {
+        var clickParam = {
+            id: folderID,
+            name: folderName,
+            div: styleDiv,
+            rule: rulename
+        };
 
-
+        $('#submit_' + folderID + rulename).bind('click', clickParam, function(event) {
             var rulesForThisFolder = getRulesList(event.data.div, event.data.id, event.data.name, event.data.rule);
 
+            // sends the rules as stringified JSON to the server.
             var postParam = {
                 rules: JSON.stringify(rulesForThisFolder)
             };
 
-            console.log("RULES SENT:  " + postParam.rules);
-            
+            // post request to update the CSS stylsheets.
             $.post('/updateCSS', postParam, function(responseJSON) {
                 $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="close-button"></span>';
                 $('.example_overlay')[0].style.display = "table";
                 $('.example_content')[0].style.display = "table-cell";
 
+                // re-create the styling DOM with updated information
                 createEditStyleDivs();
 
-                
                 $('#inner_style_div_' + event.data.id)[0].style.display = 'block';
                 $('#collapse-main_' + event.data.id).removeClass('arrow-right');
                 $('#collapse-main_' + event.data.id).addClass('arrow-down');
@@ -677,15 +691,21 @@ $(document).ready(function() {
                     closeStyleMenu();
                 });
             });
-            
         });
     }
 
-    /** rules list of the folder given
-     *
+    /** 
+     * Gets the rules of the current folder
+     * @param styleDiv is the folder's main style div
+     * @param folder id
+     * @param folder name
+     * @param rule name
+     * @return - list of rules for the folder.
      */
-     function getRulesList(styleDiv, folder_id, folder_name, rulename) {
+    function getRulesList(styleDiv, folder_id, folder_name, rulename) {
         var rulesForThisFolder = [];
+
+        // go over all the rule forms and create rule objects.
         $(styleDiv).find('.rule_div').each(function(i) {
             var name = $(this).find('.rulename')[0].value.replace(/^[^A-Z0-9]+|[^A-Z0-9]+$/ig, '').replace(/\s+/g, '').replace('\'', '');
             if(!document.getElementById('rulename_' + folder_id + name)) { 
@@ -693,6 +713,7 @@ $(document).ready(function() {
             } 
             rulename = name;
             
+            // create the rule 
             var rule = 
             {   
                 "associated_folder_id": folder_id,
@@ -724,23 +745,12 @@ $(document).ready(function() {
                         "font-size": getButtonValue('text-after-style-bar', 'font-size', folder_id, name),
                     }
                 },
-
-                // "container": 
-                // {
-                //     "style":
-                //     {
-                //         "background-color": $(this).find('.box')[0].checked ? "white" : "inherit",
-                //         "text-align": $(this).find(".center")[0].checked ? "center" : "left"
-                //     }
-                // }
             }
 
-            
+            // clears the endSeq styles for 'after' as neccessary.
             clearIrrelevantStyles(rule);
 
-            // trying to do Nick's styling requests for container object; 
-            // #TODO: Do the same with rule.after as with rule.container
-            // in other words, don't send an rule.after object if nothing is specified.
+            // add 'container' object if needed
             if(document.getElementById('box_' + folder_id + rulename).checked === true) {
                 rule["container"] = {};
                 rule["container"]["style"] = {}
@@ -760,12 +770,11 @@ $(document).ready(function() {
                 }
             }
 
+            // add more styles if both boxed and centered are specified.
             if(document.getElementById('box_' + folder_id + rulename).checked && document.getElementById('center_' + folder_id + rulename).checked) {
                 rule["container"]["style"]["display"] = "table";
                 rule["container"]["style"]["margin"] = "auto";
             }
-
-            // console.log(rule);
 
             rulesForThisFolder.push(rule);
             
