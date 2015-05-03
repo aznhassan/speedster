@@ -1,0 +1,1 @@
+[{"associated_folder_name":"Testing","name":"Test","associated_folder_id":15268,"trigger":{"endSeq":"","style":{"font-weight":"bold","text-decoration":"none","font-size":"17px","font-family":"Open Sans","font-style":"none"},"word":"\"","class":"test-trigger"}}]

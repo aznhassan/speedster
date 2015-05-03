@@ -11,6 +11,7 @@ the page is written in-->
     <link href='http://fonts.googleapis.com/css?family=Playfair+Display:400,700,400italic,700italic|Bitter:400,700,400italic|Open+Sans:400italic,700italic,400,700|Merriweather:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="${customCss}">
+    <link rel="shortcut icon" href="../../css/favicon.ico" />
   </head>
   
   <body>
