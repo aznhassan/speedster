@@ -532,6 +532,7 @@ $(document).ready(function() {
 
             // hide styling menu below the text-after endSeq by default
             $('#span_to_toggle_' + id)[0].style.visibility = "hidden";
+            $('#toolbar_text-after-style-bar' + id)[0].style.visibility = "hidden";
             
             // bind click handler to the 'Additional styles' collapsible arrow
             $(style_div).find('.additional-style-collapse').bind('click', {id:foldersList[i].folder_id}, function(event) {
