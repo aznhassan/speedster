@@ -21,6 +21,7 @@ html, body {
 
 body {
     background-color: #EA850D;
+    opacity: 50%;
 }
 
 input {
@@ -62,6 +63,45 @@ a:active {
 	color: rgba(240, 180, 180, 0.9);
 	text-align: center;
 	vertical-align: middle;
+}
+
+#hamburger_helper, #printer_helper {
+	display: inline-block;
+	position: fixed;
+	height: 25px;
+	width: 25px;
+	top: 5px;
+	opacity: 0.15;
+}
+
+#hamburger_helper:hover, #printer_helper:hover {
+	opacity: 0.35;
+}
+
+#hamburger_helper:active, #printer_helper:active {
+	opacity: 0.7;
+}
+
+#hamburger, #printer {
+	width: 26px;
+	height: 26px;
+	position: absolute;
+}
+
+#hamburger {
+	background-image: url('hamburger.svg');
+}
+
+#hamburger_helper {
+	left: 5px;
+}
+
+#printer {
+	background-image: url('printer.svg');
+}
+
+#printer_helper {
+	right: 8px;
 }
 
 
