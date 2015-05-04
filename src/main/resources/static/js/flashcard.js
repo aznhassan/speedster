@@ -7,6 +7,7 @@ $(document).ready(function() {
 
     var correctButton = document.getElementById("correct-button");
     var wrongButton = document.getElementById("wrong-button");
+    $('#button-div').hide();
 
     // TODO: Surbhi, I am adding a new object as a placeholder for current card :)
     var currCard = { 
@@ -22,12 +23,18 @@ $(document).ready(function() {
     getNextFlashcard();
     
       // TODO: Use different trigger to avoid back and forth. 
-      $('.flashcard_div_front').hover(function() {
+     /* $('.flashcard_div_front').on("click", function() {
+          alert("yes");
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
       }, function() {
           // $(this).removeClass('flip-front');
           //$('.flashcard_div_back').removeClass('flip-back');
+      });*/
+      $(document).on("click", ".flashcard_div_front", function(){
+          $(".flashcard_div_front").addClass('flip-front');
+          $('.flashcard_div_back').addClass('flip-back');
+          $('#button-div').show();
       });
 
      
@@ -43,6 +50,7 @@ $(document).ready(function() {
         $('.flashcard_div_front').removeClass('flip-front');
        
         sendFlashcardUpdates(false);
+        $('#button-div').hide();
     });
 
     /**
@@ -53,6 +61,7 @@ $(document).ready(function() {
         $('.flashcard_div_front').removeClass('flip-front');
         
         sendFlashcardUpdates(true);
+        $('#button-div').hide();
     }) 
 
   
@@ -108,7 +117,7 @@ $(document).ready(function() {
             $.post("/finishedCard", postParams, function(responseJSON) {
             // We don't need to do anything, as the primarily role 
             // of is function was to update the back-end.
-        }); 
+        });
 
         }
         
@@ -151,8 +160,8 @@ $(document).ready(function() {
      * Displaying a flashcard
      */
      function displayFlashcard(card) {
-        $('.flashcard_div_front').html('<br><br><br><p>Q: </b>' + card.q + '</p>');
-        $('.flashcard_div_back').html('<br><br><br><p>Q: </b>' + card.q +'<hr>'+'</p><p><b>A: </b>' + card.a + '</p>');
+        $('.flashcard_div_front').html('<br><br><br><p class="Q">Q: </b>' + card.q + '</p><br><br><br><p class="hint">(click to reveal)</p>');
+        $('.flashcard_div_back').html('<br><br><br><p class="Q">Q: </b>' + card.q +'<hr>'+'</p><p class="A"><b>A: </b>' + card.a + '</p>');
      }
 });
 

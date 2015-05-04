@@ -126,7 +126,7 @@ public final class ApiHandler {
       if (!madeFolders && !folder.getParentFile().isDirectory()) {
         return jsonError;
       }
-      // new File(folder, "/rules").mkdir();
+      // new File(folder, "/rules").uir();
       boolean success = true;
 
       long id = Main.getAndIncrementId();

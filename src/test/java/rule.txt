@@ -1,0 +1,42 @@
+Rule:
+{
+    "associated_folder_id": -1,
+    "associated_folder_name": ".Testing",
+    "name": "What"
+    "trigger":
+      {
+        "word": "string",
+        "endSeq": "thing typed in box if they typed something"
+        "style": 
+        {
+            "font-weight":"bold",
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
+        }
+      }
+
+      "after":
+      {
+        "endSeq": "thing they typed in the style text after box"
+        "style": 
+        {
+            "font-weight":"bold",
+            "font-style": "italic",
+            "text-decoration":"underline",
+            "font-family": "Times New Roman",
+            "font-size": "small/medium/big"
+
+        }
+      }
+
+      "container":
+      {
+        "style": 
+        {
+            
+        }
+      }
+}
