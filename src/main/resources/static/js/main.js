@@ -493,7 +493,7 @@ $(document).ready(function() {
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR \
                 <input type="checkbox" class="newline-text-after" id="newline-text-after_' + id + '"></input>  Newline<br>' + 
-                '<span id="invalid_text_after_' + id + '">Invalid Input!</span>'
+                '<span id="invalid_text_after_' + id + '">Invalid Input!</span>' + 
                 '<span style="margin-left:3%" id="span_to_toggle_' + id + '">with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', id, "") +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + id + '"></input>  Box this rule<br>' +
