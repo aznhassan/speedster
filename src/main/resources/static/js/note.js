@@ -334,8 +334,9 @@ function compileUserRule(rule) {
 	var newline1 = containerStyle && rule.trigger.endSeq && rule.trigger.endSeq == '<br>\u200b' && !rule.after;
   var newline2 = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
 
+  var boundary = '\\b';
 
-	var reg = (afterEndSeq ? (trigger + triggerEndSeq + afterEndSeq) + '|' + (trigger + triggerEndSeq) : trigger + triggerEndSeq);
+	var reg = boundary + (afterEndSeq ? (trigger + triggerEndSeq + afterEndSeq) + '|' + boundary + (trigger + triggerEndSeq) : trigger + triggerEndSeq);
 
 
 	var rep = function() {
@@ -537,7 +538,7 @@ function prepareUserRules(rules) {
 
 $(document).ready(function() {
 
-	//document.body.style.backgroundColor = "#A1E869"; //"#FF8085";
+	document.body.style.backgroundColor = "#A1E869"; //"#FF8085";
 
   var urlparts = window.location.pathname.split('/');
   var params = {'subject': decodeURIComponent(urlparts[2])}
@@ -578,6 +579,14 @@ $(document).ready(function() {
       if (/\W/.test(String.fromCharCode(code)) && [37, 38, 39, 40].indexOf(code) === -1) {
         save();
       }
+  });
+
+  $('#hamburger_helper').click(function() {
+      window.location.href = '/notes';
+  });
+
+  $('#printer_helper').click(function() {
+      window.print();
   });
 });
 

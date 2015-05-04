@@ -20,6 +20,16 @@ the page is written in-->
       <p id="alerttext">Warning: unsaved changes!</p>
     </div>
     
+    <div id="top_buttons">
+      <div id="hamburger_helper">
+        <svg preserveAspectRatio="none" id="hamburger"></svg>
+      </div>
+      <div id="printer_helper">
+        <svg preserveAspectRatio="none" id="printer"></svg>
+      </div>
+    </div>
+
+
     <!-- It's important to not have any extra space inside the div, else formatting will be bad :( -->
     <div contenteditable="true" id="noteArea">${note}</div>
   
