@@ -62,7 +62,7 @@ $(document).ready(function() {
         
         sendFlashcardUpdates(true);
         $('#button-div').hide();
-    }) 
+    });
 
   
 /*Format to recieve the next flashcard 
