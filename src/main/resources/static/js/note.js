@@ -533,6 +533,7 @@ function prepareUserRules(rules) {
 
   $('#noteArea').focus();
   stylize(false);
+  $('#noteArea').blur();
 }
 
 

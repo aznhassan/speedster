@@ -147,7 +147,8 @@ $(document).ready(function() {
                 // bind click handler that redirects clicking the note name div to the note itself
                 // the note opens in a separate tab.
                 $(notes_div).bind('click', {name: foldersList[i].folder_name}, function(event) {
-                    window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
+                    //window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
+                    window.location.href = '/getNote/' + event.data.name + "/" +  this.id, '_blank';
                 });
 
                 var deleteParam = {
@@ -282,7 +283,8 @@ $(document).ready(function() {
                     
                     // bind click handler to redirect to the note page.
                     $(new_note_div).bind('click', {name: postParam.folder_name}, function(event) {
-                        window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
+                        //window.open('/getNote/' + event.data.name + "/" +  this.id, '_blank');
+                        window.location.href = '/getNote/' + event.data.name + "/" +  this.id, '_blank';
                     });
 
                     // binds click handler to the delete icon
