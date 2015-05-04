@@ -177,9 +177,7 @@ select {
     font-size: 14px;
 }
 
-.submit-button:hover {
-    background-color: rgba(0,0,0,0.1);
-}
+
 
 #style-circle {
     height: 20px;
@@ -297,6 +295,10 @@ input[type=checkbox] {
 
 .new-style-header-to-add {
     margin-left: 4.5%;
+}
+
+.invalid_input {
+    color: rgba(255,0,0,0.5);
 }
 
 

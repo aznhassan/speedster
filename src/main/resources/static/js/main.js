@@ -481,19 +481,20 @@ $(document).ready(function() {
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + id + '" maxlength="20"></input><br>    \
                 should start with \
                 <input type="text" class="rulestart" id="rulestart_' + id + '" placeholder="Character String" maxlength="15"></input>   \
-                <span id="invalid_input_rulestart_' + id +'">Invalid input!</span><br>  \
+                <span class="invalid_input" id="invalid_input_rulestart_' + id +'">Invalid input!</span><br>  \
                 and have these styles: <br>' + 
                 createStyleToolbar('start-style-bar', id, "") + 
                 '<span class="extra_styles_title" id="extra_styles_title_' + id + '">   \
                 <span class="circle additional-style-collapse arrow-right"><span class="arrow-down"></span></span>' +
                 '  Additional Styles</span><br>' +
                 '<div class="extra_styles_div" id="extra_styles_div_' + id + '"><span>Extend these styles until</span><br>'  
-                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + id + '"></input>  Newline<br><br>' + 
+                + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR '
+                + '<input type="checkbox" class="newline-trigger" id="newline-trigger_' + id + '"></input>  Newline   ' +
+                '<span class="invalid_input" id="invalid_trigger_after_' + id + '">Invalid Input!</span><br><br>' +
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + id + '"></input>  Newline<br>' + 
-                '<span id="invalid_text_after_' + id + '">Invalid Input!</span>' + 
+                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + id + '"></input>  Newline   ' + 
+                '<span class="invalid_input" id="invalid_text_after_' + id + '">Invalid Input!</span><br>' + 
                 '<span style="margin-left:3%" id="span_to_toggle_' + id + '">with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', id, "") +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + id + '"></input>  Box this rule<br>' +
@@ -505,6 +506,7 @@ $(document).ready(function() {
             
             // hide invalid input text visibility
             $('#invalid_input_rulestart_' + id)[0].style.visibility = "hidden";
+            $('#invalid_trigger_after_' + id)[0].style.visibility = "hidden"
             $('#invalid_text_after_' + id)[0].style.visibility = "hidden";
 
             // filter invalid input for the rule start string
@@ -522,7 +524,30 @@ $(document).ready(function() {
 
             // filter invalid input for the 'extend these styles until' input
             $('#trigger-end-sequence_' + id).on('keyup', {id: id}, function(event) {
+                var currString = this.value;
+                if(currString.search(invalidRegex) !== -1) {
+                    $('#invalid_trigger_after_' + event.data.id)[0].style.visibility = "visible";
+                    $('#submit_' + event.data.id)[0].disabled = true;
+                } else {
+                    $('#invalid_trigger_after_' + event.data.id)[0].style.visibility = "hidden";
+                    $('#submit_' + event.data.id)[0].disabled = false;
+                }
+            });
 
+            // filter invalid input for the text after 'style text after with' input
+            $('#text-after-end-sequence_' + id).on('keyup', {id: id}, function(event) {
+                var currString = this.value;
+                if(currString.search(invalidRegex) !== -1) {
+                    $('#invalid_text_after_' + event.data.id)[0].style.visibility = "visible";
+                    $('#submit_' + event.data.id)[0].disabled = true;
+                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
+                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
+                } else {
+                    $('#invalid_text_after_' + event.data.id)[0].style.visibility = "hidden";
+                    $('#submit_' + event.data.id)[0].disabled = false;
+                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
+                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
+                }
             });
 
             // click handler for the newline options, disables the input box if newline box is checked
