@@ -28,7 +28,7 @@ body {
 	z-index: 900;
 	background-color: rgba(255, 255, 255, 0.5);
 	color: black;
-	height: 70%;
+	height: 60%;
 	width: 60%;
 	position: absolute;
 	margin-left: 20%;
@@ -36,8 +36,21 @@ body {
 	margin-top: 8%;
 	margin-bottom: 10%;
 	text-align: center;
+}
+
+.Q {
 	font-size: 25px;
-	font-weight: bold;
+}
+
+.A {
+	font-size: 25px;
+	font-weight: 700;
+}
+
+.hint {
+	font-size: 20px;
+	font-family: 'Playfair Display';
+	font-style: italic;
 }
 
 .flashcard_div_front {
@@ -103,7 +116,7 @@ body {
 }
 
 #correct-button:hover {
-	background-color: #71ff8f;
+	background-color: rgba(0, 220, 110, 0.9);
 	/*color: white;*/
 }
 
