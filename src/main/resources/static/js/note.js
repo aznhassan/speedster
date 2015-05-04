@@ -291,7 +291,7 @@ function applyUserRules(text) {
 // Takes a regex in the form of a string and adds a \ before special characters so that you can use the regex as a string (i.e. new Regex(...))
 // ex. "\s" -> "\\s"
 function regEsc(string) {
-    return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+    return string.replace(/([.*+?!^=:${}()|\[\]\/\\])/g, "\\$1");
     //return string.replace(/[-\/\\^$*+?.\(\)|\[\]{}]/g, '\\$&')
 }
 

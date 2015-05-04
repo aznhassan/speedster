@@ -22,6 +22,9 @@
  */
 
 
+//       /[^\/<>&#;]*/.test(str);  // true if string is valid , else false.
+
+
 
 
 $(document).ready(function() {
@@ -29,6 +32,9 @@ $(document).ready(function() {
     // variables/DOM elements needed
     var prevEditingHTML = null;             // prev HTML of the style overlay
     var foldersList = [];                   // global list of existing folders
+    var validRegex = /[^\/<>&#;]*/;         // regex to test for valid user input, returns true if string is valid
+                                            // i.e without any of the characters specified in the regex.    
+    var invalidRegex = /[\/<>&#;]/;
 
     /**
      * Handles getting all metadata for folders and within them notes
@@ -472,7 +478,8 @@ $(document).ready(function() {
                 '<div class="rule_div" id="rule_div_' + id + '">' +
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + id + '" maxlength="20"></input><br>    \
                 should start with \
-                <input type="text" class="rulestart" id="rulestart_' + id + '" placeholder="Character String" maxlength="15"></input><br>  \
+                <input type="text" class="rulestart" id="rulestart_' + id + '" placeholder="Character String" maxlength="15"></input>   \
+                <span id="invalid_input_rulestart_' + id +'">Invalid input!</span><br>  \
                 and have these styles: <br>' + 
                 createStyleToolbar('start-style-bar', id, "") + 
                 '<span class="extra_styles_title" id="extra_styles_title_' + id + '">   \
@@ -484,15 +491,38 @@ $(document).ready(function() {
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + id + '" placeholder = "Character String" maxlength="10"></input>  OR \
                 <input type="checkbox" class="newline-text-after" id="newline-text-after_' + id + '"></input>  Newline<br>' + 
+                '<span id="invalid_text_after_' + id + '">Invalid Input!</span>'
                 '<span style="margin-left:3%" id="span_to_toggle_' + id + '">with these styles</span> <br>' 
                 + createStyleToolbar('text-after-style-bar', id, "") +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + id + '"></input>  Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center" id="center_' + id + '"></input>  \
                 Center this rule<br><br></div><br>' +
-                '<div class="submit-button" id="submit_' + id + '">SAVE</div>' + 
+                '<input type="button" class="submit-button" id="submit_' + id + '" value="SAVE"></input>' + 
                 '</div>' + 
                 '</div>'); 
             
+            // hide invalid input text visibility
+            $('#invalid_input_rulestart_' + id)[0].style.visibility = "hidden";
+            $('#invalid_text_after_' + id)[0].style.visibility = "hidden";
+
+            // filter invalid input for the rule start string
+           
+            $('#rulestart_' + id).on('keyup', {id: id}, function(event) {
+                var currString = this.value;
+                if(currString.search(invalidRegex) !== -1) {
+                   $('#invalid_input_rulestart_' + event.data.id)[0].style.visibility = "visible"; 
+                   $('#submit_' + event.data.id)[0].disabled = true;
+                } else {
+                    $('#invalid_input_rulestart_' + event.data.id)[0].style.visibility = "hidden"; 
+                    $('#submit_' + event.data.id)[0].disabled = false;
+                }
+            });
+
+            // filter invalid input for the 'extend these styles until' input
+            $('#trigger-end-sequence_' + id).on('keyup', {id: id}, function(event) {
+
+            });
+
             // click handler for the newline options, disables the input box if newline box is checked
             $('#newline-trigger_' + id).bind('click', {id: foldersList[i].folder_id }, function(event) {
                 if(this.checked) {
@@ -660,7 +690,7 @@ $(document).ready(function() {
      * @param name of the folder
      * @param name of the rule
      */
-     function getSubjectRules(styleDiv, folderID, folderName, rulename) {
+    function getSubjectRules(styleDiv, folderID, folderName, rulename) {
         var clickParam = {
             id: folderID,
             name: folderName,
@@ -669,6 +699,7 @@ $(document).ready(function() {
         };
 
         $('#submit_' + folderID + rulename).bind('click', clickParam, function(event) {
+            alert("clicked");
             var rulesForThisFolder = getRulesList(event.data.div, event.data.id, event.data.name, event.data.rule);
 
             // sends the rules as stringified JSON to the server.
@@ -856,7 +887,7 @@ $(document).ready(function() {
             !rule["after"]["style"]["text-decoration"] &&
             !rule["after"]["style"]["font-family"] &&
             !rule["after"]["style"]["font-size"]) {
-            delete rule["after"]["style"];
+            delete rule["after"];
         }
     }
 

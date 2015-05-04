@@ -21,6 +21,7 @@ html, body {
 
 body {
     background-color: #EA850D;
+    opacity: 50%;
 }
 
 input {
