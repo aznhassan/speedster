@@ -175,6 +175,7 @@ select {
     text-align: center;
     cursor: pointer;
     font-size: 14px;
+    background-color: transparent;
 }
 
 

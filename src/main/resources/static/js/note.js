@@ -105,7 +105,7 @@ function getSelectionParentElement() {
 }
 
 // The following code is used to save and restore the caret position in an HTML tree
-// I believe it does so by storing a hidden character in the text and then returning back to that on restore
+// I believe it does so by storing a hidden character in the text and then returning to that on restore
 var saveSelection, restoreSelection;
 if (window.getSelection && document.createRange) {
     saveSelection = function(containerEl) {

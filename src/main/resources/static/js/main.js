@@ -1,6 +1,6 @@
 /** 
  * Main file for the program's dynamic UI interactions
- * @author sm15
+
 
  * main.js handles:
    - Loading the metadata on the main notes page
@@ -11,7 +11,7 @@
    - Style menu overlay where users can define custom rules by folder
 
  * Style overlay functionality overview:
-   - Lets users add new styles ny folder
+   - Lets users add new styles to any folder
    - Can delete existing styles
    - Each new style form features optional additional styling for text after the rule trigger word.
 
@@ -30,11 +30,8 @@
 $(document).ready(function() {
 
     // variables/DOM elements needed
-    var prevEditingHTML = null;             // prev HTML of the style overlay
     var foldersList = [];                   // global list of existing folders
-    var validRegex = /[^\/<>&#;]*/;         // regex to test for valid user input, returns true if string is valid
-                                            // i.e without any of the characters specified in the regex.    
-    var invalidRegex = /[\/<>&#;]/;
+    var invalidRegex = /[\/<>&#;]/;         // regex of invalid input characters
 
     /**
      * Handles getting all metadata for folders and within them notes
@@ -471,6 +468,11 @@ $(document).ready(function() {
             style_div.className = 'style_div';
             style_div.id = id;
 
+            var eventParam = {
+                id: foldersList[i].folder_id,
+                name: ""
+            }
+
             // HTML for a new style blank form.
             $(style_div).html('<span class="folder_style_header">' +   
                 '<span class="circle collapse-main arrow-right" id="collapse-main_' + id + '"></span>' + '<span>' + '       ' + 
@@ -504,105 +506,11 @@ $(document).ready(function() {
                 '</div>' + 
                 '</div>'); 
             
-            // hide invalid input text visibility
-            $('#invalid_input_rulestart_' + id)[0].style.visibility = "hidden";
-            $('#invalid_trigger_after_' + id)[0].style.visibility = "hidden"
-            $('#invalid_text_after_' + id)[0].style.visibility = "hidden";
+            bindHandlers(eventParam);
 
-            // filter invalid input for the rule start string
-           
-            $('#rulestart_' + id).on('keyup', {id: id}, function(event) {
-                var currString = this.value;
-                if(currString.search(invalidRegex) !== -1) {
-                   $('#invalid_input_rulestart_' + event.data.id)[0].style.visibility = "visible"; 
-                   $('#submit_' + event.data.id)[0].disabled = true;
-                } else {
-                    $('#invalid_input_rulestart_' + event.data.id)[0].style.visibility = "hidden"; 
-                    $('#submit_' + event.data.id)[0].disabled = false;
-                }
-            });
-
-            // filter invalid input for the 'extend these styles until' input
-            $('#trigger-end-sequence_' + id).on('keyup', {id: id}, function(event) {
-                var currString = this.value;
-                if(currString.search(invalidRegex) !== -1) {
-                    $('#invalid_trigger_after_' + event.data.id)[0].style.visibility = "visible";
-                    $('#submit_' + event.data.id)[0].disabled = true;
-                } else {
-                    $('#invalid_trigger_after_' + event.data.id)[0].style.visibility = "hidden";
-                    $('#submit_' + event.data.id)[0].disabled = false;
-                }
-            });
-
-            // filter invalid input for the text after 'style text after with' input
-            $('#text-after-end-sequence_' + id).on('keyup', {id: id}, function(event) {
-                var currString = this.value;
-                if(currString.search(invalidRegex) !== -1) {
-                    $('#invalid_text_after_' + event.data.id)[0].style.visibility = "visible";
-                    $('#submit_' + event.data.id)[0].disabled = true;
-                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
-                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
-                } else {
-                    $('#invalid_text_after_' + event.data.id)[0].style.visibility = "hidden";
-                    $('#submit_' + event.data.id)[0].disabled = false;
-                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
-                }
-            });
-
-            // click handler for the newline options, disables the input box if newline box is checked
-            $('#newline-trigger_' + id).bind('click', {id: foldersList[i].folder_id }, function(event) {
-                if(this.checked) {
-                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = true;
-                } else {
-                    $('#trigger-end-sequence_' + event.data.id)[0].disabled = false;
-                }
-            });
-
-            //click handler for disabling text after input if newline box is checked
-            $('#newline-text-after_' + id).bind('click', {id: foldersList[i].folder_id }, function(event) {
-                if(this.checked) {
-                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = true;
-                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
-                } else {
-                    $('#text-after-end-sequence_' + event.data.id)[0].disabled = false;
-                    if($('#text-after-end-sequence_' + event.data.id)[0].value === "") {
-                        $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
-                        $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
-                    }
-                }
-            });
-
-            // toggles visibility of the styling menu after the text-after endSeq input
-            // the endSeq cannot be styled unless there is an endSeq specified by the user.
-            $('#text-after-end-sequence_' + id).bind('keyup', {id: foldersList[i].folder_id}, function(event) {
-                if(this.value !== "" || $('#newline-text-after_' + event.data.id)[0].checked) {
-                    // disable everything below it
-                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "visible";
-                } else if(this.value === "" && $('#newline-text-after_' + event.data.id)[0].checked === false) {
-                    $('#toolbar_text-after-style-bar' + event.data.id)[0].style.visibility = "hidden";
-                    $('#span_to_toggle_' + event.data.id)[0].style.visibility = "hidden";
-                }
-            });
-
-            // hide styling menu below the text-after endSeq by default
+            // hide text after style menu by default
             $('#span_to_toggle_' + id)[0].style.visibility = "hidden";
             $('#toolbar_text-after-style-bar' + id)[0].style.visibility = "hidden";
-            
-            // bind click handler to the 'Additional styles' collapsible arrow
-            $(style_div).find('.additional-style-collapse').bind('click', {id:foldersList[i].folder_id}, function(event) {
-                $(document.getElementById('extra_styles_div_' + event.data.id)).slideToggle(175);
-                if($(this).hasClass('arrow-right')) {
-                    $(this).removeClass('arrow-right');
-                    $(this).addClass('arrow-down');
-
-                } else {
-                    $(this).removeClass('arrow-down');
-                    $(this).addClass('arrow-right');
-                }
-            });
 
             // bind click handler to toggle the form for entering a new rule.
             $(style_div).find('#style-circle').bind('click', {id: foldersList[i].folder_id}, function(event) {
@@ -726,7 +634,6 @@ $(document).ready(function() {
         };
 
         $('#submit_' + folderID + rulename).bind('click', clickParam, function(event) {
-            alert("clicked");
             var rulesForThisFolder = getRulesList(event.data.div, event.data.id, event.data.name, event.data.rule);
 
             // sends the rules as stringified JSON to the server.
@@ -988,7 +895,6 @@ $(document).ready(function() {
      * Clears the overlay DOM until the next request.
      */
     function closeStyleMenu() {
-        prevEditingHTML = $('.example_content').html();
         $('.example_content')[0].innerHTML = '<span id="rule-header">STYLE RULES</span><span class="close-button"></span>';
         $('.example_overlay')[0].style.display = "none";
         $('.example_content')[0].style.display = "none";
@@ -1020,7 +926,8 @@ $(document).ready(function() {
                 '<div class="rule_div" id="rule_div_' + folder_id + rulename_id + '">' +
                 'Rule <input type="text" class="rulename" placeholder="Name" id="rulename_' + folder_id + rulename_id + '" maxlength="20"></input><br>    \
                 should start with \
-                <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename_id + '" placeholder="Character String" maxlength="15"></input><br>  \
+                <input type="text" class="rulestart" id="rulestart_' + folder_id + rulename_id + '" placeholder="Character String" maxlength="15"></input> \
+                <span class="invalid_input" id="invalid_input_rulestart_' + folder_id + rulename_id + '">Invalid Input!</span><br>  \
                 and have these styles: <br>' + 
                 createStyleToolbar('start-style-bar', folder_id, rulename_id) + 
                 '<span class="extra_styles_title" id="extra_styles_title_' + folder_id + rulename_id + '">' + 
@@ -1030,80 +937,23 @@ $(document).ready(function() {
                 '<div class="extra_styles_div" id="extra_styles_div_' + folder_id + rulename_id + '"><span>' + 
                 'Extend these styles until<br>'   
                 + '<input type="text" class="trigger-end-sequence" id="trigger-end-sequence_' + folder_id + rulename_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + folder_id + rulename_id + '"></input>  Newline<br><br>' + 
+                <input type="checkbox" class="newline-trigger" id="newline-trigger_' + folder_id + rulename_id + '"></input>  Newline   \
+                <span class="invalid_input" id="invalid_trigger_after_' + folder_id + rulename_id + '">Invalid Input!</span><br><br>' + 
                 'Style text after this rule until<br>'
                 + '<input type="text" class="text-after-end-sequence" id="text-after-end-sequence_' + folder_id + rulename_id + '" placeholder = "Character String" maxlength="10"></input>  OR \
-                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + folder_id + rulename_id + '"></input>  Newline<br>' + 
+                <input type="checkbox" class="newline-text-after" id="newline-text-after_' + folder_id + rulename_id + '"></input>  Newline   \
+                <span class="invalid_input" id="invalid_text_after_' + folder_id + rulename_id + '">Invalid Input!</span><br>' + 
                 '<span id="span_to_toggle_' + folder_id + rulename_id + '">with these styles </span><br>' 
                 + createStyleToolbar('text-after-style-bar', folder_id, rulename_id) +
                 '<input type="checkbox" name="boxed" value="box" class="box" id="box_' + folder_id + rulename_id+ '"></input> \
                 Box this rule<br>' +
                 '<input type="checkbox" name="centered" value="center" class="center" id="center_' + folder_id + rulename_id + '"></input> \
                 Center this rule<br><br></div>' +
-                '<div class="submit-button" id="submit_' + folder_id + rulename_id + '">SAVE</div>' + 
+                '<input type="button" class="submit-button" value="SAVE" id="submit_' + folder_id + rulename_id + '"></input>' + 
                 '</div><br id="line_break_' + folder_id + rulename_id +'">');
             
-            // bind click handler to the newline button for trigger endSeq.
-            $('#newline-trigger_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
-                if(this.checked) {
-                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
-                } else {
-                    $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
-                }
-            });
-
-            // bind click handler to the newline checkbox for the rule.after endSeq.
-            $('#newline-text-after_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
-                if(this.checked) {
-                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
-                    $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
-
-                } else {
-                    $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
-                    if($('#text-after-end-sequence_' + event.data.id + event.data.name)[0].value === "") {
-                        $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-                        $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-                    }
-                }
-            });
-
-            // keyup handler to the rule.after.endSeq text box.
-            $('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: folder_id, name: rulename_id}, function(event) {
-                if(this.value !== "" || $('#newline-text-after_' + event.data.id + event.data.name)[0].checked) {
-                    $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
-                    $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
-
-                } else if(this.value === "" && $('#newline-text-after_' + event.data.id + event.data.name)[0].checked === false) {
-                    $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-                    $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
-                }
-            });
-
-            // click handler to the collapse icon
-            $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', eventParam, function(event) {
-                $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
-                if($(this).hasClass('arrow-right')) {
-                    $(this).removeClass('arrow-right');
-                    $(this).addClass('arrow-down');
-                } else {
-                    $(this).removeClass('arrow-down');
-                    $(this).addClass('arrow-right');
-                }
-            });
-
-            // click handler to the the collapse button on the folder collapse.
-            $('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
-                $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
-                if($(this).hasClass('arrow-right')) {
-                    $(this).removeClass('arrow-right');
-                    $(this).addClass('arrow-down');
-                } else {
-                    $(this).removeClass('arrow-down');
-                    $(this).addClass('arrow-right');
-                }
-            });
-
+            bindHandlers(eventParam);
+            
             var clickParam = {
                 id: folder_id,
                 folder: folder_name,
@@ -1284,5 +1134,114 @@ $(document).ready(function() {
             // binds click handler to 'SAVE' button to save the styles.
             getSubjectRules(document.getElementById(folder_id), folder_id, folder_name, rulename_id);
         }
+    }
+
+    /** 
+     * Binds click and keyup handlers to the DOM elements of the styling form
+     * @param eventParam - object holding folder id and rulename_id if it exists, else empty string.
+     */
+    function bindHandlers(eventParam) {
+        var folder_id = eventParam.id;
+        var rulename_id = eventParam.name;
+        // hide the invalid input text by default
+        $('#invalid_input_rulestart_' + folder_id + rulename_id)[0].style.visibility = "hidden";
+        $('#invalid_trigger_after_' + folder_id + rulename_id)[0].style.visibility = "hidden";
+        $('#invalid_text_after_' + folder_id + rulename_id)[0].style.visibility = "hidden";
+
+        // bind keyup handler to the 'rule starts with' input box to check invalid input
+        $('#rulestart_' + folder_id + rulename_id).on('keyup', eventParam, function(event) {
+            if(this.value.search(invalidRegex) !== -1) {
+                $('#invalid_input_rulestart_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+                $('#submit_' + event.data.id + event.data.name)[0].disabled = true;
+            } else {
+                $('#invalid_input_rulestart_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                $('#submit_' + event.data.id + event.data.name)[0].disabled = false;
+            }
+        });
+
+        // bind keyup handler to the 'extend styles until' i.e trigger endSeq input box
+        $('#trigger-end-sequence_' + folder_id + rulename_id).on('keyup', eventParam, function(event) {
+            if(this.value.search(invalidRegex)  !== -1) {
+                $('#invalid_trigger_after_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+                $('#submit_' + event.data.id + event.data.name)[0].disabled = true;
+            } else {
+                $('#invalid_trigger_after_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                $('#submit_' + event.data.id + event.data.name)[0].disabled = false;
+            }
+        });
+
+        // bind keyup handler to the 'style text after' input box to check for invalid input
+        $('#text-after-end-sequence_' + folder_id + rulename_id).on('keyup', eventParam, function(event) {
+            if(this.value.search(invalidRegex) !== -1) {
+                $('#invalid_text_after_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+                $('#submit_' + event.data.id + event.data.name)[0].disabled = true;
+                $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+            } else {
+                $('#invalid_text_after_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                $('#submit_' + event.data.id + event.data.name).disabled = false;
+                $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+            }
+        });
+        
+        // bind click handler to the newline button for trigger endSeq.
+        $('#newline-trigger_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
+            if(this.checked) {
+                $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+            } else {
+                $('#trigger-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+            }
+        });
+
+        // bind click handler to the newline checkbox for the rule.after endSeq.
+        $('#newline-text-after_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
+            if(this.checked) {
+                $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = true;
+                $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
+                $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+
+            } else {
+                $('#text-after-end-sequence_' + event.data.id + event.data.name)[0].disabled = false;
+                if($('#text-after-end-sequence_' + event.data.id + event.data.name)[0].value === "") {
+                    $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                    $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                }
+            }
+        });
+
+        // keyup handler to the rule.after.endSeq text box.
+        $('#text-after-end-sequence_' + folder_id + rulename_id).bind('keyup', {id: folder_id, name: rulename_id}, function(event) {
+            if(this.value !== "" || $('#newline-text-after_' + event.data.id + event.data.name)[0].checked) {
+                $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "visible";
+                $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "visible";
+
+            } else if(this.value === "" && $('#newline-text-after_' + event.data.id + event.data.name)[0].checked === false) {
+                $('#toolbar_text-after-style-bar' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+                $('#span_to_toggle_' + event.data.id + event.data.name)[0].style.visibility = "hidden";
+            }
+        });
+
+        // click handler to the collapse icon
+        $('#rule_div_' + folder_id + rulename_id).find('.additional-style-collapse').bind('click', eventParam, function(event) {
+            $('#extra_styles_div_' + event.data.id + event.data.name).slideToggle(175);
+            if($(this).hasClass('arrow-right')) {
+                $(this).removeClass('arrow-right');
+                $(this).addClass('arrow-down');
+            } else {
+                $(this).removeClass('arrow-down');
+                $(this).addClass('arrow-right');
+            }
+        });
+
+        // click handler to the the collapse button on the folder collapse.
+        $('#existing-styles-collapse_' + folder_id + rulename_id).bind('click', eventParam, function(event) {
+            $('#rule_div_' + event.data.id + event.data.name).slideToggle(175);
+            if($(this).hasClass('arrow-right')) {
+                $(this).removeClass('arrow-right');
+                $(this).addClass('arrow-down');
+            } else {
+                $(this).removeClass('arrow-down');
+                $(this).addClass('arrow-right');
+            }
+        });
     }
 });
