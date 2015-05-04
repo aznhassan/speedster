@@ -1,0 +1,1 @@
+.test-trigger{font-weight:bold;text-decoration:none;font-size:17px;font-family:"Open Sans";font-style:none}

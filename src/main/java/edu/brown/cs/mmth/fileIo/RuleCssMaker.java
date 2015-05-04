@@ -229,7 +229,12 @@ public final class RuleCssMaker {
      * "font-size": "small/medium/big" }
      */
 
-    JSONObject styleObject = obj.getJSONObject("style");
+    JSONObject styleObject = new JSONObject();
+    try {
+      styleObject = obj.getJSONObject("style");
+    } catch (JSONException e) {
+      return "";
+    }
     String[] styleNames = JSONObject.getNames(styleObject);
     int styleLength = styleNames.length;
 

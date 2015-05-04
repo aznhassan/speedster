@@ -22,12 +22,17 @@ $(document).ready(function() {
     getNextFlashcard();
     
       // TODO: Use different trigger to avoid back and forth. 
-      $('.flashcard_div_front').hover(function() {
+     /* $('.flashcard_div_front').on("click", function() {
+          alert("yes");
           $(this).addClass('flip-front');
           $('.flashcard_div_back').addClass('flip-back');
       }, function() {
           // $(this).removeClass('flip-front');
           //$('.flashcard_div_back').removeClass('flip-back');
+      });*/
+      $(document).on("click", ".flashcard_div_front", function(){
+          $(".flashcard_div_front").addClass('flip-front');
+          $('.flashcard_div_back').addClass('flip-back');
       });
 
      
