@@ -8,8 +8,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import edu.brown.cs.mmth.speedster.Main;
 
 public class CSSWriteTest {
 
@@ -58,6 +62,21 @@ public class CSSWriteTest {
   public static void onceExecutedBeforeAll() {
     assertTrue(readTestJson());
     assertTrue(readExpectedCss());
+  }
+
+  @AfterClass
+  public static void deleteData() {
+    File testFile = new File("src/main/resources/static/customCss/-1.css");
+    File testFolder = new File(Main.getBasePath() + "/Testing");
+    try {
+      FileUtils.deleteDirectory(testFolder);
+    } catch (IOException e) {
+      System.err.println("ERROR: Couldn't delete folder");
+      System.exit(1);
+    }
+    if(!testFile.delete()) {
+      System.err.println("ERROR: Couldn't delete file");
+    }
   }
 
   @Test
