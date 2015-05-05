@@ -5,12 +5,17 @@ package edu.brown.cs.mmth.fileIo;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.AfterClass;
 import org.junit.Test;
 
+import edu.brown.cs.mmth.speedster.Main;
 import edu.brown.cs.mmth.speedster.Note;
 
 /**
@@ -19,11 +24,11 @@ import edu.brown.cs.mmth.speedster.Note;
  *
  */
 public class NoteRWTest {
-  @Test
   /**
    * Tests whether text gets written to file and is
    * read from file accurately.
    */
+  @Test
   public void basicNoteRWTest() {
     String subject = "Italiano 150";
     String data = "Come stai?";
@@ -48,10 +53,10 @@ public class NoteRWTest {
     assertTrue(rNotes.get(0).getTextData().equals(data));
   }
 
-  @Test
   /**
    * Tests for multiple line reading and writing.
    */
+  @Test
   public void multipleLineNoteRWTest() {
     String subject = "Italiano 150";
     String message = "Ciao tutti\n questo è la mia terra ora";
@@ -76,6 +81,17 @@ public class NoteRWTest {
     assertTrue(rNotes.get(0).getSubject().equals(subject));
     assertTrue(rNotes.get(0).getTextData()
         .equals(message));
+  }
+
+  @AfterClass
+  public static void deleteFiles() {
+    File testFile = new File(Main.getBasePath() + "/" + "Italiano 150");
+    try {
+      FileUtils.deleteDirectory(testFile);
+    } catch (IOException e) {
+      System.err.println("ERROR: Couldn't delete the folder");
+      System.exit(1);
+    }
   }
 
 }
