@@ -208,7 +208,7 @@ function stylize(correcting) {
     }
 
     // Encode HTML special chars for distinction from our own insertions
-    console.log(res);
+    //console.log(res);
     res = escapeHTML(res);
 
     // \u200b -> <br>\u200b
@@ -228,22 +228,13 @@ function stylize(correcting) {
     title = '<div class="title">' + title + '</div>';
 
     // NOTE:
-    res = res.replace(/(note:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-        return '<div class="box">' + '<span class="notecolon">' + a + '</span>' 
-        + '<span class="noteafter">' + b + '</span>' + '</div>' + maybeUnNewline(c);
-    });
+    // res = res.replace(/(note:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
+    //     return '<div class="box">' + '<span class="notecolon">' + a + '</span>' 
+    //     + '<span class="noteafter">' + b + '</span>' + '</div>' + maybeUnNewline(c);
+    // });
 
 
     // Q/A
-    // res = res.replace(/\b(Q:)([^]*?)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e) {
-    //     return '<div class="qabox">' + a + b + c + d  + '</div>' + maybeUnNewline(e);
-    // });
-    // res = res.replace(/\b(Q:)(.*?\?|.*$)/gi, function(x, a, b) {
-    //     return '<span class="qcolon">' + a + '</span>' + '<span class="qafter">' + b + '</span>';
-    // });
-    // res = res.replace(/\b(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c) {
-    //     return '<span class="acolon">' + a + '</span>' + '<span class="aafter">' + b + '</span>' + c;
-    // });
     res = res.replace(/\b(Q:)([^]*?)(<br>\u200b)(A:)(.*?)(<br>\u200b|$)/gi, function(x, a, b, c, d, e, f) {
         return '<div class="qabox">' + a + b + c + d + e + '</div>' + maybeUnNewline(f);
     });
@@ -304,7 +295,7 @@ function escapeHTML(text) {
         "'": '&#039;'
   	};
 
-    return text.replace(/[&<>"']/g, function(m) { console.log('escaping:' + m); return map[m]; });
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 function unescapeHTML(html) {
@@ -316,7 +307,7 @@ function unescapeHTML(html) {
    	    '&#039;': "'"
     };
 
-    return html.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/gi, function(m) { console.log( 'restoring:' + m); return map[m]; });
+    return html.replace(/&amp;|&lt;|&gt;|&quot;|&#039;/gi, function(m) { return map[m]; });
 }
 
 function compileUserRules(rules) {
@@ -334,7 +325,7 @@ function compileUserRule(rule) {
 	var newline1 = containerStyle && rule.trigger.endSeq && rule.trigger.endSeq == '<br>\u200b' && !rule.after;
   var newline2 = containerStyle && rule.after && rule.after.endSeq == '<br>\u200b';
 
-  var boundary = '\\b';
+  var boundary = '';// '\\b';
 
 	var reg = boundary + (afterEndSeq ? (trigger + triggerEndSeq + afterEndSeq) + '|' + boundary + (trigger + triggerEndSeq) : trigger + triggerEndSeq);
 
@@ -451,45 +442,45 @@ function gatherFlashcards() {
 
 function prepareUserRules(rules) {
   //////////// Testing ////
-  rules.push({
-    'name': 'inline quotes',
-    'trigger': {
-      'word': '"',
-      'endSeq': '"',
-      'class': 'quotes'
-    }
-  });
+  // rules.push({
+  //   'name': 'inline quotes',
+  //   'trigger': {
+  //     'word': '"',
+  //     'endSeq': '"',
+  //     'class': 'quotes'
+  //   }
+  // });
 
-  rules.push({
-   'name': 'figure',
-    'trigger': {
-      'word': '[',
-      'endSeq': ']',
-      'class': 'equationcaption'
-    },
-    'after': {
-      'endSeq': NEWLINEDUMMY,
-      'class': 'equation'
-    },
-    'container': {
-      'class': 'equationbox'
-    }
-  });
+  // rules.push({
+  //  'name': 'figure',
+  //   'trigger': {
+  //     'word': '[',
+  //     'endSeq': ']',
+  //     'class': 'equationcaption'
+  //   },
+  //   'after': {
+  //     'endSeq': NEWLINEDUMMY,
+  //     'class': 'equation'
+  //   },
+  //   'container': {
+  //     'class': 'equationbox'
+  //   }
+  // });
 
-  rules.push({
-    'name': 'large quotes',
-    'trigger': {
-      'word': "``",
-      'class': 'largequote'
-    },
-    'after': {
-      'endSeq': NEWLINEDUMMY,
-      'class': 'largequoteafter'
-    },
-    'container': {
-      'class': 'largequotebox'
-    }
-  });
+  // rules.push({
+  //   'name': 'large quotes',
+  //   'trigger': {
+  //     'word': "``",
+  //     'class': 'largequote'
+  //   },
+  //   'after': {
+  //     'endSeq': NEWLINEDUMMY,
+  //     'class': 'largequoteafter'
+  //   },
+  //   'container': {
+  //     'class': 'largequotebox'
+  //   }
+  // });
 
   rules.push({
     'name': 'psuedo-sections',
@@ -499,22 +490,6 @@ function prepareUserRules(rules) {
       'endSeq': NEWLINEDUMMY
     }
   });
-
-  // rules.push({
-  //   'name': 'tab note',
-  //   'trigger': {
-  //     'word': '$',
-  //     'class': 'section',
-  //     'endSeq': NEWLINEDUMMY
-  //   },
-  //   'after': {
-  //     'endSeq': NEWLINEDUMMY',
-  //     'class': 'noteafter'
-  //   },
-  //   'container': {
-  //     'class': 'box'
-  //   }
-  // });
 
   ////////////////////////
 
@@ -539,13 +514,13 @@ function prepareUserRules(rules) {
 
 $(document).ready(function() {
 
-	document.body.style.backgroundColor = "#A1E869"; //"#FF8085";
+	document.body.style.backgroundColor = "#00E5DB"; //"#A1E869"; //"#FF8085";
 
   var urlparts = window.location.pathname.split('/');
   var params = {'subject': decodeURIComponent(urlparts[2])}
 
   $.post('/rulesForSubject', params, function(responseJSON) {
-    console.log(responseJSON);
+      //console.log(responseJSON);
       var rules = JSON.parse(responseJSON) || [];
       prepareUserRules(rules);
   });

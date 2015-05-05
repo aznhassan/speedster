@@ -22,7 +22,7 @@
 
   </head>
   <body>
-     <h1>NOTEWORTHY NOTES</h1><br>
+     <h1>MY NOTES</h1><br>
 
 	 <div class="data" style="display:none">${data}</div>
 

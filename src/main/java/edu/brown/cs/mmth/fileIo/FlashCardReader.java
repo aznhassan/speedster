@@ -153,6 +153,9 @@ public final class FlashCardReader {
       return null;
     }
     for (File file : files) {
+      if (file.getName().equals("rules")) { //Ignoring the rules directory
+        continue;
+      }
       // All flashcards are one level deep in folders!
       if (!file.isFile()) {
         flashCards.addAll(readCardsInFolder(file, subject));
