@@ -1,4 +1,4 @@
-A project not named Speedster ()
+A project not named Speedster
 
 Project Name: TBD
 
