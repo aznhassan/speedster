@@ -56,10 +56,3 @@ The project consists of the following packages:
 * tries -- package for a generic trie
 
 For more details about the package, classes or even functions please refer to the JavaDocs and the in-line comments! 
-
-  ___  _____ ____  
- / _ \| ____|  _ \ 
-| | | |  _| | | | |
-| |_| | |___| |_| |
- \__\_\_____|____/ 
-                    
